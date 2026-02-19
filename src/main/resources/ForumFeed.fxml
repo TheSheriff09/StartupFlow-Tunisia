@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane prefHeight="720.0" prefWidth="1280.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.GUI.ForumFeedController"
+            stylesheets="@css/entrepreneur_dashboard.css"
+            styleClass="root">
+
+    <!-- TOP NAVIGATION BAR -->
+    <top>
+        <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 15 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);">
+            
+            <!-- Branding -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ImageView fitHeight="100" fitWidth="100" preserveRatio="true">
+                    <image>
+                        <Image url="@/assest/logo.png"/>
+                    </image>
+                </ImageView>
+                <VBox spacing="0">
+                    <Label text="StartupFlow" styleClass="brandTitle"/>
+                    <Label text="Tunisia" styleClass="brandSub"/>
+                </VBox>
+            </HBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Navigation Buttons -->
+            <Button text="Dashboard" styleClass="actionBtn" onAction="#goDashboard" style="-fx-background-color: transparent; -fx-text-fill: #666;"/>
+            <Button text="Startup" styleClass="actionBtn" onAction="#goStartup" style="-fx-background-color: transparent; -fx-text-fill: #666;"/>
+            <Button text="Mentorship" styleClass="actionBtn" onAction="#goMentorship" style="-fx-background-color: transparent; -fx-text-fill: #666;"/>
+            <Button text="Funding" styleClass="actionBtn" onAction="#goFunding" style="-fx-background-color: transparent; -fx-text-fill: #666;"/>
+            <Button text="Forum" styleClass="actionBtn" onAction="#goForum"/> <!-- Active Tab -->
+            
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- User Actions -->
+            <Button text="+ New Post" styleClass="actionBtn" onAction="#addPost"/>
+            <Button text="Logout" styleClass="actionBtn" onAction="#logout" style="-fx-background-color: #ff3b30; -fx-text-fill: white;"/>
+        </HBox>
+    </top>
+
+    <!-- CENTER FEED -->
+    <center>
+        <VBox spacing="20" style="-fx-background-color: #f4f4f4;">
+            <padding>
+                <Insets top="20" right="100" bottom="20" left="100"/>
+            </padding>
+
+            <!-- Header -->
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <Label text="Community Forum" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+            </HBox>
+
+            <!-- Scrollable Feed -->
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+                <VBox fx:id="postsContainer" spacing="15" >
+                    <!-- Posts will be added here dynamically -->
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </center>
+
+</BorderPane>

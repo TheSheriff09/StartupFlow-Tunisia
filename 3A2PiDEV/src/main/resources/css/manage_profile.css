@@ -1,0 +1,78 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #f0e9ff 55%, #e3d6ff 100%);
+    -fx-font-family: "Segoe UI","Inter","Arial";
+}
+
+/* Top bar */
+.brandTitle { -fx-text-fill:#7b61ff; -fx-font-size:16px; -fx-font-weight:800; }
+.brandSub   { -fx-text-fill:#7b61ff; -fx-font-size:12px; -fx-opacity:0.85; }
+
+.navLink { -fx-text-fill:#7b61ff; -fx-font-size:14px; -fx-opacity:0.75; -fx-cursor: hand; }
+.navActive { -fx-opacity:1.0; -fx-underline:true; }
+
+/* User MenuButton */
+.userBtn {
+    -fx-background-color: linear-gradient(to right, #7b61ff, #d7a1ff);
+    -fx-text-fill: white;
+    -fx-background-radius: 18;
+    -fx-padding: 7 16 7 16;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+    -fx-background-insets: 0;
+}
+.userBtn > .label { -fx-text-fill: white; }
+
+/* Card */
+.mainCard {
+    -fx-background-color: rgba(0,0,0,0.16); /* gray overlay like screenshot */
+    -fx-background-radius: 22;
+    -fx-border-radius: 22;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 26, 0.2, 0, 10);
+}
+
+/* Section title */
+.sectionTitle { -fx-text-fill:#7b61ff; -fx-font-size:22px; -fx-font-weight:900; }
+.sectionSub   { -fx-text-fill:#7b61ff; -fx-font-size:14px; -fx-opacity:0.85; -fx-font-weight:700; }
+
+.titleUnderline {
+    -fx-min-height: 4px;
+    -fx-max-height: 4px;
+    -fx-pref-width: 170px;
+    -fx-background-color: rgba(123,97,255,0.70);
+    -fx-background-radius: 10;
+}
+
+/* Labels left */
+.fieldText { -fx-text-fill:#7b61ff; -fx-font-size:18px; -fx-font-weight:900; }
+.iconTxt   { -fx-font-size:18px; }
+
+/* Fields */
+.pillField {
+    -fx-background-color: rgba(255,255,255,0.92);
+    -fx-background-radius: 22;
+    -fx-padding: 10 18 10 18;
+    -fx-border-color: transparent;
+    -fx-font-weight: 700;
+}
+
+/* Divider */
+.divider {
+    -fx-background-color: rgba(215,161,255,0.9);
+    -fx-background-radius: 10;
+}
+
+/* Buttons */
+.backBtn, .saveBtn {
+    -fx-background-color: linear-gradient(to right, #7b61ff, #d7a1ff);
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-background-radius: 24;
+    -fx-cursor: hand;
+    -fx-background-insets: 0;
+}
+
+/* Message */
+.msg {
+    -fx-text-fill: #38F41BFF;
+    -fx-font-weight: 800;
+}

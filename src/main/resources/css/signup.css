@@ -1,0 +1,142 @@
+.root {
+    -fx-background-color:
+            linear-gradient(to bottom, #ffffff 0%, #ffffff 45%, #e9dfff 100%);
+    -fx-font-family: "Segoe UI";
+}
+
+/* Top right */
+.top-right { }
+.home-text {
+    -fx-text-fill: #9a7bff;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+.home-icon {
+    -fx-pref-width: 28px;
+    -fx-pref-height: 28px;
+    -fx-background-radius: 999;
+    -fx-background-color: #e9d6ff;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0.2, 0, 4);
+}
+.home-icon-text {
+    -fx-text-fill: #9a7bff;
+    -fx-font-size: 14px;
+}
+
+/* Left Card */
+.left-card {
+    -fx-background-radius: 28;
+    -fx-background-color: rgba(210, 210, 210, 0.55);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 30, 0.25, 0, 10);
+}
+
+.card-content .title {
+    -fx-text-fill: #2f3440;
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+}
+.card-content .subtitle {
+    -fx-text-fill: #555c6a;
+    -fx-font-size: 14px;
+}
+
+/* Inputs */
+.pill-field {
+    -fx-pref-width: 340px;
+    -fx-pref-height: 44px;
+    -fx-background-radius: 999;
+    -fx-background-color: rgba(255,255,255,0.35);
+    -fx-prompt-text-fill: rgba(0,0,0,0.35);
+    -fx-text-fill: #2f3440;
+    -fx-padding: 0 18 0 18;
+    -fx-border-color: transparent;
+}
+
+.pill-wrap {
+    -fx-pref-width: 340px;
+    -fx-pref-height: 44px;
+    -fx-background-radius: 999;
+    -fx-background-color: rgba(255,255,255,0.35);
+    -fx-padding: 0 10 0 0;
+}
+.pill-field-inner {
+    -fx-background-color: transparent;
+    -fx-pref-height: 44px;
+    -fx-pref-width: 290px;
+    -fx-padding: 0 0 0 18;
+    -fx-prompt-text-fill: rgba(0,0,0,0.35);
+}
+.eye-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #b28cff;
+    -fx-font-size: 14px;
+}
+
+/* Register button */
+.register-btn {
+    -fx-pref-width: 340px;
+    -fx-pref-height: 46px;
+    -fx-background-radius: 14;
+    -fx-text-fill: white;
+    -fx-font-weight: 800;
+    -fx-background-color: linear-gradient(to right, #6b5cff 0%, #ff9cff 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 18, 0.2, 0, 6);
+}
+
+/* OR line */
+.or-row { -fx-padding: 10 0 0 0; }
+.line {
+    -fx-pref-height: 2px;
+    -fx-background-color: rgba(255,255,255,0.55);
+}
+.or-text {
+    -fx-text-fill: rgba(40,40,40,0.55);
+    -fx-font-weight: 700;
+}
+
+/* Social */
+.social-btn {
+    -fx-min-width: 52px;
+    -fx-min-height: 52px;
+    -fx-background-radius: 999;
+    -fx-background-color: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: 900;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0.2, 0, 5);
+}
+.social-btn.fb { -fx-text-fill: #1877F2; }
+.social-btn.gg { -fx-text-fill: #db4437; }
+.social-btn.gh { -fx-text-fill: #111111; }
+
+/* Login */
+.login-row { -fx-padding: 12 0 0 0; }
+.login-text { -fx-text-fill: rgba(0,0,0,0.70); }
+.login-link {
+    -fx-text-fill: rgba(0,0,0,0.95);
+    -fx-font-weight: 800;
+}
+
+/* Right side */
+.brand-title {
+    -fx-text-fill: #9a7bff;
+    -fx-font-size: 22px;
+    -fx-font-weight: 900;
+}
+.brand-sub {
+    -fx-text-fill: #b79aff;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+}
+
+.wave-wrap {
+    -fx-padding: 50 0 0 0;
+    -fx-pref-width: 520px;
+    -fx-pref-height: 380px;
+}
+.wave, .wave2, .wave3 {
+    -fx-fill: transparent;
+    -fx-stroke: rgba(180, 120, 255, 0.45);
+    -fx-stroke-width: 2.0;
+}
+.wave2 { -fx-stroke: rgba(180, 120, 255, 0.35); }
+.wave3 { -fx-stroke: rgba(180, 120, 255, 0.25); }

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="614.0" prefWidth="1128.0" styleClass="root" stylesheets="@css/login.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.GUI.LoginController">
+
+    <!-- Right image side -->
+    <ImageView fitHeight="623.0" fitWidth="549.0" layoutX="579.0" layoutY="-4.0" pickOnBounds="true">
+        <image>
+            <!-- replace with your image -->
+            <Image url="@assest/ChatGPT Image Jan 28, 2026, 08_10_30 PM.png" />
+        </image>
+    </ImageView>
+
+    <!-- Overlay text on right -->
+    <VBox layoutX="640" layoutY="420" spacing="10">
+        <Label styleClass="rightTitle" text="Turn Ideas Into Impact" />
+        <Label styleClass="rightSub" text="From bold ideas to funded startups, manage mentoring,&#10;performance, and growth with clarity and confidence." />
+    </VBox>
+
+    <!-- Brand top-left -->
+    <VBox layoutX="40" layoutY="22" spacing="-2">
+        <Label styleClass="brandTitle" text="StartupFlow" />
+        <Label styleClass="brandSub" text="Tunisia" />
+    </VBox>
+
+    <!-- Home top-right (left side) -->
+    <HBox alignment="CENTER" layoutX="430" layoutY="24" spacing="10">
+        <Label styleClass="homeText" text="Home" />
+        <StackPane styleClass="homeIcon">
+            <Label styleClass="homeIconTxt" text="⌂" />
+        </StackPane>
+    </HBox>
+
+    <!-- Left login card -->
+    <StackPane layoutX="55" layoutY="90" prefHeight="480" prefWidth="460" styleClass="card">
+
+        <VBox alignment="TOP_CENTER" spacing="12" styleClass="cardContent">
+            <padding>
+                <Insets bottom="30" left="38" right="38" top="30" />
+            </padding>
+            <Label styleClass="welcome" text="Welcome Back!" />
+
+            <HBox alignment="CENTER" spacing="18">
+                <Button onAction="#onLinkedin" styleClass="socialBtn">
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assest/Facebook_Logo_2023-removebg-preview.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+                <Button onAction="#onGoogle" styleClass="socialBtn">
+               <graphic>
+                  <ImageView fitHeight="26.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assest/google-lens-icon-logo-symbol-free-png.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+                <Button onAction="#onOther" styleClass="socialBtn" text=" ">
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assest/github-logo-repository-computer-icons-github-removebg-preview.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            </HBox>
+
+            <Label prefHeight="26.0" prefWidth="53.0" styleClass="fieldLabel" text="Email" />
+            <TextField fx:id="emailField" promptText="Entrepreneur@startupflow.in" styleClass="pillField" />
+
+            <Label styleClass="fieldLabel" text="Password" />
+            <HBox alignment="CENTER_LEFT" prefHeight="31.0" prefWidth="279.0" spacing="10" styleClass="pillWrap">
+                <PasswordField fx:id="passwordField" prefHeight="38.0" prefWidth="314.0" promptText="**************" styleClass="pillInner" />
+                <Button onAction="#togglePassword" styleClass="eyeBtn" text="👁" />
+            </HBox>
+
+            <Label fx:id="msgLabel" styleClass="msg" text="" wrapText="true" />
+
+            <Button onAction="#onLogin" styleClass="signBtn" text="sign in" />
+
+            <HBox alignment="CENTER" spacing="6">
+                <Label styleClass="small" text="don't have an account ?" />
+                <Hyperlink onAction="#onGoSignup" styleClass="link" text="sign up" />
+            </HBox>
+
+        </VBox>
+
+    </StackPane>
+
+</AnchorPane>

@@ -1,0 +1,144 @@
+/* Global */
+.root {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #f0e9ff 55%, #e3d6ff 100%);
+    -fx-font-family: "Segoe UI", "Inter", "Arial";
+}
+
+/* Sidebar */
+.sidebar {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 0);
+}
+
+.brandTitle {
+    -fx-text-fill: #7b61ff;
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+}
+
+.brandSub {
+    -fx-text-fill: #7b61ff;
+    -fx-opacity: 0.8;
+    -fx-font-size: 12px;
+}
+
+/* Sidebar Navigation */
+.navLink {
+    -fx-background-color: transparent;
+    -fx-text-fill: #666;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+    -fx-padding: 10 15;
+    -fx-background-radius: 8;
+}
+
+.navLink:hover {
+    -fx-background-color: #f8f5ff;
+    -fx-text-fill: #7b61ff;
+}
+
+.navActive,
+.navLink:focused {
+    -fx-background-color: #f0e9ff;
+    -fx-text-fill: #7b61ff;
+    -fx-font-weight: 800;
+    -fx-background-radius: 8;
+    -fx-border-color: transparent;
+}
+
+/* Also support the "nav-btn" class used in Admin panel */
+.nav-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #555;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+    -fx-padding: 10 15;
+    -fx-background-radius: 8;
+}
+
+.nav-btn:hover {
+    -fx-background-color: #f8f5ff;
+    -fx-text-fill: #7b61ff;
+}
+
+.nav-btn.active {
+    -fx-background-color: #f0e9ff;
+    -fx-text-fill: #7b61ff;
+    -fx-font-weight: 800;
+}
+
+/* Primary Action Button (New Post) */
+.actionBtn {
+    -fx-background-color: #7b61ff;
+    -fx-text-fill: white;
+    -fx-font-weight: 800;
+    -fx-font-size: 14px;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+    -fx-padding: 8 20;
+    -fx-effect: dropshadow(gaussian, rgba(123, 97, 255, 0.4), 10, 0, 0, 4);
+}
+
+.actionBtn:hover {
+    -fx-background-color: #6a50e0;
+}
+
+/* Logout */
+.logout {
+    -fx-text-fill: #ff3b30;
+}
+
+.logout:hover {
+    -fx-background-color: #fff0f0;
+}
+
+/* Post Items */
+.card {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 10, 0, 0, 2);
+    -fx-background-radius: 12;
+}
+
+/* Comment Box Style */
+.comment-box {
+    -fx-background-color: #f1f3f5;
+    -fx-background-radius: 12;
+    -fx-padding: 10 14;
+    -fx-border-color: #e9ecef;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+/* Reaction Buttons (Text + Emoji) */
+.reaction-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #666;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-padding: 6 12;
+    -fx-background-radius: 15;
+    -fx-border-color: transparent;
+}
+
+.reaction-btn:hover {
+    -fx-background-color: #f0f2f5;
+    -fx-text-fill: #7b61ff;
+}
+
+.reaction-active {
+    -fx-text-fill: #7b61ff;
+    -fx-font-weight: 800;
+    -fx-background-color: rgba(123, 97, 255, 0.1);
+}
+
+/* ScrollPane Transparent */
+.scroll-pane>.viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}

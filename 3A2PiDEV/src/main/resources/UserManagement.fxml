@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="720.0" prefWidth="1280.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.GUI.UserManagementController"
+            stylesheets="@css/usermanagement.css"
+            styleClass="root">
+
+    <!-- LEFT SIDEBAR -->
+    <left>
+        <VBox prefWidth="260.0" spacing="14.0" styleClass="sidebar" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="22" right="18" bottom="22" left="18"/>
+            </padding>
+
+            <VBox spacing="2">
+                <Label text="StartupFlow" styleClass="brand-title"/>
+                <Label text="Tunisia" styleClass="brand-sub"/>
+            </VBox>
+
+            <Separator styleClass="sep"/>
+
+            <VBox spacing="10" styleClass="nav-box">
+                <Button text="Dashboard" styleClass="nav-btn" onAction="#goDashboard"/>
+                <Button text="User Management" styleClass="nav-btn active" onAction="#goUsers"/>
+                <Button text="Startup Projects" styleClass="nav-btn" onAction="#goProjects"/>
+                <Button text="Mentorship" styleClass="nav-btn" onAction="#goMentorship"/>
+                <Button text="Funding &amp; Evaluation" styleClass="nav-btn" onAction="#goFunding"/>
+                <Button text="Forum Moderation" styleClass="nav-btn" onAction="#goForum"/>
+                <Button text="Settings" styleClass="nav-btn" onAction="#goSettings"/>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Button text="Logout" styleClass="nav-btn logout" onAction="#logout"/>
+        </VBox>
+    </left>
+
+    <!-- TOP BAR -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="topbar" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="14" right="18" bottom="14" left="18"/>
+            </padding>
+
+            <Label text="User Management" styleClass="top-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <TextField fx:id="searchField" promptText="Search by name / email..."
+                       styleClass="search"/>
+
+            <Button text="Refresh" styleClass="pill" onAction="#refresh"/>
+        </HBox>
+    </top>
+
+    <!-- MAIN -->
+    <center>
+        <AnchorPane styleClass="main" BorderPane.alignment="CENTER">
+
+            <!-- TABLE CARD -->
+            <StackPane layoutX="26" layoutY="26" prefWidth="930" prefHeight="610" styleClass="glass-card">
+                <VBox spacing="12" styleClass="card-content">
+                    <padding>
+                        <Insets top="18" right="18" bottom="18" left="18"/>
+                    </padding>
+
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="users" styleClass="section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblInfo" text="" styleClass="info"/>
+                    </HBox>
+
+                    <TableView fx:id="usersTable" editable="true" styleClass="table" prefHeight="545">
+                        <columns>
+                            <TableColumn fx:id="colId" text="id" prefWidth="55"/>
+                            <TableColumn fx:id="colFullName" text="full_name" prefWidth="170"/>
+                            <TableColumn fx:id="colEmail" text="email" prefWidth="190"/>
+
+                            <!-- DO NOT SHOW HASH, ALWAYS EMPTY -->
+                            <TableColumn fx:id="colPassword" text="password_hash" prefWidth="120"/>
+
+                            <TableColumn fx:id="colRole" text="role" prefWidth="125"/>
+                            <TableColumn fx:id="colStatus" text="status" prefWidth="105"/>
+
+                            <TableColumn fx:id="colMentorExp" text="mentor_expertise" prefWidth="170"/>
+                            <TableColumn fx:id="colEvalLevel" text="evaluator_level" prefWidth="150"/>
+                            <TableColumn fx:id="colCreatedAt" text="created_at" prefWidth="130"/>
+
+                            <!-- ICON ACTIONS -->
+                            <TableColumn fx:id="colActions" text="Action" prefWidth="85"/>
+                        </columns>
+                    </TableView>
+
+                </VBox>
+            </StackPane>
+
+            <!-- RIGHT FORM CARD -->
+            <StackPane layoutX="980" layoutY="26" prefWidth="274" prefHeight="610" styleClass="side-card">
+                <VBox spacing="10" styleClass="side-content">
+                    <padding>
+                        <Insets top="16" right="14" bottom="16" left="14"/>
+                    </padding>
+
+                    <Label text="Add User" styleClass="side-title"/>
+
+                    <TextField fx:id="tfFullName" promptText="Full Name" styleClass="pillField"/>
+                    <TextField fx:id="tfEmail" promptText="Email" styleClass="pillField"/>
+                    <PasswordField fx:id="pfPassword" promptText="Password" styleClass="pillField"/>
+
+                    <ComboBox fx:id="cbRole" promptText="Role" styleClass="pillField"/>
+                    <ComboBox fx:id="cbStatus" promptText="Status" styleClass="pillField"/>
+
+                    <TextField fx:id="tfMentorExpertise" promptText="mentor_expertise (only MENTOR)" styleClass="pillField"/>
+                    <TextField fx:id="tfEvaluatorLevel" promptText="evaluator_level (only EVALUATOR)" styleClass="pillField"/>
+
+                    <Button text="Add User" styleClass="saveBtn" onAction="#addUser"/>
+
+                    <Separator styleClass="sep"/>
+
+                    <Button text="Reclamations" styleClass="pill2" onAction="#goReclamations"/>
+                </VBox>
+            </StackPane>
+
+        </AnchorPane>
+    </center>
+
+</BorderPane>

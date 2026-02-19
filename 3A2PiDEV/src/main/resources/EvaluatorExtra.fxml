@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/25"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.esprit.GUI.EvaluatorExtraController"
+      alignment="CENTER" spacing="15">
+
+    <Label text="Evaluator Information" style="-fx-font-size: 20;"/>
+
+    <TextField fx:id="levelField" promptText="Enter Evaluation Level" prefWidth="250"/>
+
+    <Button text="Finish" onAction="#finishEvaluator"/>
+
+</VBox>
