@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controller.StatsController"
+            prefWidth="1300" prefHeight="850"
+            stylesheets="@/css/styles.css">
+
+    <children>
+        <AnchorPane layoutX="40" layoutY="40"
+                    prefWidth="1220" prefHeight="770"
+                    styleClass="main-card">
+
+            <children>
+                <Label text="Statistics Dashboard"
+                       layoutX="30" layoutY="25"
+                       style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #7B61FF;"/>
+
+                <!-- LEFT: Summary cards + navigation -->
+                <VBox spacing="14" layoutX="30" layoutY="80" prefWidth="280">
+
+                    <Label text="Summary"
+                           style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+
+                    <Label fx:id="lblTotalApps" text="Total Applications: 0"
+                           style="-fx-font-size: 14;"/>
+                    <Label fx:id="lblTotalEvals" text="Total Evaluations: 0"
+                           style="-fx-font-size: 14;"/>
+                    <Label fx:id="lblAvgScore" text="Average Score: 0"
+                           style="-fx-font-size: 14;"/>
+                    <Label fx:id="lblTotalAmount" text="Total Funding Amount: 0"
+                           style="-fx-font-size: 14;"/>
+
+                    <Separator />
+
+                    <Label text="Navigation"
+                           style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+
+                    <Button text="Go to Applications" onAction="#goToApplications" prefWidth="240"/>
+                    <Button text="Go to Evaluation" onAction="#goToEvaluation" prefWidth="240"/>
+
+                    <Separator />
+
+                    <Button text="Refresh Stats" onAction="#refresh" prefWidth="240"/>
+
+                </VBox>
+
+                <!-- RIGHT: Charts -->
+                <VBox spacing="15" layoutX="340" layoutY="80" prefWidth="850" prefHeight="660">
+
+                    <Label text="Charts"
+                           style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+
+                    <HBox spacing="20">
+                        <PieChart fx:id="appStatusChart" prefWidth="410" prefHeight="520"/>
+                        <PieChart fx:id="evalDecisionChart" prefWidth="410" prefHeight="520"/>
+                    </HBox>
+
+                </VBox>
+
+            </children>
+        </AnchorPane>
+    </children>
+</AnchorPane>

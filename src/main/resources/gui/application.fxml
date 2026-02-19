@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controller.ApplicationController"
+            prefWidth="1300" prefHeight="850"
+            stylesheets="@/css/styles.css">
+
+    <children>
+        <AnchorPane layoutX="40" layoutY="40"
+                    prefWidth="1220" prefHeight="770"
+                    styleClass="main-card">
+
+            <children>
+                <Label text="Funding Application"
+                       layoutX="30" layoutY="25"
+                       style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #7B61FF;"/>
+
+                <VBox spacing="12" layoutX="30" layoutY="80" prefWidth="250">
+                    <TextField fx:id="txtEntrepreneurId" promptText="Entrepreneur ID"/>
+                    <TextField fx:id="txtAmount" promptText="Amount"/>
+                    <TextField fx:id="txtStatus" promptText="Status"/>
+                    <TextField fx:id="txtSubmissionDate" promptText="Submission Date"/>
+                    <TextField fx:id="txtApplicationReason" promptText="Application Reason"/>
+                    <TextField fx:id="txtProjectId" promptText="Project ID"/>
+                    <TextField fx:id="txtPaymentSchedule" promptText="Payment Schedule"/>
+                    <HBox spacing="5">
+                        <TextField fx:id="txtAttachment" promptText="Attachment" prefWidth="170"/>
+                        <Button text="Browse" onAction="#browseAttachment" prefWidth="70"/>
+                    </HBox>
+
+                    <VBox spacing="10" alignment="CENTER">
+                        <Button text="Add Application" onAction="#addApplication" prefWidth="200"/>
+                        <HBox spacing="10" alignment="CENTER">
+                            <Button text="Update" onAction="#updateApplication" style="-fx-padding: 8 15;"/>
+                            <Button text="Delete" styleClass="button-danger" onAction="#deleteApplication"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <TextField fx:id="searchField"
+                           styleClass="search-field"
+                           promptText="🔍 Search applications..."
+                           layoutX="310" layoutY="25"
+                           prefWidth="880"/>
+
+                <TableView fx:id="tableApplications"
+                           layoutX="310" layoutY="80"
+                           prefWidth="880"
+                           prefHeight="660">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                        <TableColumn fx:id="colEntrepreneurId" text="Entrepreneur ID" prefWidth="110"/>
+                        <TableColumn fx:id="colAmount" text="Amount" prefWidth="90"/>
+                        <TableColumn fx:id="colStatus" text="Status" prefWidth="90"/>
+                        <TableColumn fx:id="colSubmissionDate" text="Date" prefWidth="110"/>
+                        <TableColumn fx:id="colApplicationReason" text="Reason" prefWidth="130"/>
+                        <TableColumn fx:id="colProjectId" text="Project ID" prefWidth="90"/>
+                        <TableColumn fx:id="colPaymentSchedule" text="Payment" prefWidth="110"/>
+                        <TableColumn fx:id="colAttachment" text="Attachment" prefWidth="100"/>
+                    </columns>
+                </TableView>
+
+                <!-- NAV BUTTONS -->
+                <HBox spacing="10" layoutX="930" layoutY="25">
+                    <Button text="Go to Evaluation"
+                            onAction="#goToEvaluation"
+                            style="-fx-padding: 8 15;"/>
+                    <Button text="Go to Stats"
+                            onAction="#goToStats"
+                            style="-fx-padding: 8 15;"/>
+                </HBox>
+
+            </children>
+        </AnchorPane>
+    </children>
+</AnchorPane>
