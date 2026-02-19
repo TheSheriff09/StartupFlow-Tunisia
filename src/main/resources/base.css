@@ -1,0 +1,137 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   base.css  —  StartupFlow Design System  |  Foundation Layer
+   ───────────────────────────────────────────────────────────────────────
+   PURPOSE : Global reset, typography, page backgrounds, shared abstract
+             helper classes.  All other CSS files build on top of this.
+
+   COLOR TOKENS  (JavaFX has no CSS custom-properties — kept as reference
+                  comments; literal values are repeated per component):
+
+     page-gradient      : #e8d5f5 → #dcc8f0 → #cdbdf0 → #ecd4ec
+     accent-deep        : #4c1d95   (deep indigo-violet)
+     accent             : #6d28d9   (violet)
+     accent-mid         : #7c3aed
+     accent-light       : #8b5cf6   (lavender)
+     accent-pale        : #a78bfa
+     accent-tint        : #ede9fe   (very light lavender)
+     glass-white        : rgba(255,255,255,0.72)
+     glass-border       : rgba(196,181,253,0.58)
+     text-primary       : #1e1b4b
+     text-heading       : #4c1d95
+     text-secondary     : #374151
+     text-muted         : #64748b
+     text-faint         : #94a3b8
+
+   LOADING ORDER : base → layout → components → animations
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Global font family reset ──────────────────────────────────────── */
+* {
+    -fx-font-family: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-smoothing-type: lcd;
+}
+
+/* ── 2. Page background gradients ─────────────────────────────────────── */
+
+/* Startup view root */
+.root-pane {
+    -fx-background-color: linear-gradient(
+        to bottom right,
+        #e8d5f5 0%,
+        #dcc8f0 22%,
+        #cdbdf0 46%,
+        #d8c4f2 68%,
+        #ecd4ec 100%);
+}
+
+/* Business Plan view root */
+.root-pane-bp {
+    -fx-background-color: linear-gradient(
+        to bottom right,
+        #e8d5f5 0%,
+        #dcc8f0 22%,
+        #cdbdf0 46%,
+        #d8c4f2 68%,
+        #ecd4ec 100%);
+}
+
+/* Admin back-office root */
+.admin-root-pane {
+    -fx-background-color: linear-gradient(
+        to bottom right,
+        #ede0f8 0%,
+        #e4d4f4 22%,
+        #dccef4 46%,
+        #e2d0f4 68%,
+        #f0d8ee 100%);
+}
+
+/* ── 3. Reusable abstract utilities ───────────────────────────────────── */
+
+/* Zero-size spacer (layout filler) */
+.spacer { -fx-pref-width: 0; -fx-pref-height: 0; }
+
+/* Generic glass card foundation */
+.glass-container {
+    -fx-background-color: rgba(255,255,255,0.68);
+    -fx-background-radius: 24;
+    -fx-border-color: rgba(196,181,253,0.58);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 24;
+    -fx-effect: dropshadow(gaussian, rgba(91,33,182,0.14), 32, 0.05, 0, 8);
+}
+
+/* Generic primary gradient button */
+.primary-button {
+    -fx-background-color: linear-gradient(to right, #6d28d9, #8b5cf6);
+    -fx-text-fill: white;
+    -fx-font-weight: 800;
+    -fx-font-size: 13px;
+    -fx-background-radius: 14;
+    -fx-padding: 10 28 10 28;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(109,40,217,0.38), 14, 0, 0, 4);
+}
+
+/* Generic danger button */
+.danger-button {
+    -fx-background-color: linear-gradient(to right, #b91c1c, #dc2626);
+    -fx-text-fill: white;
+    -fx-font-weight: 800;
+    -fx-font-size: 13px;
+    -fx-background-radius: 14;
+    -fx-padding: 10 28 10 28;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(185,28,28,0.38), 14, 0, 0, 4);
+}
+
+/* Generic circular floating action button */
+.floating-button {
+    -fx-background-color: linear-gradient(to bottom right, #c026d3, #a855f7);
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: 900;
+    -fx-min-width: 62px;  -fx-max-width: 62px;
+    -fx-min-height: 62px; -fx-max-height: 62px;
+    -fx-background-radius: 31;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(192,38,211,0.74), 32, 0.22, 0, 8);
+    -fx-padding: 0;
+}
+
+/* Generic modern text input */
+.modern-input {
+    -fx-background-color: white;
+    -fx-border-color: #ddd6fe;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-border-width: 1.5;
+    -fx-text-fill: #3b1f6b;
+    -fx-prompt-text-fill: #c4b5fd;
+    -fx-font-size: 13px;
+    -fx-padding: 10 16 10 16;
+    -fx-effect: dropshadow(gaussian, rgba(109,40,217,0.07), 10, 0, 0, 2);
+}

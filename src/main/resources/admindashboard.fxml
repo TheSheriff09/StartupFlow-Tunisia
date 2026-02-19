@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Admin Back-Office Dashboard — StartupFlow
+    Main shell: sidebar + topbar + dynamic content area.
+    Pages are loaded programmatically into contentArea by AdminDashboardController.
+-->
+<StackPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.gui.admin.AdminDashboardController"
+        stylesheets="@styles.css">
+
+    <BorderPane fx:id="mainPane" styleClass="admin-root-pane">
+
+        <!-- ═══════ TOP BAR ═══════ -->
+        <top>
+            <HBox styleClass="admin-topbar" alignment="CENTER_LEFT" spacing="0">
+
+                <!-- Brand block — same width as sidebar -->
+                <VBox styleClass="admin-brand-box" spacing="2">
+                    <Label text="StartupFlow" styleClass="admin-brand-title"/>
+                    <Label text="Admin Panel" styleClass="admin-brand-sub"/>
+                </VBox>
+
+                <!-- Title + spacer -->
+                <HBox styleClass="admin-topbar-content" HBox.hgrow="ALWAYS"
+                      alignment="CENTER_LEFT" spacing="14">
+                    <Label fx:id="topbarTitle" text="Dashboard Overview"
+                           styleClass="admin-topbar-title">
+                        <HBox.margin><Insets left="24"/></HBox.margin>
+                    </Label>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <!-- Date label -->
+                    <Label fx:id="lblDate" text="" styleClass="activity-meta"/>
+
+                    <!-- Admin badge -->
+                    <Label text="ADMIN" styleClass="admin-badge"/>
+
+                    <!-- Back to app -->
+                    <Button text="← Back to App" styleClass="admin-back-btn"
+                            onAction="#goBack"/>
+
+                    <!-- User pill -->
+                    <Button text="Admin User" styleClass="user-btn">
+                        <HBox.margin><Insets right="0"/></HBox.margin>
+                    </Button>
+                </HBox>
+            </HBox>
+        </top>
+
+        <!-- ═══════ SIDEBAR ═══════ -->
+        <left>
+            <VBox styleClass="admin-sidebar">
+                <padding><Insets top="18" right="12" bottom="18" left="12"/></padding>
+
+                <Label text="MAIN MENU" styleClass="sidebar-section-label"/>
+
+                <Button fx:id="btnDashboard"
+                        text="🏠   Dashboard"
+                        styleClass="sidebar-btn-active"
+                        onAction="#showDashboard"/>
+
+                <Button fx:id="btnStartups"
+                        text="🚀   Startups"
+                        styleClass="sidebar-btn"
+                        onAction="#showStartups"/>
+
+                <Button fx:id="btnBusinessPlans"
+                        text="📋   Business Plans"
+                        styleClass="sidebar-btn"
+                        onAction="#showBusinessPlans"/>
+
+                <Region VBox.vgrow="NEVER" styleClass="sidebar-divider">
+                    <VBox.margin><Insets top="8" bottom="8"/></VBox.margin>
+                </Region>
+
+                <Label text="MANAGEMENT" styleClass="sidebar-section-label"/>
+
+                <Button fx:id="btnUsers"
+                        text="👥   Users"
+                        styleClass="sidebar-btn-disabled"
+                        disable="true"/>
+                <Button fx:id="btnSettings"
+                        text="⚙️   Settings"
+                        styleClass="sidebar-btn-disabled"
+                        disable="true"/>
+                <Button fx:id="btnReports"
+                        text="📊   Reports"
+                        styleClass="sidebar-btn-disabled"
+                        disable="true"/>
+
+                <Region VBox.vgrow="ALWAYS"/>
+
+                <Region VBox.vgrow="NEVER" styleClass="sidebar-divider">
+                    <VBox.margin><Insets top="4" bottom="8"/></VBox.margin>
+                </Region>
+
+                <Label text="StartupFlow Admin v1.0" styleClass="activity-meta">
+                    <padding><Insets left="6" bottom="4"/></padding>
+                </Label>
+            </VBox>
+        </left>
+
+        <!-- ═══════ CONTENT AREA ═══════ -->
+        <center>
+            <VBox fx:id="contentArea" alignment="TOP_CENTER"
+                  fillWidth="true" maxHeight="Infinity" maxWidth="Infinity">
+                <!-- Pages are loaded dynamically here -->
+            </VBox>
+        </center>
+
+    </BorderPane>
+
+    <!-- ═══════ MODAL LAYER (popups / overlays) ═══════ -->
+    <StackPane fx:id="modalLayer" visible="false" managed="false"/>
+
+</StackPane>

@@ -1,0 +1,234 @@
+/* ═══════════════════════════════════════════════════════════════════
+   layout.css  —  StartupFlow Design System
+   Structural layout: navbar, search, board, scroll, FAB, grid
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Navbar ──────────────────────────────────────────────────────── */
+.navbar {
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-padding: 0 36 0 36;
+    -fx-pref-height: 72;
+    -fx-min-height: 72;
+    -fx-border-color: transparent transparent rgba(196,181,253,0.40) transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-effect: dropshadow(gaussian, rgba(109,40,217,0.06), 20, 0, 0, 4);
+}
+
+/* Legacy alias */
+.topbar {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* BP topbar */
+.topbar-bp {
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-padding: 0 36 0 36;
+    -fx-pref-height: 72;
+    -fx-min-height: 72;
+    -fx-spacing: 14;
+    -fx-border-color: transparent transparent rgba(196,181,253,0.40) transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-effect: dropshadow(gaussian, rgba(109,40,217,0.06), 20, 0, 0, 4);
+}
+
+/* ── Nav links ───────────────────────────────────────────────────── */
+.nav-links {
+    -fx-padding: 0 0 0 48;
+    -fx-spacing: 2;
+    -fx-alignment: CENTER;
+}
+
+.nav-link {
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #64748b;
+    -fx-cursor: hand;
+    -fx-padding: 10 18 10 18;
+    -fx-background-radius: 10;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-font-weight: 500;
+    -fx-transition: all 0.2s;
+}
+.nav-link:hover {
+    -fx-text-fill: #6d28d9;
+    -fx-background-color: rgba(237,233,254,0.70);
+    -fx-scale-x: 1.02; -fx-scale-y: 1.02;
+}
+
+.nav-active {
+    -fx-text-fill: #6d28d9;
+    -fx-font-weight: 800;
+    -fx-border-color: transparent transparent #7c3aed transparent;
+    -fx-border-width: 0 0 2.5 0;
+    -fx-padding: 10 18 7.5 18;
+    -fx-background-color: transparent;
+}
+
+/* ── User button (right of navbar) ──────────────────────────────── */
+.user-btn {
+    -fx-background-color: linear-gradient(to right, #6d28d9, #8b5cf6);
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 24 10 24;
+    -fx-background-radius: 26;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(109,40,217,0.40), 14, 0.10, 0, 4);
+}
+.user-btn:hover {
+    -fx-background-color: linear-gradient(to right, #5b21b6, #7c3aed);
+    -fx-scale-x: 1.04; -fx-scale-y: 1.04;
+    -fx-effect: dropshadow(gaussian, rgba(91,33,182,0.58), 22, 0.14, 0, 6);
+}
+.user-btn:pressed { -fx-scale-x: 0.97; -fx-scale-y: 0.97; }
+
+/* ── Count badges ────────────────────────────────────────────────── */
+.count-badge {
+    -fx-background-color: #ede9fe;
+    -fx-text-fill: #6d28d9;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 5 16 5 16;
+    -fx-background-radius: 22;
+    -fx-border-color: #ddd6fe;
+    -fx-border-radius: 22;
+    -fx-border-width: 1;
+}
+
+.count-badge-bp {
+    -fx-background-color: #ede9fe;
+    -fx-text-fill: #6d28d9;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 5 16 5 16;
+    -fx-background-radius: 22;
+    -fx-border-color: #ddd6fe;
+    -fx-border-radius: 22;
+    -fx-border-width: 1;
+}
+
+/* ── Search bar ──────────────────────────────────────────────────── */
+.search-wrap {
+    -fx-background-color: transparent;
+    -fx-padding: 16 0 16 0;
+    -fx-alignment: CENTER;
+}
+
+.search-field {
+    -fx-background-color: rgba(255,255,255,0.78);
+    -fx-border-color: rgba(180,150,240,0.60);
+    -fx-border-radius: 32;
+    -fx-background-radius: 32;
+    -fx-border-width: 1.5;
+    -fx-text-fill: #4c1d95;
+    -fx-prompt-text-fill: #c4b5fd;
+    -fx-font-size: 14px;
+    -fx-padding: 12 32 12 32;
+    -fx-pref-height: 48px;
+    -fx-min-width: 320px;
+    -fx-max-width: 480px;
+    -fx-effect: dropshadow(gaussian, rgba(140,80,220,0.10), 18, 0.02, 0, 3);
+}
+.search-field:focused {
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-border-color: #9f72f5;
+    -fx-border-width: 2;
+    -fx-effect:
+        dropshadow(gaussian, rgba(159,114,245,0.50), 26, 0.06, 0, 0),
+        dropshadow(gaussian, rgba(109,40,217,0.10), 6, 0, 0, 2);
+}
+
+/* ── Board outer panel ───────────────────────────────────────────── */
+.board-panel {
+    -fx-background-color: rgba(255,255,255,0.35);
+    -fx-background-radius: 28;
+    -fx-border-color: rgba(255,255,255,0.65);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 28;
+    -fx-effect:
+        dropshadow(gaussian, rgba(109,40,217,0.16), 40, 0.06, 0, 8),
+        innershadow(gaussian, rgba(255,255,255,0.80), 4, 0, 0, 2);
+}
+
+/* ── Scroll areas ────────────────────────────────────────────────── */
+.scroll-area,
+.scroll-area-bp {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 26;
+}
+.scroll-area > .viewport,
+.scroll-area-bp > .viewport {
+    -fx-background-color: transparent;
+}
+.scroll-area .scroll-bar:vertical,
+.scroll-area-bp .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 7;
+}
+.scroll-area .scroll-bar:vertical .thumb,
+.scroll-area-bp .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(167,139,250,0.48);
+    -fx-background-radius: 4;
+}
+.scroll-area .scroll-bar:vertical .thumb:hover,
+.scroll-area-bp .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: rgba(109,40,217,0.68);
+}
+.scroll-area .scroll-bar:vertical .track,
+.scroll-area-bp .scroll-bar:vertical .track,
+.scroll-area .scroll-bar:vertical .increment-button,
+.scroll-area-bp .scroll-bar:vertical .increment-button,
+.scroll-area .scroll-bar:vertical .decrement-button,
+.scroll-area-bp .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+.scroll-area .corner,
+.scroll-area-bp .corner { -fx-background-color: transparent; }
+
+/* ── Cards flow pane ────────────────────────────────────────────── */
+.cards-pane,
+.cards-pane-bp { -fx-background-color: transparent; }
+
+/* ── FAB bar  ────────────────────────────────────────────────────── */
+.fab-bar,
+.fab-bar-bp {
+    -fx-background-color: transparent;
+    -fx-padding: 0 44 38 0;
+    -fx-alignment: CENTER_RIGHT;
+}
+
+/* ── BP header ───────────────────────────────────────────────────── */
+.bp-view-header {
+    -fx-font-size: 17px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #4c1d95;
+}
+
+/* ── Back button ─────────────────────────────────────────────────── */
+.btn-back {
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-text-fill: #6d28d9;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-padding: 9 20 9 20;
+    -fx-background-radius: 20;
+    -fx-border-color: #ddd6fe;
+    -fx-border-radius: 20;
+    -fx-border-width: 1.5;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(109,40,217,0.10), 8, 0, 0, 2);
+}
+.btn-back:hover {
+    -fx-background-color: #f5f0ff;
+    -fx-border-color: #a78bfa;
+    -fx-text-fill: #4c1d95;
+    -fx-effect: dropshadow(gaussian, rgba(109,40,217,0.22), 14, 0, 0, 3);
+}
+.btn-back:pressed { -fx-scale-x: 0.97; -fx-scale-y: 0.97; }
+
+/* ── Spacer utility ──────────────────────────────────────────────── */
+.spacer { -fx-pref-width: 0; -fx-pref-height: 0; }

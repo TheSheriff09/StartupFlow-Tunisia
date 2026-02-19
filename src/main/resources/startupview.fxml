@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Root StackPane lets us layer the modal overlay on top of the dashboard
+    without modifying the dashboard layout at all.
+-->
+<StackPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.gui.startup.StartupViewController"
+        stylesheets="@styles.css">
+
+<BorderPane
+        fx:id="mainContent"
+        styleClass="root-pane">
+
+    <!-- ═══════ NAVBAR ═══════ -->
+    <top>
+        <VBox>
+            <!-- Navigation bar -->
+            <HBox styleClass="navbar" alignment="CENTER_LEFT" spacing="0">
+                <!-- Brand -->
+                <VBox spacing="1">
+                    <Label text="StartupFlow" styleClass="brand-title"/>
+                    <Label text="Tunisia" styleClass="brand-sub"/>
+                </VBox>
+
+                <!-- Nav links -->
+                <HBox styleClass="nav-links" alignment="CENTER" spacing="4">
+                    <Label text="Home"       styleClass="nav-link"/>
+                    <Label text="Startup"    styleClass="nav-link nav-active"/>
+                    <Label text="Mentorship" styleClass="nav-link"/>
+                    <Label text="Funding"    styleClass="nav-link"/>
+                    <Label text="Forum"      styleClass="nav-link"/>
+                </HBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Count + Admin + User button -->
+                <Label fx:id="lblCount" text="0 startups" styleClass="count-badge">
+                    <HBox.margin><Insets right="14"/></HBox.margin>
+                </Label>
+                <Button text="⚙ Admin" styleClass="admin-back-btn"
+                        onAction="#openAdminDashboard">
+                    <HBox.margin><Insets right="10"/></HBox.margin>
+                </Button>
+                <Button text="User 1" styleClass="user-btn"/>
+            </HBox>
+
+            <!-- Centered search bar -->
+            <HBox styleClass="search-wrap" alignment="CENTER">
+                <TextField
+                        fx:id="searchField"
+                        promptText="🔍  Search startups…"
+                        styleClass="search-field"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- ═══════ BOARD PANEL + CARDS ═══════ -->
+    <center>
+        <StackPane>
+            <padding>
+                <Insets top="14" right="36" bottom="14" left="36"/>
+            </padding>
+            <VBox styleClass="board-panel">
+                <ScrollPane fitToWidth="true" styleClass="scroll-area" VBox.vgrow="ALWAYS">
+                    <FlowPane
+                            fx:id="cardsContainer"
+                            hgap="24" vgap="24"
+                            styleClass="cards-pane">
+                        <padding>
+                            <Insets top="30" right="30" bottom="30" left="30"/>
+                        </padding>
+                    </FlowPane>
+                </ScrollPane>
+            </VBox>
+        </StackPane>
+    </center>
+
+    <!-- ═══════ FAB (circular) ═══════ -->
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" styleClass="fab-bar">
+            <Button
+                    fx:id="fabBtn"
+                    text="＋"
+                    styleClass="fab-btn"
+                    onAction="#openAddDialog"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
+
+<!-- Modal overlay layer — populated at runtime by StartupViewController -->
+<StackPane
+        fx:id="modalLayer"
+        visible="false"
+        managed="false"
+        maxWidth="Infinity"
+        maxHeight="Infinity"
+        StackPane.alignment="CENTER"/>
+
+</StackPane>
