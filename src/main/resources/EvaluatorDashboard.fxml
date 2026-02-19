@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="614.0" prefWidth="1128.0"
+            styleClass="root" stylesheets="@css/entrepreneur_dashboard.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.GUI.EvaluatorDashboardController">
+
+    <HBox spacing="18" styleClass="topbar"
+          AnchorPane.leftAnchor="28" AnchorPane.rightAnchor="28" AnchorPane.topAnchor="18">
+
+        <VBox spacing="-2">
+            <Label styleClass="brandTitle" text="StartupFlow" />
+            <Label styleClass="brandSub" text="Tunisia" />
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <HBox spacing="28" styleClass="nav">
+            <Label onMouseClicked="#onDashboard" styleClass="navLink navActive" text="DashBoard" />
+            <Label onMouseClicked="#onFunding" styleClass="navLink" text="Funding &amp; Evaluation" />
+            <Label onMouseClicked="#onForum" styleClass="navLink" text="Forum" />
+        </HBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <MenuButton fx:id="userMenuBtn" styleClass="userBtn" text="User">
+            <items>
+                <MenuItem fx:id="miHeader" disable="true" text="USER" />
+                <MenuItem onAction="#onManageProfile" text="Manage Profile" />
+                <MenuItem onAction="#onSettings" text="Settings" />
+                <MenuItem fx:id="miDivider" disable="true" text="────────────" />
+                <MenuItem fx:id="miLogout" onAction="#onLogout" text="Log Out" />
+            </items>
+        </MenuButton>
+    </HBox>
+
+    <StackPane styleClass="mainCard"
+               AnchorPane.bottomAnchor="60" AnchorPane.leftAnchor="70"
+               AnchorPane.rightAnchor="70" AnchorPane.topAnchor="120">
+
+        <ImageView fx:id="wavesImg" fitHeight="518.0" fitWidth="801.0"
+                   opacity="0.25" preserveRatio="true" styleClass="waves">
+            <image>
+                <Image url="@assest/hamod__2_-removebg-preview.png" />
+            </image>
+        </ImageView>
+
+        <VBox alignment="TOP_LEFT" styleClass="statusBox" StackPane.alignment="TOP_LEFT">
+            <padding><Insets bottom="0" left="26" right="0" top="26" /></padding>
+            <HBox alignment="CENTER_LEFT" spacing="6">
+                <Label styleClass="statusLabel" text="Status:" />
+                <Label fx:id="statusValueLabel" styleClass="statusValue" text="Pending" />
+            </HBox>
+        </VBox>
+
+        <VBox alignment="CENTER" spacing="18" styleClass="centerBox">
+            <Label styleClass="hello" text="Welcome">
+                <font><Font size="10.0" /></font>
+            </Label>
+            <Label styleClass="roleTitle" text="Evaluator" />
+            <Region styleClass="titleUnderline" />
+
+            <Button fx:id="assignedAppsBtn" onAction="#onAssignedApplications"
+                    styleClass="actionBtn" text="📂  View Assigned Applications" />
+            <Button fx:id="submitEvalBtn" onAction="#onSubmitEvaluation"
+                    styleClass="actionBtn" text="📝  Submit Evaluation" />
+            <Button fx:id="forumBtn" onAction="#onSupport"
+                    styleClass="actionBtn" text="📌  Contact Support" />
+        </VBox>
+
+    </StackPane>
+</AnchorPane>

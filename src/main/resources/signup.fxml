@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="614.0" prefWidth="1128.0" styleClass="root" stylesheets="@css/signup.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.GUI.SignupController">
+   <ImageView fitHeight="435.0" fitWidth="646.0" layoutX="495.0" layoutY="165.0" pickOnBounds="true" preserveRatio="true">
+      <image>
+         <Image url="@assest/hamod__1_-removebg-preview.png" />
+      </image>
+   </ImageView>
+
+    <!-- Left card -->
+    <StackPane layoutX="72.0" layoutY="80.0" prefHeight="493.0" prefWidth="422.0" styleClass="left-card" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="72.0" AnchorPane.topAnchor="80.0">
+
+        <VBox alignment="TOP_CENTER" prefHeight="486.0" prefWidth="414.0" spacing="14.0" styleClass="card-content">
+            <padding>
+                <Insets bottom="30" left="38" right="38" top="36" />
+            </padding>
+
+            <Label styleClass="title" text="Create Account" />
+            <Label styleClass="subtitle" text="Get starting by creating your new account" wrapText="true" />
+
+            <TextField fx:id="fullNameField" promptText="Full Name" styleClass="pill-field" />
+            <TextField fx:id="emailField" promptText="Email" styleClass="pill-field" />
+
+            <!-- Password row with eye button -->
+            <HBox alignment="CENTER_LEFT" prefWidth="375.0" spacing="8.0" styleClass="pill-wrap">
+
+                <PasswordField fx:id="passwordField" promptText="Password" styleClass="pill-field-inner" />
+
+                <TextField fx:id="visiblePasswordField" managed="false" promptText="Password" styleClass="pill-field-inner" visible="false" />
+   
+                <Button fx:id="togglePassBtn" focusTraversable="false" onAction="#togglePassword" styleClass="eye-btn" text="👁" />
+            </HBox>
+
+            <Button onAction="#register" styleClass="register-btn" text="Register" />
+
+            <!-- OR separator -->
+            <HBox alignment="CENTER" spacing="14.0" styleClass="or-row">
+                <Region styleClass="line" HBox.hgrow="ALWAYS" />
+                <Label styleClass="or-text" text="Or" />
+                <Region prefHeight="5.0" prefWidth="0.0" styleClass="line" HBox.hgrow="ALWAYS" />
+            </HBox>
+
+            <!-- Social buttons (placeholders, same look) -->
+            <HBox alignment="CENTER" spacing="20.0">
+                <Button onAction="#socialFacebook" prefHeight="30.0" prefWidth="49.0" styleClass="social-btn fb">
+               <graphic>
+                  <ImageView fitHeight="22.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assest/Facebook_Logo_2023-removebg-preview.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+                <Button ellipsisString="" onAction="#socialGoogle" prefHeight="29.0" prefWidth="48.0" styleClass="social-btn gg">
+               <graphic>
+                  <ImageView fitHeight="19.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assest/google-lens-icon-logo-symbol-free-png.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+                <Button onAction="#socialGithub" prefHeight="30.0" prefWidth="45.0" styleClass="social-btn gh">
+               <graphic>
+                  <ImageView fitHeight="22.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assest/github-logo-repository-computer-icons-github-removebg-preview.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            </HBox>
+
+            <HBox alignment="CENTER" spacing="6.0" styleClass="login-row">
+                <Label styleClass="login-text" text="Already have an account?" />
+                <Hyperlink onAction="#goLogin" styleClass="login-link" text="log in" />
+            </HBox>
+        </VBox>
+    </StackPane>
+
+        <Label layoutX="606.0" layoutY="66.0" styleClass="brand-title" text="StartupFlow" />
+     <Label layoutX="606.0" layoutY="94.0" styleClass="brand-sub" text="Tunisia" />
+
+          <!-- Top right "Home" -->
+    <HBox alignment="CENTER" layoutX="1065.0" layoutY="14.0" spacing="10.0" styleClass="top-right">
+        <Label styleClass="home-text" text="Home" />
+        <StackPane styleClass="home-icon">
+            <Label prefHeight="18.0" prefWidth="7.0" styleClass="home-icon-text" text="⌂" />
+        </StackPane>
+    </HBox>
+   <Button layoutX="38.0" layoutY="16.0" mnemonicParsing="false" text="⬅ Back" />
+
+</AnchorPane>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="540.0" prefWidth="960.0" styleClass="root" stylesheets="@css/rolechoice.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.GUI.RoleChoiceController">
+
+    <!-- Background gradient -->
+    <Region styleClass="bg" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" />
+
+    <!-- Top bar -->
+    <HBox spacing="18" styleClass="topbar" AnchorPane.leftAnchor="28" AnchorPane.rightAnchor="28" AnchorPane.topAnchor="18">
+
+        <VBox spacing="-2" styleClass="brand">
+            <Label styleClass="brandTitle" text="StartupFlow" />
+            <Label styleClass="brandSub" text="Tunisia" />
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- Only Home + Login (as you requested) -->
+        <HBox spacing="26" styleClass="nav">
+            <Hyperlink onAction="#onHome" styleClass="navLink" text="Home" />
+        </HBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <Button onAction="#onLogin" styleClass="loginBtn" text="log in" />
+    </HBox>
+
+    <!-- Center content -->
+    <StackPane AnchorPane.bottomAnchor="60" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="90">
+
+        <!-- Background image / shape (optional) -->
+        <ImageView fitHeight="290" fitWidth="390" opacity="0.35" preserveRatio="true">
+            <image>
+                <Image url="@assest/hamod__1_-removebg-preview.png" />
+            </image>
+        </ImageView>
+
+        <VBox alignment="CENTER" spacing="22" styleClass="centerBox">
+            <Label styleClass="headline" text="Are you ?" />
+
+            <HBox alignment="CENTER" spacing="26">
+                <Button onAction="#onEntrepreneur" styleClass="roleBtn" text="Entrepreneur" />
+                <Button onAction="#onMentor" styleClass="roleBtn" text="Mentor" />
+            <Button onAction="#onEvaluator" styleClass="roleBtn" text="Evaluator" />
+            </HBox>
+        </VBox>
+    </StackPane>
+</AnchorPane>

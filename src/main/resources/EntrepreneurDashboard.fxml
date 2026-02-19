@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="614.0" prefWidth="1128.0" styleClass="root" stylesheets="@css/entrepreneur_dashboard.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.GUI.EntrepreneurDashboardController">
+
+    <!-- Top bar -->
+    <HBox spacing="18" styleClass="topbar" AnchorPane.leftAnchor="28" AnchorPane.rightAnchor="28" AnchorPane.topAnchor="18">
+
+        <!-- Brand -->
+        <VBox spacing="-2">
+            <Label styleClass="brandTitle" text="StartupFlow" />
+            <Label styleClass="brandSub" text="Tunisia" />
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- Nav -->
+        <HBox spacing="28" styleClass="nav">
+            <Label onMouseClicked="#onDashboard" styleClass="navLink navActive" text="DashBoard" />
+            <Label onMouseClicked="#onStartup" styleClass="navLink" text="Startup" />
+            <Label onMouseClicked="#onMentorship" styleClass="navLink" text="Mentorship" />
+            <Label onMouseClicked="#onFunding" styleClass="navLink" text="Funding" />
+        </HBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- User dropdown -->
+        <MenuButton fx:id="userMenuBtn" styleClass="userBtn" text="User 1">
+            <items>
+                <MenuItem fx:id="miHeader" disable="true" text="USER 1" />
+                <MenuItem onAction="#onManageProfile" text="Manage Profile" />
+                <MenuItem onAction="#onStartups" text="Startups" />
+                <MenuItem onAction="#onSettings" text="Settings" />
+                <MenuItem fx:id="miDivider" disable="true" text="────────────" />
+                <MenuItem fx:id="miLogout" onAction="#onLogout" text="Log Out" />
+            </items>
+        </MenuButton>
+    </HBox>
+
+    <!-- Main card -->
+    <StackPane styleClass="mainCard" AnchorPane.bottomAnchor="60" AnchorPane.leftAnchor="70" AnchorPane.rightAnchor="70" AnchorPane.topAnchor="120">
+
+        <!-- Decorative waves background (optional image). Put your png if you have it -->
+        <ImageView fx:id="wavesImg" fitHeight="518.0" fitWidth="801.0" opacity="0.25" preserveRatio="true" styleClass="waves">
+            <image>
+                <!-- if you don't have it, you can remove this ImageView completely -->
+                <Image url="@assest/hamod__2_-removebg-preview.png" />
+            </image>
+        </ImageView>
+
+        <!-- Left status -->
+        <VBox alignment="TOP_LEFT" styleClass="statusBox" StackPane.alignment="TOP_LEFT">
+            <padding><Insets bottom="0" left="26" right="0" top="26" /></padding>
+            <HBox alignment="CENTER_LEFT" spacing="6">
+                <Label styleClass="statusLabel" text="Status:" />
+                <Label fx:id="statusValueLabel" styleClass="statusValue" text="Approved" />
+            </HBox>
+        </VBox>
+
+              <!-- Center text + buttons -->
+        <VBox alignment="CENTER" spacing="18" styleClass="centerBox">
+      
+               <Label styleClass="hello" text="Welcome">
+            <font>
+               <Font size="10.0" />
+            </font>
+         </Label>
+            <Label styleClass="roleTitle" text="Entrepreneur" />
+            <Region styleClass="titleUnderline" />
+
+                  <Button fx:id="findMentorBtn" onAction="#onFindMentor" styleClass="actionBtn" text="👨‍🏫  Find Mentor" />
+            <Button fx:id="swotBtn" onAction="#onSwot" styleClass="actionBtn" text="🤖  AI SWOT Generator" />
+            <Button fx:id="supportBtn" onAction="#onSupport" styleClass="actionBtn" text="📌  Contact Support" />
+
+              </VBox>
+
+    </StackPane>
+   <Region layoutX="401.0" layoutY="55.0" minHeight="3.0" prefHeight="4.0" prefWidth="330.0" styleClass="titleUnderline" />
+
+</AnchorPane>

@@ -1,0 +1,103 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #f0e9ff 55%, #e3d6ff 100%);
+    -fx-font-family: "Segoe UI","Inter","Arial";
+}
+
+/* Top bar */
+.topbar{
+    -fx-padding: 14 18 14 18;
+    -fx-background-color: rgba(255,255,255,0.55);
+    -fx-background-radius: 18;
+    -fx-border-color: rgba(123,97,255,0.18);
+    -fx-border-radius: 18;
+}
+
+.brandTitle { -fx-text-fill:#7b61ff; -fx-font-size:16px; -fx-font-weight:800; }
+.brandSub   { -fx-text-fill:#7b61ff; -fx-font-size:12px; -fx-opacity:0.85; }
+
+.navLink { -fx-text-fill:#7b61ff; -fx-font-size:14px; -fx-opacity:0.75; -fx-cursor: hand; }
+.navActive { -fx-opacity:1.0; -fx-underline:true; }
+
+/* User MenuButton */
+.userBtn {
+    -fx-background-color: linear-gradient(to right, #7b61ff, #d7a1ff);
+    -fx-text-fill: white;
+    -fx-background-radius: 18;
+    -fx-padding: 7 16 7 16;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+    -fx-background-insets: 0;
+}
+.userBtn > .label { -fx-text-fill: white; }
+
+/* Card */
+.mainCard {
+    -fx-background-color: rgba(0,0,0,0.16);
+    -fx-background-radius: 22;
+    -fx-border-radius: 22;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 26, 0.2, 0, 10);
+}
+
+.contentBox{
+    -fx-padding: 24 26 24 26;
+    -fx-max-width: 860;
+}
+
+/* Section title */
+.sectionTitle { -fx-text-fill:#7b61ff; -fx-font-size:26px; -fx-font-weight:900; }
+.sectionSub   { -fx-text-fill:#7b61ff; -fx-font-size:13px; -fx-opacity:0.85; -fx-font-weight:700; }
+
+.titleUnderline {
+    -fx-min-height: 4px;
+    -fx-max-height: 4px;
+    -fx-pref-width: 170px;
+    -fx-background-color: rgba(123,97,255,0.70);
+    -fx-background-radius: 10;
+}
+
+/* Pill field (ComboBox look) */
+.pillField {
+    -fx-background-color: rgba(255,255,255,0.92);
+    -fx-background-radius: 22;
+    -fx-padding: 6 14 6 14;
+    -fx-border-color: transparent;
+    -fx-font-weight: 700;
+}
+
+/* Make ComboBox text purple */
+.combo-box .list-cell {
+    -fx-text-fill: #7b61ff;
+    -fx-font-weight: 700;
+}
+
+/* Button */
+.saveBtn {
+    -fx-background-color: linear-gradient(to right, #7b61ff, #d7a1ff);
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-background-radius: 24;
+    -fx-cursor: hand;
+    -fx-background-insets: 0;
+    -fx-padding: 10 16 10 16;
+}
+.saveBtn:hover { -fx-opacity: 0.92; }
+
+/* TextArea styled like clean white card */
+.outputArea{
+    -fx-background-color: rgba(255,255,255,0.92);
+    -fx-control-inner-background: rgba(255,255,255,0.92);
+    -fx-text-fill: #2b2b2b;
+    -fx-highlight-fill: rgba(123,97,255,0.30);
+    -fx-highlight-text-fill: #1f1f1f;
+    -fx-background-radius: 18;
+    -fx-control-inner-background-radius: 18;
+    -fx-border-color: rgba(123,97,255,0.25);
+    -fx-border-radius: 18;
+    -fx-font-weight: 600;
+}
+
+/* Message */
+.msg {
+    -fx-text-fill: #38F41BFF;
+    -fx-font-weight: 800;
+}

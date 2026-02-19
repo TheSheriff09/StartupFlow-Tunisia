@@ -1,0 +1,138 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #f0e9ff 55%, #e3d6ff 100%);
+    -fx-font-family: "Segoe UI", "Inter", "Arial";
+}
+
+/* Topbar */
+.brandTitle {
+    -fx-text-fill: #7b61ff;
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+}
+.brandSub {
+    -fx-text-fill: #7b61ff;
+    -fx-opacity: 0.85;
+    -fx-font-size: 12px;
+}
+
+.navLink {
+    -fx-text-fill: #7b61ff;
+    -fx-font-size: 14px;
+    -fx-opacity: 0.75;
+    -fx-cursor: hand;
+}
+.navActive {
+    -fx-opacity: 1.0;
+    -fx-underline: true;
+}
+
+/* User button (MenuButton) */
+.userBtn {
+    -fx-background-color: linear-gradient(to right, #7b61ff, #d7a1ff);
+    -fx-text-fill: white;
+    -fx-background-radius: 18;
+    -fx-padding: 7 16 7 16;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+    -fx-background-insets: 0;
+}
+.userBtn > .label { -fx-text-fill: white; }
+
+/* Card */
+.mainCard {
+    -fx-background-color: rgba(255, 255, 255, 0.55);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(123, 97, 255, 0.15);
+    -fx-effect: dropshadow(gaussian, rgba(123,97,255,0.18), 24, 0.25, 0, 10);
+}
+
+/* ===== FORCE THE CENTER LOOK (HIGH SPECIFICITY) ===== */
+.mainCard .hello {
+    -fx-text-fill: #7b61ff;
+    -fx-font-size: 42px;     /* bigger like your design */
+    -fx-font-weight: 800;
+}
+
+.mainCard .roleTitle {
+    -fx-text-fill: #7b61ff;
+    -fx-font-size: 46px;
+    -fx-font-weight: 900;
+}
+
+/* underline under "Entrepreneur" */
+.titleUnderline {
+    -fx-min-height: 4px;
+    -fx-max-height: 4px;
+    -fx-pref-width: 260px;
+    -fx-background-color: rgba(123, 97, 255, 0.65);
+    -fx-background-radius: 10;
+    -fx-translate-y: -4;
+}
+
+/* Status */
+.statusLabel {
+    -fx-text-fill: #7b61ff;
+    -fx-font-size: 14px;
+    -fx-opacity: 0.85;
+}
+.statusValue {
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+}
+.statusUnderline {
+    -fx-min-height: 3px;
+    -fx-max-height: 3px;
+    -fx-pref-width: 130px;
+    -fx-background-color: rgba(123, 97, 255, 0.60);
+    -fx-background-radius: 10;
+    -fx-translate-y: 6;
+}
+
+/* Status colors (controller adds classes) */
+.stApproved { -fx-text-fill: #2bbf6a; }
+.stPending  { -fx-text-fill: #ff9f0a; }
+.stBlocked  { -fx-text-fill: #ff3b30; }
+
+/* ===== FORCE BUTTON LOOK (NO GRAY DEFAULT) ===== */
+.mainCard .actionBtn {
+    -fx-background-color: linear-gradient(to right, #7b61ff, #d7a1ff);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+
+    -fx-background-radius: 22;
+    -fx-padding: 12 26 12 26;
+    -fx-pref-width: 280px;
+
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(123,97,255,0.25), 14, 0.2, 0, 6);
+}
+
+/* Hover */
+.mainCard .actionBtn:hover {
+    -fx-opacity: 0.92;
+}
+
+/* Menu popup */
+.context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 22, 0.2, 0, 10);
+}
+.menu-item .label {
+    -fx-text-fill: #7b61ff;
+    -fx-font-size: 13px;
+}
+.menu-item:focused {
+    -fx-background-color: rgba(123, 97, 255, 0.10);
+}
+.logoutItem .label {
+    -fx-text-fill: #ff3b30;
+    -fx-font-weight: 800;
+}

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="@css/landing.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.GUI.LandingController">
+
+       <!-- Background gradient layer -->
+    <Region styleClass="bg-gradient" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+
+    <!-- Top Navbar -->
+    <HBox spacing="30" styleClass="navbar" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="22.0">
+
+        <!-- Brand -->
+        <VBox spacing="-2" styleClass="brand">
+            <Label styleClass="brand-title" text="StartupFlow" />
+            <Label styleClass="brand-sub" text="Tunisia" />
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- Menu -->
+        <HBox spacing="40" styleClass="nav-links">
+            <Hyperlink onAction="#onHome" styleClass="nav-link selected" text="Home" />
+            <Hyperlink onAction="#onAbout" styleClass="nav-link" text="About" />
+            <Hyperlink onAction="#onContent" styleClass="nav-link" text="Content" />
+        </HBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- Auth buttons -->
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+            <Button onAction="#onLogin" styleClass="btn-pill" text="log in" />
+            <Hyperlink onAction="#onSignup" styleClass="signup-link" text="sign up" />
+        </HBox>
+    </HBox>
+
+    <!-- Hero Content -->
+    <HBox spacing="40" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="170.0">
+
+        <!-- Left text -->
+        <VBox maxWidth="686.0" prefHeight="470.0" prefWidth="518.0" spacing="18" styleClass="hero-left">
+
+            <Label styleClass="hero-subtitle" text="Startup Incubation &amp; Innovation Management Platform" wrapText="true" />
+
+            <HBox spacing="18" styleClass="cta-row">
+                <Button onAction="#onGetStarted" styleClass="btn-cta" text="GET STARTED" />
+                <Button onAction="#onGetIncorporated" styleClass="btn-cta-outline" text="GET INCORPORATED" />
+            </HBox>
+        </VBox>
+      <ImageView fitHeight="379.0" fitWidth="672.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@assest/hamod__1_-removebg-preview.png" />
+         </image>
+      </ImageView>
+
+    </HBox>
+      <Label layoutX="76.0" layoutY="63.0" styleClass="hero-title" text="StartupFlow Tunisia" />
+
+</AnchorPane>

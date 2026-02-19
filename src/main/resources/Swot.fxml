@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="614.0" prefWidth="1128.0"
+            styleClass="root"
+            stylesheets="@css/swot.css"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.GUI.SwotController">
+
+    <!-- Top bar -->
+    <HBox spacing="18" styleClass="topbar"
+          AnchorPane.leftAnchor="28" AnchorPane.rightAnchor="28" AnchorPane.topAnchor="18">
+        <VBox spacing="-2">
+            <Label styleClass="brandTitle" text="StartupFlow" />
+            <Label styleClass="brandSub" text="Tunisia" />
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <HBox spacing="28" styleClass="nav">
+            <Label styleClass="navLink navActive" text="AI SWOT" />
+        </HBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <MenuButton fx:id="userMenuBtn" styleClass="userBtn" text="User 1">
+            <items>
+                <MenuItem onAction="#onBack" text="⬅ Back to Dashboard" />
+                <MenuItem fx:id="miDivider" disable="true" text="────────────" />
+                <MenuItem onAction="#onLogout" text="Log Out" />
+            </items>
+        </MenuButton>
+    </HBox>
+
+    <!-- Main card -->
+    <StackPane styleClass="mainCard"
+               AnchorPane.bottomAnchor="60"
+               AnchorPane.leftAnchor="70"
+               AnchorPane.rightAnchor="70"
+               AnchorPane.topAnchor="120">
+
+        <VBox spacing="14" styleClass="contentBox" StackPane.alignment="CENTER">
+
+            <Label styleClass="sectionTitle" text="AI SWOT" />
+            <Label styleClass="sectionSub" text="Generate a clean 4-part SWOT for your startup" />
+            <Region styleClass="titleUnderline" />
+
+            <HBox spacing="12" styleClass="row">
+                <ComboBox fx:id="startupCombo" styleClass="pillField"
+                          promptText="Select a Startup..." prefWidth="420.0"/>
+                <Button fx:id="generateBtn" onAction="#onGenerate" styleClass="saveBtn"
+                        text="🤖 Generate" />
+            </HBox>
+
+            <TextArea fx:id="outputArea"
+                      promptText="Strengths • Weaknesses • Opportunities • Threats"
+                      wrapText="true"
+                      prefHeight="290.0"
+                      styleClass="outputArea"/>
+
+            <Label fx:id="statusLabel" styleClass="msg" text="" />
+        </VBox>
+
+    </StackPane>
+
+</AnchorPane>

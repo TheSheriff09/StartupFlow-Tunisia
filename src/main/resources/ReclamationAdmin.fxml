@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="720.0" prefWidth="1280.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.GUI.ReclamationAdminController"
+            stylesheets="@css/reclamation_admin.css"
+            styleClass="root">
+
+    <!-- TOP BAR -->
+    <top>
+        <HBox spacing="12" styleClass="topbar">
+            <padding><Insets top="14" right="18" bottom="14" left="18"/></padding>
+
+            <VBox spacing="-2">
+                <Label text="StartupFlow" styleClass="brandTitle"/>
+                <Label text="Tunisia" styleClass="brandSub"/>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <TextField fx:id="searchField" promptText="Search title / description / status..." styleClass="search"/>
+            <Button text="Refresh" styleClass="pill" onAction="#refresh"/>
+            <Button text="⬅ Back" styleClass="pill" onAction="#goBack"/>
+        </HBox>
+    </top>
+
+    <!-- MAIN -->
+    <center>
+        <AnchorPane styleClass="main">
+
+            <!-- LEFT: Reclamations -->
+            <StackPane layoutX="26" layoutY="26" prefWidth="820" prefHeight="610" styleClass="glass-card">
+                <VBox spacing="12" styleClass="card-content">
+                    <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="Reclamations (Admin)" styleClass="section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblInfo" text="" styleClass="hint"/>
+                    </HBox>
+
+                    <TableView fx:id="reclamationsTable" prefHeight="540" styleClass="table">
+                        <columns>
+                            <TableColumn fx:id="colId" text="ID" prefWidth="55"/>
+                            <TableColumn fx:id="colTitle" text="Title" prefWidth="140"/>
+                            <TableColumn fx:id="colDescription" text="Description" prefWidth="310"/>
+                            <TableColumn fx:id="colStatus" text="Status" prefWidth="140"/>
+                            <TableColumn fx:id="colRequested" text="Requested" prefWidth="90"/>
+                            <TableColumn fx:id="colTarget" text="Target" prefWidth="70"/>
+                            <TableColumn fx:id="colCreated" text="Created" prefWidth="120"/>
+                            <TableColumn fx:id="colActions" text="Actions" prefWidth="90"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </StackPane>
+
+            <!-- RIGHT: Status + Responses -->
+            <StackPane layoutX="870" layoutY="26" prefWidth="384" prefHeight="610" styleClass="side-card">
+                <VBox spacing="12" styleClass="side-content">
+                    <padding><Insets top="18" right="16" bottom="18" left="16"/></padding>
+
+                    <Label text="Selected Reclamation" styleClass="side-title"/>
+
+                    <Label fx:id="lblSelected" text="Select a reclamation..." styleClass="hint"/>
+
+                    <HBox spacing="10">
+                        <ComboBox fx:id="cbStatus" promptText="Change status" styleClass="pillField"/>
+                        <Button text="Save" styleClass="pill" onAction="#saveStatus"/>
+                    </HBox>
+
+                    <Separator styleClass="sep"/>
+
+                    <Label text="Send Response" styleClass="side-title"/>
+
+                    <TextArea fx:id="taResponse" promptText="Write response to the entrepreneur..."
+                              wrapText="true" styleClass="area" prefHeight="110"/>
+
+                    <Button text="Send Response" styleClass="saveBtn" onAction="#sendResponse"/>
+
+                    <Separator styleClass="sep"/>
+
+                    <Label text="Responses" styleClass="side-title"/>
+
+                    <TableView fx:id="responsesTable" prefHeight="210" styleClass="miniTable">
+                        <columns>
+                            <TableColumn fx:id="colRespCreated" text="Created" prefWidth="110"/>
+                            <TableColumn fx:id="colRespContent" text="Content" prefWidth="240"/>
+                        </columns>
+                    </TableView>
+
+                    <Label fx:id="lblRespInfo" text="Select a reclamation to view responses." styleClass="hint"/>
+                </VBox>
+            </StackPane>
+
+        </AnchorPane>
+    </center>
+</BorderPane>

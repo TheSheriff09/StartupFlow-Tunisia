@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.esprit.GUI.MentorExtraController"
+      alignment="CENTER" spacing="14.0">
+
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <Label text="Mentor Information" style="-fx-font-size: 22; -fx-font-weight: bold;"/>
+
+    <Label text="Please enter your expertise:"/>
+    <TextField fx:id="expertiseField" promptText="e.g., Marketing, Finance, Product..." prefWidth="340"/>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Back" prefWidth="120" onAction="#goBack"/>
+        <Button text="Finish" prefWidth="120" onAction="#finishMentor"/>
+    </HBox>
+
+    <Label fx:id="errorLabel" text="" style="-fx-text-fill: red;"/>
+</VBox>

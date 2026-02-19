@@ -1,0 +1,134 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #f0e9ff 55%, #e3d6ff 100%);
+    -fx-font-family: "Segoe UI", "Inter", "Arial";
+}
+
+.topbar {
+    -fx-background-color: transparent;
+}
+
+.brandTitle {
+    -fx-text-fill: #7b61ff;
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+}
+.brandSub {
+    -fx-text-fill: #7b61ff;
+    -fx-opacity: 0.85;
+    -fx-font-size: 12px;
+}
+
+.main { }
+
+.glass-card {
+    -fx-background-color: rgba(255, 255, 255, 0.58);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(123, 97, 255, 0.15);
+    -fx-effect: dropshadow(gaussian, rgba(123,97,255,0.18), 24, 0.25, 0, 10);
+}
+
+.side-card {
+    -fx-background-color: rgba(255, 255, 255, 0.60);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(123, 97, 255, 0.15);
+    -fx-effect: dropshadow(gaussian, rgba(123,97,255,0.14), 20, 0.25, 0, 8);
+}
+
+.section-title {
+    -fx-text-fill: #7b61ff;
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+}
+
+.search {
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-padding: 8 14 8 14;
+    -fx-border-color: rgba(123,97,255,0.18);
+    -fx-background-color: rgba(255,255,255,0.85);
+}
+
+.pill {
+    -fx-background-color: linear-gradient(to right, #7b61ff, #d7a1ff);
+    -fx-text-fill: white;
+    -fx-font-weight: 800;
+    -fx-background-radius: 18;
+    -fx-padding: 8 14 8 14;
+    -fx-cursor: hand;
+}
+
+.side-title {
+    -fx-text-fill: #7b61ff;
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+}
+
+.pillField {
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-padding: 9 12 9 12;
+    -fx-border-color: rgba(123,97,255,0.18);
+    -fx-background-color: rgba(255,255,255,0.90);
+}
+
+.area {
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-padding: 10;
+    -fx-border-color: rgba(123,97,255,0.18);
+    -fx-background-color: rgba(255,255,255,0.90);
+}
+
+.saveBtn {
+    -fx-background-color: linear-gradient(to right, #7b61ff, #d7a1ff);
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-background-radius: 18;
+    -fx-padding: 10 16 10 16;
+    -fx-cursor: hand;
+}
+
+.hint, .rules {
+    -fx-text-fill: rgba(123,97,255,0.85);
+    -fx-font-size: 12px;
+}
+
+.table {
+    -fx-background-color: transparent;
+}
+
+.miniBtn {
+    -fx-background-color: rgba(123,97,255,0.14);
+    -fx-text-fill: #7b61ff;
+    -fx-font-weight: 900;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-padding: 4 8 4 8;
+}
+
+.miniDanger {
+    -fx-background-color: rgba(255,59,48,0.14);
+    -fx-text-fill: #ff3b30;
+    -fx-font-weight: 900;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-padding: 4 8 4 8;
+}
+.miniTable {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: rgba(123,97,255,0.18);
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+}
+
+.miniTable .column-header-background {
+    -fx-background-color: rgba(123,97,255,0.10);
+    -fx-background-radius: 14 14 0 0;
+}
+
+.miniTable .table-row-cell {
+    -fx-background-color: rgba(255,255,255,0.45);
+}

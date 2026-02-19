@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="720.0" prefWidth="1280.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.GUI.ReclamationEntrepreneurController"
+            stylesheets="@css/reclamation.css"
+            styleClass="root">
+
+    <!-- TOP BAR -->
+    <top>
+        <HBox spacing="12" styleClass="topbar">
+            <padding><Insets top="14" right="18" bottom="14" left="18"/></padding>
+
+            <VBox spacing="-2">
+                <Label text="StartupFlow" styleClass="brandTitle"/>
+                <Label text="Tunisia" styleClass="brandSub"/>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="⬅ Back" styleClass="pill" onAction="#goBack"/>
+        </HBox>
+    </top>
+
+    <!-- MAIN -->
+    <center>
+        <AnchorPane styleClass="main">
+
+            <!-- Big glass table card -->
+            <StackPane layoutX="26" layoutY="26" prefWidth="920" prefHeight="610" styleClass="glass-card">
+                <VBox spacing="12" styleClass="card-content">
+                    <padding><Insets top="18" right="20" bottom="18" left="20"/></padding>
+
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="My Reclamations" styleClass="section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <TextField fx:id="searchField" promptText="Search..." styleClass="search"/>
+                        <Button text="Refresh" styleClass="pill" onAction="#refresh"/>
+                    </HBox>
+
+                    <TableView fx:id="table" prefHeight="520" styleClass="table">
+                        <columns>
+                            <TableColumn fx:id="colId" text="ID" prefWidth="55"/>
+                            <TableColumn fx:id="colTitle" text="Type" prefWidth="150"/>
+                            <TableColumn fx:id="colDescription" text="Description" prefWidth="360"/>
+                            <TableColumn fx:id="colStatus" text="Status" prefWidth="120"/>
+                            <TableColumn fx:id="colTarget" text="Target ID" prefWidth="90"/>
+                            <TableColumn fx:id="colCreated" text="Created" prefWidth="120"/>
+                            <TableColumn fx:id="colActions" text="Actions" prefWidth="90"/>
+                        </columns>
+                    </TableView>
+
+                    <Label fx:id="lblInfo" text="" styleClass="hint"/>
+                </VBox>
+            </StackPane>
+
+            <!-- Right Create card -->
+            <StackPane layoutX="970" layoutY="26" prefWidth="284" prefHeight="610" styleClass="side-card">
+                <VBox spacing="12" styleClass="side-content">
+                    <padding><Insets top="18" right="16" bottom="18" left="16"/></padding>
+
+                    <Label text="Create Reclamation" styleClass="side-title"/>
+
+                    <ComboBox fx:id="cbTitle" promptText="Type (Title)" styleClass="pillField"/>
+                    <TextArea fx:id="taDescription" promptText="Describe your issue..." wrapText="true"
+                              styleClass="area"/>
+
+                    <TextField fx:id="tfTargetId" promptText="Target user ID (only USER_PROBLEM)" styleClass="pillField"/>
+
+                    <Button text="Submit" styleClass="saveBtn" onAction="#submit"/>
+
+                    <Separator styleClass="sep"/>
+
+                    <Label text="Responses" styleClass="side-title"/>
+
+                    <TableView fx:id="responsesTable" prefHeight="180" styleClass="miniTable">
+                        <columns>
+                            <TableColumn fx:id="colRespCreated" text="Created" prefWidth="95"/>
+                            <TableColumn fx:id="colRespContent" text="Content" prefWidth="160"/>
+                        </columns>
+                    </TableView>
+
+                    <Label fx:id="lblRespInfo" text="Select a reclamation to view replies." styleClass="rules"/>
+                </VBox>
+            </StackPane>
+
+        </AnchorPane>
+    </center>
+</BorderPane>
