@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="720.0" prefWidth="1280.0"
+            styleClass="root"
+            stylesheets="@../css/mentorship.css"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.gui.MentorshipDashboardController">
+
+    <!-- SIDEBAR -->
+    <left>
+        <VBox prefWidth="260" spacing="14" styleClass="sidebar" BorderPane.alignment="CENTER">
+            <padding><Insets bottom="22" left="18" right="18" top="22"/></padding>
+
+            <VBox spacing="2">
+                <Label styleClass="brand-title" text="StartupFlow"/>
+                <Label styleClass="brand-sub"   text="Tunisia"/>
+            </VBox>
+
+            <Separator styleClass="sep"/>
+
+            <Label text="MENTORSHIP MODULE"
+                   style="-fx-font-size:11px;-fx-font-weight:800;-fx-text-fill:#9b8acc;-fx-padding:4 0 0 2;"/>
+
+            <VBox spacing="8">
+                <Button fx:id="btnSchedule" onAction="#showSchedule"
+                        styleClass="nav-btn,active" text="📅  Schedule"/>
+                <Button fx:id="btnBookings" onAction="#showBookings"
+                        styleClass="nav-btn" text="📋  Bookings"/>
+                <Button fx:id="btnSessions" onAction="#showSessions"
+                        styleClass="nav-btn" text="🤝  Sessions"/>
+                <Button fx:id="btnFeedback" onAction="#showFeedback"
+                        styleClass="nav-btn" text="💬  Feedback"/>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </left>
+
+    <!-- TOP BAR -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="topbar" BorderPane.alignment="CENTER">
+            <padding><Insets bottom="14" left="22" right="22" top="14"/></padding>
+            <Label fx:id="topTitle" styleClass="top-title" text="Mentorship — Schedule"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button styleClass="user-pill" text="Sarah"/>
+        </HBox>
+    </top>
+
+    <!-- MAIN CONTENT -->
+    <center>
+        <StackPane fx:id="mainContent" styleClass="main" BorderPane.alignment="CENTER"/>
+    </center>
+
+</BorderPane>
