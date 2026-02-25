@@ -6,36 +6,44 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="tn.esprit.GUI.FindMentorController"
-            prefWidth="900" prefHeight="600">
+            stylesheets="@css/mentor_reco.css"
+            prefWidth="980" prefHeight="640">
 
-    <VBox spacing="10" AnchorPane.topAnchor="12" AnchorPane.leftAnchor="12"
-          AnchorPane.rightAnchor="12" AnchorPane.bottomAnchor="12">
+    <VBox spacing="14"
+          AnchorPane.topAnchor="16" AnchorPane.leftAnchor="16"
+          AnchorPane.rightAnchor="16" AnchorPane.bottomAnchor="16">
 
-        <Label text="Find Best Mentors (Expertise Match + Reclamation Risk)" style="-fx-font-size:16px; -fx-font-weight:bold;"/>
-
-        <HBox spacing="10">
-            <VBox spacing="6" HBox.hgrow="ALWAYS">
-                <Label text="Describe what you need:"/>
-                <TextArea fx:id="needTextArea" prefRowCount="3" wrapText="true"/>
+        <!-- Header -->
+        <HBox spacing="12" alignment="CENTER_LEFT" styleClass="headerBar">
+            <Button text="← Back" onAction="#goBack" styleClass="backBtn"/>
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                <Label text="Mentor Recommendation" styleClass="pageTitle"/>
+                <Label text="AI score is learned from mentor history (ratings, completed sessions) + reclamation risk."
+                       styleClass="pageSub"/>
             </VBox>
-
-            <VBox spacing="6">
-                <Button fx:id="btnFind" text="Find Mentor" onAction="#findMentors" prefWidth="140"/>
-                <Label fx:id="lblInfo" text=""/>
-            </VBox>
+            <Button fx:id="btnFind" text="Refresh" onAction="#findMentors" styleClass="primaryBtn"/>
         </HBox>
 
-        <TableView fx:id="table" VBox.vgrow="ALWAYS">
-            <columns>
-                <TableColumn fx:id="colBest" text="Best" prefWidth="90"/>
-                <TableColumn fx:id="colName" text="Mentor" prefWidth="160"/>
-                <TableColumn fx:id="colExpertise" text="Expertise" prefWidth="280"/>
-                <TableColumn fx:id="colMatch" text="Match %" prefWidth="90"/>
-                <TableColumn fx:id="colRecl" text="Reclamations (90d)" prefWidth="140"/>
-                <TableColumn fx:id="colRisk" text="Risk" prefWidth="80"/>
-            </columns>
-        </TableView>
+        <Label fx:id="lblInfo" text="" styleClass="hintLabel"/>
 
-        <Label text="Risk meaning: LOW (0-2), MID (3-6), HIGH (7+). HIGH mentors are not marked BEST even if match is high."/>
+        <!-- Table Card -->
+        <VBox spacing="10" styleClass="card" VBox.vgrow="ALWAYS">
+            <Label text="Ranked mentors" styleClass="sectionTitle"/>
+
+            <TableView fx:id="table" styleClass="mentorTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colBest" text="Best" prefWidth="90"/>
+                    <TableColumn fx:id="colName" text="Mentor" prefWidth="190"/>
+                    <TableColumn fx:id="colExpertise" text="Expertise" prefWidth="340"/>
+                    <TableColumn fx:id="colRating" text="AI Rating %" prefWidth="120"/>
+                    <TableColumn fx:id="colRecl" text="Reclamations (90d)" prefWidth="160"/>
+                    <TableColumn fx:id="colRisk" text="Risk" prefWidth="90"/>
+                </columns>
+            </TableView>
+
+            <Label text="Risk: LOW (0–2), MID (3–6), HIGH (7+). HIGH mentors are never tagged BEST."
+                   styleClass="footNote"/>
+        </VBox>
+
     </VBox>
 </AnchorPane>
