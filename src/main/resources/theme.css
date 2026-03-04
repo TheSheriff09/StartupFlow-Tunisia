@@ -1,0 +1,145 @@
+/* ═══════════════════════════════════════════════════════════════════
+   theme.css  —  StartupFlow Design System
+   Color tokens, typography, gradients, global resets
+   ═══════════════════════════════════════════════════════════════════
+
+   COLOR SYSTEM:
+     --deep    : #4c1d95   deep indigo (headings, brand)
+     --violet  : #6d28d9   primary violet
+     --mid     : #7c3aed   medium violet
+     --light   : #8b5cf6   lavender-violet (accents, focus)
+     --pale    : #a78bfa   soft lavender (secondary text)
+     --muted   : #c4b5fd   muted lavender (placeholders)
+     --surface : rgba(255,255,255,0.70)  glass surface
+     --border  : rgba(196,181,253,0.55)  glass border
+     --shadow  : rgba(91,33,182,0.14)    soft violet shadow
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Global font ─────────────────────────────────────────────────── */
+* {
+    -fx-font-family: "Segoe UI", "Inter", "Helvetica Neue", sans-serif;
+}
+
+/* ── Page backgrounds ────────────────────────────────────────────── */
+
+/* Main app page */
+.sf-page-bg,
+.root-pane {
+    -fx-background-color: linear-gradient(
+        to bottom right,
+        #ede4fc 0%,
+        #e4d4f4 18%,
+        #d9c8f0 38%,
+        #cdbdf0 55%,
+        #d6c5ef 72%,
+        #e5cef4 85%,
+        #edcee8 100%);
+}
+
+/* Business plan page (same gradient, aliased for bp view) */
+.root-pane-bp {
+    -fx-background-color: linear-gradient(
+        to bottom right,
+        #ede4fc 0%,
+        #e4d4f4 18%,
+        #d9c8f0 38%,
+        #cdbdf0 55%,
+        #d6c5ef 72%,
+        #e5cef4 85%,
+        #edcee8 100%);
+}
+
+/* Admin root page */
+.admin-root-pane {
+    -fx-background-color: linear-gradient(
+        to bottom right,
+        #f0eaff 0%,
+        #e8deff 20%,
+        #ddd5f8 40%,
+        #d4caf4 60%,
+        #ddd0f7 80%,
+        #ecd9f4 100%);
+}
+
+/* ── Typography hierarchy ────────────────────────────────────────── */
+
+/* H1 — Page title */
+.sf-h1 {
+    -fx-font-size: 28px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #4c1d95;
+    -fx-effect: dropshadow(gaussian, rgba(91,33,182,0.14), 6, 0, 0, 1);
+}
+
+/* H2 — Section title */
+.sf-h2 {
+    -fx-font-size: 20px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #5b21b6;
+}
+
+/* H3 — Card title / subsection */
+.sf-h3 {
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #6d28d9;
+}
+
+/* Body text */
+.sf-body {
+    -fx-font-size: 13px;
+    -fx-text-fill: #374151;
+    -fx-line-spacing: 2;
+}
+
+/* Muted / secondary text */
+.sf-muted {
+    -fx-font-size: 12px;
+    -fx-text-fill: #94a3b8;
+}
+
+/* Label for form fields */
+.sf-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: 800;
+    -fx-text-fill: rgba(196, 181, 253, 0.90);
+    -fx-padding: 0 0 2 0;
+}
+
+/* Overline / metadata */
+.sf-overline {
+    -fx-font-size: 10px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #a78bfa;
+    -fx-padding: 0 0 4 2;
+}
+
+/* Brand title in navbar */
+.brand-title {
+    -fx-font-size: 21px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #4c1d95;
+    -fx-effect: dropshadow(gaussian, rgba(91,33,182,0.15), 6, 0, 0, 1);
+}
+
+/* Brand sub ("Tunisia") */
+.brand-sub {
+    -fx-font-size: 10.5px;
+    -fx-text-fill: #a78bfa;
+    -fx-font-weight: 700;
+    -fx-padding: 1 0 0 1;
+}
+
+/* ── Glass surface token ─────────────────────────────────────────── */
+.glass-surface {
+    -fx-background-color: rgba(255,255,255,0.72);
+    -fx-border-color: rgba(196,181,253,0.55);
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(91,33,182,0.12), 24, 0.04, 0, 6);
+}
+
+/* ── Gradient text simulation via label on dark bg ───────────────── */
+.sf-gradient-label {
+    -fx-text-fill: linear-gradient(to right, #7c3aed, #c026d3);
+    -fx-font-weight: 900;
+}

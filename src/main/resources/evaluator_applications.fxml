@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.GUI.EvaluatorApplicationsController"
+            prefWidth="1200" prefHeight="800">
+
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="12" right="12" bottom="12" left="12"/>
+            </padding>
+            <Label text="Funding Applications" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Back to Dashboard" onAction="#backToDashboard"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="12" bottom="12" left="12"/>
+            </padding>
+
+            <TextField fx:id="searchField" promptText="Search applications..." />
+
+            <TableView fx:id="tableApps" prefHeight="600">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+                    <TableColumn fx:id="colEntrepreneurId" text="Entrepreneur" prefWidth="120"/>
+                    <TableColumn fx:id="colAmount" text="Amount" prefWidth="100"/>
+                    <TableColumn fx:id="colStatus" text="Status" prefWidth="120"/>
+                    <TableColumn fx:id="colSubmissionDate" text="Date" prefWidth="120"/>
+                    <TableColumn fx:id="colReason" text="Reason" prefWidth="260"/>
+                    <TableColumn fx:id="colProjectId" text="Project" prefWidth="100"/>
+                    <TableColumn fx:id="colSchedule" text="Schedule" prefWidth="140"/>
+                </columns>
+            </TableView>
+
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button text="Evaluate Selected" onAction="#evaluateSelected"/>
+            </HBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>

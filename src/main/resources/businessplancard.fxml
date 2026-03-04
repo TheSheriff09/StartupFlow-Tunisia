@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.GUI.businessplan.BusinessPlanCardController"
+        fx:id="cardRoot"
+        styleClass="bp-card"
+        prefWidth="310"
+        minHeight="240"
+        spacing="0">
+
+    <!-- Content area (padded) -->
+    <VBox spacing="0" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets top="24" right="24" bottom="20" left="24"/>
+        </padding>
+
+        <!-- Status badge + more button row -->
+        <HBox alignment="CENTER_LEFT">
+            <Label fx:id="lblStatus" styleClass="bp-status" text="DRAFT"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnMore" text="⋯" styleClass="btn-more" onAction="#handleMore"/>
+        </HBox>
+
+        <!-- Title -->
+        <Label fx:id="lblTitle" styleClass="bp-title" text="Plan Title" wrapText="true">
+            <VBox.margin><Insets top="12" bottom="10"/></VBox.margin>
+        </Label>
+
+        <!-- Thin divider -->
+        <Region styleClass="card-divider">
+            <VBox.margin><Insets bottom="12"/></VBox.margin>
+        </Region>
+
+        <!-- Info rows -->
+        <VBox spacing="8">
+            <Label fx:id="lblDescription"    styleClass="card-bullet" text="" wrapText="true"/>
+            <Label fx:id="lblMarketAnalysis" styleClass="bp-market"  text="" wrapText="true"/>
+            <!-- Funding + Timeline -->
+            <HBox spacing="14" alignment="CENTER_LEFT">
+                <Label fx:id="lblFunding"  styleClass="bp-funding"  text=""/>
+                <Label fx:id="lblTimeline" styleClass="bp-timeline" text=""/>
+            </HBox>
+            <Label fx:id="lblDates" styleClass="bp-dates" text=""/>
+        </VBox>
+
+        <Region VBox.vgrow="ALWAYS"/>
+    </VBox>
+
+</VBox>
+

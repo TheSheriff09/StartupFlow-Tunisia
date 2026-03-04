@@ -36,7 +36,7 @@
     </VBox>
 
     <!-- Home top-right (left side) -->
-    <HBox alignment="CENTER" layoutX="430" layoutY="24" spacing="10">
+    <HBox alignment="CENTER" layoutX="430" layoutY="24" spacing="10" onMouseClicked="#onHome">
         <Label styleClass="homeText" text="Home" />
         <StackPane styleClass="homeIcon">
             <Label styleClass="homeIconTxt" text="⌂" />
@@ -84,3 +84,4 @@
     </StackPane>
 
 </AnchorPane>
+

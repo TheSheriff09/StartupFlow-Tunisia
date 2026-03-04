@@ -36,7 +36,12 @@
             <VBox spacing="10" styleClass="nav-box">
                 <Button text="Dashboard" styleClass="nav-btn" onAction="#goDashboard"/>
                 <Button text="User Management" styleClass="nav-btn" onAction="#goUsers"/>
-                <Button text="Startup Projects" styleClass="nav-btn" onAction="#goProjects"/>
+                <VBox spacing="5" style="-fx-padding: 0 0 0 15;">
+                    <Button text="Startup Projects" styleClass="nav-btn" onAction="#goProjects"/>
+                    <Button text="↳ Sub-Dashboard" styleClass="nav-btn" onAction="#goProjects" style="-fx-font-size: 13.5px;"/>
+                    <Button text="↳ Startups List" styleClass="nav-btn" onAction="#goProjects" style="-fx-font-size: 13.5px;"/>
+                    <Button text="↳ Business Plans" styleClass="nav-btn" onAction="#goProjects" style="-fx-font-size: 13.5px;"/>
+                </VBox>
                 <Button text="Mentorship" styleClass="nav-btn" onAction="#goMentorship"/>
                 <Button text="Funding &amp; Evaluation" styleClass="nav-btn" onAction="#goFunding"/>
                 <Button fx:id="btnDashboardForum" text="Dashboard Forum" styleClass="nav-btn" onAction="#goDashboardForum"/>
@@ -156,3 +161,4 @@
     </center>
 
 </BorderPane>
+

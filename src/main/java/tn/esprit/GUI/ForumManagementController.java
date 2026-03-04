@@ -13,7 +13,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import tn.esprit.entities.ForumPost;
-import tn.esprit.services.ForumPostService;
+import tn.esprit.Services.ForumPostService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -94,7 +94,7 @@ public class ForumManagementController {
 
         // ACTION ICONS: update + delete
         colActions.setCellFactory(tc -> new TableCell<>() {
-            private final Button btnDelete = new Button("🗑");
+            private final Button btnDelete = new Button("ðŸ—‘");
 
             {
                 btnDelete.getStyleClass().add("miniDanger");
@@ -261,7 +261,7 @@ public class ForumManagementController {
         try {
             java.net.URL url = getClass().getResource(fxmlPath);
             if (url == null) {
-                System.out.println("❌ FXML not found: " + fxmlPath);
+                System.out.println("âŒ FXML not found: " + fxmlPath);
                 return;
             }
             Parent root = FXMLLoader.load(url);

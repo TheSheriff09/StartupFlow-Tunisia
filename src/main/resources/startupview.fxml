@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Root StackPane lets us layer the modal overlay on top of the dashboard
+    without modifying the dashboard layout at all.
+-->
+<StackPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.GUI.startup.StartupViewController"
+        stylesheets="@styles.css">
+
+<BorderPane
+        fx:id="mainContent"
+        styleClass="root-pane">
+
+    <!-- ═══════ NAVBAR ═══════ -->
+    <top>
+        <VBox>
+            <!-- Navigation bar (Matches Dashboard/Forum) -->
+            <HBox spacing="18" styleClass="topbar">
+                <padding>
+                    <Insets top="18" right="28" bottom="0" left="28"/>
+                </padding>
+                <!-- Brand -->
+                <VBox spacing="-2">
+                    <Label styleClass="brandTitle" text="StartupFlow" />
+                    <Label styleClass="brandSub" text="Tunisia" />
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS" />
+
+                <!-- Nav -->
+                <HBox spacing="28" styleClass="nav">
+                    <Label onMouseClicked="#goDashboard" styleClass="navLink" text="DashBoard" />
+                    <Label onMouseClicked="#goStartup" styleClass="navLink navActive" text="Startup" />
+                    <Label onMouseClicked="#goMentorship" styleClass="navLink" text="Mentorship" />
+                    <Label onMouseClicked="#goFunding" styleClass="navLink" text="Funding" />
+                    <Label onMouseClicked="#goForum" styleClass="navLink" text="Fourm" />
+                </HBox>
+
+                <Region HBox.hgrow="ALWAYS" />
+
+                <!-- User dropdown -->
+                <MenuButton fx:id="userMenuBtn" styleClass="userBtn" text="User 1">
+                    <items>
+                        <MenuItem fx:id="miHeader" disable="true" text="USER 1" />
+                        <MenuItem onAction="#onManageProfile" text="Manage Profile" />
+                        <MenuItem onAction="#onStartups" text="Startups" />
+                        <MenuItem onAction="#onSettings" text="Settings" />
+                        <MenuItem fx:id="miDivider" disable="true" text="────────────" />
+                        <MenuItem fx:id="miLogout" onAction="#onLogout" text="Log Out" />
+                    </items>
+                </MenuButton>
+            </HBox>
+
+            <!-- Secondary Top Bar for Startup Actions -->
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <padding>
+                    <Insets top="10" right="28" bottom="10" left="28"/>
+                </padding>
+                <Label fx:id="lblCount" text="0 startups" styleClass="count-badge">
+                    <HBox.margin><Insets right="14"/></HBox.margin>
+                </Label>
+                <Button text=" Scan QR" onAction="#handleScanQR"
+                        style="-fx-background-color:linear-gradient(to right,#7c3aed,#6d28d9);
+                               -fx-text-fill:white; -fx-background-radius:20; -fx-padding:7 16;
+                               -fx-font-weight:700; -fx-font-size:12px; -fx-cursor:hand;">
+                    <tooltip><Tooltip text="Upload a QR code image to find a startup"/></tooltip>
+                    <HBox.margin><Insets right="10"/></HBox.margin>
+                </Button>
+                <Button text="📈 AI Forecast" onAction="#openFinancialForecast"
+                        style="-fx-background-color:linear-gradient(to right,#059669,#0d9488);
+                               -fx-text-fill:white; -fx-background-radius:20; -fx-padding:7 16;
+                               -fx-font-weight:700; -fx-font-size:12px; -fx-cursor:hand;">
+                    <tooltip><Tooltip text="Generate an AI-powered 12-month financial forecast"/></tooltip>
+                    <HBox.margin><Insets right="10"/></HBox.margin>
+                </Button>
+                <Button text="💱 Currency" onAction="#openCurrencyConverter"
+                        style="-fx-background-color:linear-gradient(to right,#0369a1,#0284c7);
+                               -fx-text-fill:white; -fx-background-radius:20; -fx-padding:7 16;
+                               -fx-font-weight:700; -fx-font-size:12px; -fx-cursor:hand;">
+                    <tooltip><Tooltip text="Convert funding amounts to USD and EUR"/></tooltip>
+                    <HBox.margin><Insets right="10"/></HBox.margin>
+                </Button>
+                <Button fx:id="btnAdmin" text="⚙ Admin" styleClass="admin-back-btn"
+                        onAction="#openAdminDashboard">
+                    <tooltip><Tooltip text="Open the Admin Dashboard"/></tooltip>
+                    <HBox.margin><Insets right="10"/></HBox.margin>
+                </Button>
+                <Button fx:id="themeToggle" text="☀" styleClass="theme-toggle"
+                        onAction="#toggleTheme">
+                    <tooltip><Tooltip text="Toggle Dark / Light mode"/></tooltip>
+                    <HBox.margin><Insets right="10"/></HBox.margin>
+                </Button>
+            </HBox>
+
+            <!-- Centered search bar + sort selector -->
+            <HBox styleClass="search-wrap" alignment="CENTER" spacing="12">
+                <TextField
+                        fx:id="searchField"
+                        promptText="🔍  Search startups…"
+                        styleClass="search-field"/>
+                <ComboBox fx:id="sortCombo" onAction="#onSortChanged"
+                          promptText="Sort by…"
+                          styleClass="search-field"
+                          prefWidth="170"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- ═══════ BOARD PANEL + CARDS ═══════ -->
+    <center>
+        <StackPane>
+            <padding>
+                <Insets top="14" right="36" bottom="14" left="36"/>
+            </padding>
+            <VBox styleClass="board-panel">
+                <ScrollPane fitToWidth="true" styleClass="scroll-area" VBox.vgrow="ALWAYS">
+                    <FlowPane
+                            fx:id="cardsContainer"
+                            hgap="24" vgap="24"
+                            styleClass="cards-pane">
+                        <padding>
+                            <Insets top="30" right="30" bottom="30" left="30"/>
+                        </padding>
+                    </FlowPane>
+                </ScrollPane>
+            </VBox>
+        </StackPane>
+    </center>
+
+    <!-- ═══════ FAB (circular) ═══════ -->
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" styleClass="fab-bar">
+            <Button
+                    fx:id="fabBtn"
+                    text="＋"
+                    styleClass="fab-btn"
+                    onAction="#openAddDialog"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
+
+<!-- Modal overlay layer — populated at runtime by StartupViewController -->
+<StackPane
+        fx:id="modalLayer"
+        visible="false"
+        managed="false"
+        maxWidth="Infinity"
+        maxHeight="Infinity"
+        StackPane.alignment="CENTER"/>
+
+</StackPane>
+

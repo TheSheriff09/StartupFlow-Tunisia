@@ -18,12 +18,12 @@ import javafx.animation.Animation;
 import javafx.util.Duration;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
 import javafx.scene.layout.HBox;
 import javafx.application.Platform;
-import tn.esprit.entities.User;
-import tn.esprit.utils.CurrentUserSession;
+import tn.esprit.utils.NavigationManager;
 import tn.esprit.utils.NavContext;
+import tn.esprit.utils.SessionManager;
+import tn.esprit.utils.TopBarHelper;
 
 public class ForumFeedController {
 
@@ -48,17 +48,17 @@ public class ForumFeedController {
     @FXML
     private MenuButton userMenuBtn;
 
-    @FXML
-    private MenuItem miHeader;
-
-    @FXML
-    private MenuItem miLogout;
-
     private final ForumPostService postService = new ForumPostService();
 
     @FXML
     public void initialize() {
-        setupUserDropdown();
+        // ── Session guard ──
+        if (!SessionManager.requireLogin(postsContainer))
+            return;
+
+        // ── Top bar setup (reusable) ──
+        TopBarHelper.setup(userMenuBtn, null, postsContainer);
+
         refreshFeed();
         initNewsTicker();
         setupAdminNav();
@@ -68,8 +68,7 @@ public class ForumFeedController {
         if (navForumDashboard == null)
             return;
 
-        User u = CurrentUserSession.user;
-        boolean isAdmin = (u != null && "ADMIN".equalsIgnoreCase(u.getRole()));
+        boolean isAdmin = SessionManager.isAdmin();
 
         navForumDashboard.setVisible(isAdmin);
         navForumDashboard.setManaged(isAdmin);
@@ -80,28 +79,10 @@ public class ForumFeedController {
         }
     }
 
-    private void setupUserDropdown() {
-        if (userMenuBtn == null)
-            return;
-        User u = CurrentUserSession.user;
-        if (u == null) {
-            userMenuBtn.setText("User");
-            if (miHeader != null)
-                miHeader.setText("USER");
-            return;
-        }
-
-        String fullName = (u.getFullName() == null) ? "User" : u.getFullName().trim();
-        userMenuBtn.setText(fullName);
-        if (miHeader != null)
-            miHeader.setText(fullName);
-    }
-
     private void initNewsTicker() {
         ForumPost newestPost = postService.getNewestPost();
         if (newestPost != null) {
             String content = newestPost.getContent();
-            // Truncate content if it's too long to keep the ticker readable
             if (content != null && content.length() > 50) {
                 content = content.substring(0, 50) + "...";
             }
@@ -109,9 +90,7 @@ public class ForumFeedController {
             newsTickerLabel.setText("BREAKING: " + newestPost.getTitle() + " - " + content + " ("
                     + newestPost.getCreatedAt().toString() + ")");
 
-            // Allow the label to layout so we can get its width
             Platform.runLater(() -> {
-                // Clips the text so it doesn't overlap with "LATEST POST"
                 if (tickerPane != null) {
                     javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle();
                     clip.widthProperty().bind(tickerPane.widthProperty());
@@ -124,7 +103,7 @@ public class ForumFeedController {
 
                 TranslateTransition transition = new TranslateTransition(Duration.seconds(15), newsTickerLabel);
                 transition.setFromX(containerWidth);
-                transition.setToX(-labelWidth - 50); // Move completely off screen
+                transition.setToX(-labelWidth - 50);
                 transition.setCycleCount(Animation.INDEFINITE);
                 transition.play();
             });
@@ -137,7 +116,6 @@ public class ForumFeedController {
         postsContainer.getChildren().clear();
         List<ForumPost> posts = postService.list();
 
-        // Sort by newest first
         posts.sort((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()));
 
         for (ForumPost post : posts) {
@@ -173,46 +151,16 @@ public class ForumFeedController {
         }
     }
 
-    // Complete Navigation Implementation
-
-    private void goTo(String fxmlPath) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
-            Stage stage = (Stage) postsContainer.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    // ── Navigation ──
 
     @FXML
     private void onDashboard() {
-        User u = CurrentUserSession.user;
-        if (u == null) {
-            goTo("/Login.fxml");
-            return;
-        }
-
-        String role = (u.getRole() == null) ? "" : u.getRole().trim().toUpperCase();
-
-        if (role.equals("ADMIN")) {
-            goTo("/DashboardAdmin.fxml");
-        } else if (role.equals("ENTREPRENEUR")) {
-            goTo("/EntrepreneurDashboard.fxml");
-        } else if (role.equals("MENTOR")) {
-            goTo("/MentorDashboard.fxml");
-        } else if (role.equals("EVALUATOR")) {
-            goTo("/EvaluatorDashboard.fxml");
-        } else {
-            // Default fallback
-            goTo("/EntrepreneurDashboard.fxml");
-        }
+        NavigationManager.goToDashboard(postsContainer);
     }
 
     @FXML
     private void onStartup() {
-        System.out.println("Navigating to Startup");
+        NavigationManager.navigateTo(postsContainer, "/startupview.fxml");
     }
 
     @FXML
@@ -233,23 +181,23 @@ public class ForumFeedController {
     @FXML
     private void onForumDashboard() {
         tn.esprit.GUI.ForumAdminController.showAnalyticsOnLoad = true;
-        goTo("/ForumAdmin.fxml");
+        NavigationManager.navigateTo(postsContainer, "/ForumAdmin.fxml");
     }
 
     @FXML
     private void onUserManagement() {
-        goTo("/UserManagement.fxml");
+        NavigationManager.navigateTo(postsContainer, "/UserManagement.fxml");
     }
 
     @FXML
     private void onManageProfile() {
         NavContext.setBack("/ForumFeed.fxml");
-        goTo("/ManageProfile.fxml");
+        NavigationManager.navigateTo(postsContainer, "/ManageProfile.fxml");
     }
 
     @FXML
     private void onStartups() {
-        System.out.println("Startups");
+        NavigationManager.navigateTo(postsContainer, "/startupview.fxml");
     }
 
     @FXML
@@ -259,7 +207,6 @@ public class ForumFeedController {
 
     @FXML
     private void onLogout() {
-        CurrentUserSession.user = null;
-        goTo("/Signup.fxml");
+        NavigationManager.logout(postsContainer);
     }
 }

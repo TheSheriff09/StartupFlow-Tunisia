@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.GUI.startup.StartupCardController"
+        fx:id="cardRoot"
+        styleClass="startup-card"
+        prefWidth="310"
+        minHeight="240"
+        spacing="0">
+
+    <!-- Content area (padded) -->
+    <VBox spacing="0" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets top="24" right="24" bottom="20" left="24"/>
+        </padding>
+
+        <!-- Title row with more button -->
+        <HBox alignment="CENTER_LEFT" spacing="8">
+            <Label fx:id="lblName" styleClass="card-name" text="Startup Name" wrapText="true"
+                   HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308"/>
+            <Button fx:id="btnMore" text="⋯" styleClass="btn-more" onAction="#handleMore"/>
+        </HBox>
+
+        <!-- Thin divider -->
+        <Region styleClass="card-divider">
+            <VBox.margin><Insets top="14" bottom="14"/></VBox.margin>
+        </Region>
+
+        <!-- Bullet info -->
+        <VBox spacing="8">
+            <Label fx:id="lblSector"      styleClass="card-bullet" text=""/>
+            <Label fx:id="lblDescription" styleClass="card-bullet" text=""/>
+            <Label fx:id="lblStatus"      styleClass="card-bullet" text=""/>
+            <Label fx:id="lblFunding"     styleClass="card-bullet" text=""/>
+            <Label fx:id="lblDate" visible="false" managed="false" text=""/>
+        </VBox>
+
+        <!-- Investment Score badge -->
+        <HBox alignment="CENTER_LEFT" spacing="8" VBox.margin="$bottom8">
+            <Label text="📊 Score:" styleClass="card-bullet"
+                   style="-fx-font-weight:700;"/>
+            <Label fx:id="lblScore" text="—"
+                   style="-fx-font-size:12px; -fx-font-weight:800; -fx-padding: 2 10 2 10;
+                          -fx-background-radius:20;"/>
+            <Label fx:id="lblScoreBand" text=""
+                   style="-fx-font-size:10.5px; -fx-opacity:0.8;"/>
+        </HBox>
+
+        <Region VBox.vgrow="ALWAYS"/>
+    </VBox>
+
+</VBox>
+

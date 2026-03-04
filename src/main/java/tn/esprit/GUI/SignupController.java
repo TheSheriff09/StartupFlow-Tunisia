@@ -1,28 +1,30 @@
 package tn.esprit.GUI;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import tn.esprit.Services.UserService;
 import tn.esprit.entities.User;
-import tn.esprit.utils.CurrentUserSession;
+import tn.esprit.utils.NavigationManager;
+import tn.esprit.utils.SessionManager;
 import tn.esprit.utils.SignupSession;
 import javafx.scene.control.Label;
 
 public class SignupController {
-    @FXML private Label msgLabel;
-    @FXML private TextField fullNameField;
-    @FXML private TextField emailField;
-    @FXML private PasswordField passwordField;
-  //  @FXML private Label msgLabel;
-    @FXML private Button togglePassBtn;
-    @FXML private TextField visiblePasswordField;
+    @FXML
+    private Label msgLabel;
+    @FXML
+    private TextField fullNameField;
+    @FXML
+    private TextField emailField;
+    @FXML
+    private PasswordField passwordField;
+    // @FXML private Label msgLabel;
+    @FXML
+    private Button togglePassBtn;
+    @FXML
+    private TextField visiblePasswordField;
     private boolean showingPassword = false;
 
     @FXML
@@ -41,25 +43,11 @@ public class SignupController {
         SignupSession.fullName = fullName;
         SignupSession.email = email;
         SignupSession.passwordPlain = password;
-        System.out.println(getClass().getResource("/RoleChoice.fxml"));
-        goTo("RoleChoice.fxml");
-
+        NavigationManager.navigateTo(fullNameField, "/RoleChoice.fxml");
     }
 
-    private void goTo(String fxml) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/" + fxml));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) fullNameField.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    @FXML private void togglePassword() {
+    @FXML
+    private void togglePassword() {
         if (showingPassword) {
             passwordField.setText(visiblePasswordField.getText());
 
@@ -88,8 +76,12 @@ public class SignupController {
         }
     }
 
-    @FXML private void socialFacebook() {}
-    @FXML private void onGoogle2() {
+    @FXML
+    private void socialFacebook() {
+    }
+
+    @FXML
+    private void onGoogle2() {
         msgLabel.setText("Opening Google login...");
 
         new Thread(() -> {
@@ -103,21 +95,13 @@ public class SignupController {
                 if (existing != null) {
                     String st = (existing.getStatus() == null) ? "PENDING" : existing.getStatus().trim();
                     if (st.equalsIgnoreCase("BLOCKED")) {
-                        javafx.application.Platform.runLater(() ->
-                                msgLabel.setText("Your account is blocked"));
+                        javafx.application.Platform.runLater(() -> msgLabel.setText("Your account is blocked"));
                         return;
                     }
 
-                    CurrentUserSession.user = existing;
+                    SessionManager.login(existing);
 
-                    javafx.application.Platform.runLater(() -> {
-                        String role = (existing.getRole() == null) ? "" : existing.getRole().trim().toUpperCase();
-                        if (role.equals("ADMIN")) goTo("/DashboardAdmin.fxml");
-                        else if (role.equals("ENTREPRENEUR")) goTo("/EntrepreneurDashboard.fxml");
-                        else if (role.equals("MENTOR")) goTo("/MentorDashboard.fxml");
-                        else if (role.equals("EVALUATOR")) goTo("/EvaluatorDashboard.fxml");
-                        else msgLabel.setText("Unknown role: " + role);
-                    });
+                    javafx.application.Platform.runLater(() -> NavigationManager.goToDashboard(fullNameField));
 
                     return;
                 }
@@ -125,20 +109,31 @@ public class SignupController {
                 // New Google user -> send to RoleChoice to pick role
                 tn.esprit.utils.SignupSession.fullName = g.getName();
                 tn.esprit.utils.SignupSession.email = g.getEmail();
-                tn.esprit.utils.SignupSession.passwordPlain = null; // IMPORTANT: no password
+                tn.esprit.utils.SignupSession.passwordPlain = null;
 
                 javafx.application.Platform.runLater(() -> {
                     msgLabel.setText("Choose your role to complete signup.");
-                    goTo("RoleChoice.fxml");
+                    NavigationManager.navigateTo(fullNameField, "/RoleChoice.fxml");
                 });
 
             } catch (Exception ex) {
                 ex.printStackTrace();
-                javafx.application.Platform.runLater(() ->
-                        msgLabel.setText("Google login error: " + ex.getMessage()));
+                javafx.application.Platform.runLater(() -> msgLabel.setText("Google login error: " + ex.getMessage()));
             }
-        }).start();}
-  @FXML private void socialGithub() {}
-    @FXML private void goLogin() {        goTo("Login.fxml");
+        }).start();
+    }
+
+    @FXML
+    private void socialGithub() {
+    }
+
+    @FXML
+    private void goLogin() {
+        NavigationManager.navigateTo(fullNameField, "/Login.fxml");
+    }
+
+    @FXML
+    private void onHome() {
+        NavigationManager.navigateTo(fullNameField, "/Landing.fxml");
     }
 }

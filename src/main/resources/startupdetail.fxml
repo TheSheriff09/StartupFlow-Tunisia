@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.GUI.startup.StartupDetailController"
+        stylesheets="@styles.css">
+
+<BorderPane fx:id="mainContent" styleClass="root-pane">
+
+    <!-- ═══════ TOP BAR ═══════ -->
+    <top>
+        <HBox styleClass="topbar-bp" alignment="CENTER_LEFT" spacing="0">
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <Button text="←  Back" styleClass="btn-back" onAction="#goBack"/>
+                <VBox spacing="1">
+                    <Label fx:id="lblTitle" text="Startup Detail" styleClass="bp-view-header"/>
+                </VBox>
+            </HBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnExportPDF" text="📄 Export PDF"
+                    onAction="#handleExportPDF"
+                    style="-fx-background-color:linear-gradient(to right,#6d28d9,#7c3aed);
+                           -fx-text-fill:white;-fx-background-radius:20;-fx-padding:7 16;
+                           -fx-font-weight:700;-fx-font-size:12px;-fx-cursor:hand;">
+                <HBox.margin><Insets right="10"/></HBox.margin>
+            </Button>
+            <Button fx:id="btnGenerateQR" text="📱 QR Code"
+                    onAction="#handleGenerateQR"
+                    style="-fx-background-color:linear-gradient(to right,#059669,#0d9488);
+                           -fx-text-fill:white;-fx-background-radius:20;-fx-padding:7 16;
+                           -fx-font-weight:700;-fx-font-size:12px;-fx-cursor:hand;">
+                <HBox.margin><Insets right="10"/></HBox.margin>
+            </Button>
+            <Button fx:id="themeToggle" text="☀" styleClass="theme-toggle"
+                    onAction="#toggleTheme">
+                <HBox.margin><Insets right="10"/></HBox.margin>
+            </Button>
+        </HBox>
+    </top>
+
+    <!-- ═══════ CONTENT ═══════ -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="scroll-area" VBox.vgrow="ALWAYS">
+            <padding><Insets top="20" right="40" bottom="20" left="40"/></padding>
+            <VBox spacing="22" fx:id="contentBox">
+
+                <!-- ── Score + Status Row ── -->
+                <HBox spacing="16" alignment="CENTER_LEFT">
+                    <VBox spacing="4" style="-fx-padding:14 20;
+                           -fx-background-color: linear-gradient(to right, #7c3aed, #a855f7), #151030;
+                           -fx-background-insets: 0, 3 0 0 0;
+                           -fx-background-radius: 14 14 14 14, 0 0 14 14;
+                           -fx-border-color: rgba(139,92,246,0.18);
+                           -fx-border-radius: 14; -fx-border-width: 0 1 1 1;">
+                        <Label text="Investment Score" style="-fx-font-size:11px;-fx-text-fill:#a78bfa;-fx-font-weight:700;"/>
+                        <Label fx:id="lblScore" text="—" style="-fx-font-size:28px;-fx-font-weight:800;-fx-text-fill:white;"/>
+                        <Label fx:id="lblRisk" text="" style="-fx-font-size:12px;-fx-font-weight:700;"/>
+                    </VBox>
+                    <VBox spacing="4" style="-fx-padding:14 20;
+                           -fx-background-color: linear-gradient(to right, #059669, #0d9488), #151030;
+                           -fx-background-insets: 0, 3 0 0 0;
+                           -fx-background-radius: 14 14 14 14, 0 0 14 14;
+                           -fx-border-color: rgba(16,185,129,0.18);
+                           -fx-border-radius: 14; -fx-border-width: 0 1 1 1;">
+                        <Label text="Recommendation" style="-fx-font-size:11px;-fx-text-fill:#6ee7b7;-fx-font-weight:700;"/>
+                        <Label fx:id="lblRecommendation" text="—"
+                               style="-fx-font-size:14px;-fx-font-weight:700;-fx-text-fill:white;"
+                               wrapText="true" maxWidth="280"/>
+                    </VBox>
+                </HBox>
+
+                <!-- ── Detail Cards ── -->
+                <Label text="Startup Details" styleClass="bp-view-header" style="-fx-font-size:16px;"/>
+                <FlowPane fx:id="detailCards" hgap="16" vgap="16"/>
+
+                <!-- ── Business Plans ── -->
+                <Label text="Business Plans" styleClass="bp-view-header" style="-fx-font-size:16px;"/>
+                <VBox fx:id="plansBox" spacing="12"/>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>
+
+<!-- Modal layer -->
+<StackPane fx:id="modalLayer" visible="false" managed="false"
+           maxWidth="Infinity" maxHeight="Infinity" StackPane.alignment="CENTER"/>
+
+</StackPane>
+

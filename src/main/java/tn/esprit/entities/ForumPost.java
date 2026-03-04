@@ -11,18 +11,23 @@ public class ForumPost {
 
     private String imageUrl;
 
+    private int userId;
+    private String authorName;
+
     // Constructors
     public ForumPost() {
     }
 
     public ForumPost(int id, String title, String content, String imageUrl, LocalDateTime createdAt,
-            LocalDateTime updatedAt) {
+            LocalDateTime updatedAt, int userId, String authorName) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.userId = userId;
+        this.authorName = authorName;
     }
 
     // Getters and Setters
@@ -74,6 +79,22 @@ public class ForumPost {
         this.updatedAt = updatedAt;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
     @Override
     public String toString() {
         return "ForumPost{" +
@@ -83,6 +104,8 @@ public class ForumPost {
                 ", imageUrl='" + imageUrl + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", userId=" + userId +
+                ", authorName='" + authorName + '\'' +
                 '}';
     }
 }

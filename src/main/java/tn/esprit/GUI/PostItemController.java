@@ -10,8 +10,8 @@ import javafx.scene.layout.VBox;
 import tn.esprit.entities.Comment;
 import tn.esprit.entities.ForumPost;
 import tn.esprit.entities.Interaction;
-import tn.esprit.services.CommentService;
-import tn.esprit.services.InteractionService;
+import tn.esprit.Services.CommentService;
+import tn.esprit.Services.InteractionService;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -51,12 +51,28 @@ public class PostItemController {
     private int likeCount = 0; // Temporary in-memory counter for demo (should be in DB)
 
     private final InteractionService interactionService = new InteractionService();
-    private final int CURRENT_USER_ID = 1; // Placeholder ID
+
+    private int getCurrentUserId() {
+        return (tn.esprit.utils.SessionManager.getUser() != null) ? tn.esprit.utils.SessionManager.getUser().getId()
+                : 1;
+    }
+
+    private String getSessionUserName() {
+        return (tn.esprit.utils.SessionManager.getUser() != null
+                && tn.esprit.utils.SessionManager.getUser().getFullName() != null)
+                        ? tn.esprit.utils.SessionManager.getUser().getFullName()
+                        : "User";
+    }
 
     public void setData(ForumPost post) {
         this.post = post;
 
-        lblAuthor.setText("Community User");
+        // Display the actual author name saved in the DB, or a fallback if null/empty
+        String author = post.getAuthorName();
+        if (author == null || author.trim().isEmpty()) {
+            author = "Community User";
+        }
+        lblAuthor.setText(author);
         lblTitle.setText(post.getTitle());
         lblContent.setText(post.getContent());
         lblDate.setText(post.getCreatedAt().format(DateTimeFormatter.ofPattern("MMM dd, HH:mm")));
@@ -92,26 +108,32 @@ public class PostItemController {
         lblLikes.setText(count + " Interactions");
     }
 
+    // Renamed from onReact and updated
     @FXML
-    private void onReact() {
-        interactionService.add(new tn.esprit.entities.Interaction(post.getId(), CURRENT_USER_ID, "LIKE"));
-        updateLikeLabel();
+    private void likePost() {
+        Interaction i = new Interaction(post.getId(), getCurrentUserId(), "LIKE");
+        interactionService.add(i);
+        updateLikeLabel(); // Changed from updateLikeCount() to updateLikeLabel()
         resetReactionStyles();
         btnLike.getStyleClass().add("reaction-active");
     }
 
+    // Renamed from onLove and updated
     @FXML
-    private void onLove() {
-        interactionService.add(new tn.esprit.entities.Interaction(post.getId(), CURRENT_USER_ID, "LOVE"));
-        updateLikeLabel();
+    private void lovePost() {
+        Interaction i = new Interaction(post.getId(), getCurrentUserId(), "LOVE");
+        interactionService.add(i);
+        updateLikeLabel(); // Changed from updateLikeCount() to updateLikeLabel()
         resetReactionStyles();
         btnLove.getStyleClass().add("reaction-active");
     }
 
+    // Renamed from onHaha and updated
     @FXML
-    private void onHaha() {
-        interactionService.add(new tn.esprit.entities.Interaction(post.getId(), CURRENT_USER_ID, "HAHA"));
-        updateLikeLabel();
+    private void hahaPost() {
+        Interaction i = new Interaction(post.getId(), getCurrentUserId(), "HAHA");
+        interactionService.add(i);
+        updateLikeLabel(); // Changed from updateLikeCount() to updateLikeLabel()
         resetReactionStyles();
         btnHaha.getStyleClass().add("reaction-active");
     }
@@ -140,8 +162,9 @@ public class PostItemController {
             VBox bubble = new VBox(3);
             bubble.getStyleClass().add("comment-box");
 
-            Label userLbl = new Label("User");
-            userLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #333;");
+            String author = c.getAuthorName() != null ? c.getAuthorName() : "User";
+            Label userLbl = new Label(author);
+            userLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #7b61ff;");
 
             Label contentLbl = new Label(c.getContent());
             contentLbl.setWrapText(true);
@@ -155,11 +178,14 @@ public class PostItemController {
     @FXML
     private void submitComment() {
         String content = taComment.getText().trim();
-        if (content.isEmpty())
+        if (content.isEmpty()) { // Corrected the if condition structure
             return;
+        }
 
         Comment c = new Comment();
         c.setPostId(post.getId());
+        c.setUserId(getCurrentUserId());
+        c.setAuthorName(getSessionUserName());
         c.setContent(content);
         c.setCreatedAt(LocalDateTime.now());
 

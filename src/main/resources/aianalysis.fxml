@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    AI Business Plan Analyzer popup overlay.
+    Open via: AiAnalysisController.show(modalLayer, blurTarget, plan)
+
+    Three internal states managed by the controller:
+      LOADING  – spinner while HTTP request runs on background thread
+      ERROR    – error message on failure
+      RESULT   – four structured sections: Strengths / Weaknesses / Risk / Suggestions
+-->
+<StackPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.GUI.popup.AiAnalysisController"
+        fx:id="overlayRoot"
+        style="-fx-background-color: rgba(15,10,40,0.76);"
+        onMouseClicked="#handleOverlayClick">
+
+    <VBox
+            fx:id="modalCard"
+            alignment="TOP_LEFT"
+            spacing="0"
+            maxWidth="560"
+            minWidth="420"
+            maxHeight="700"
+            style="-fx-background-color: #1a0f3c; -fx-background-radius: 22;
+                   -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.5), 36, 0, 0, 10);">
+
+        <!-- Title bar -->
+        <HBox alignment="CENTER_LEFT" spacing="12"
+              style="-fx-background-color: linear-gradient(to right,#6d28d9,#3730a3);
+                     -fx-background-radius: 22 22 0 0; -fx-padding: 20 28 20 28;">
+            <Label text="🤖" style="-fx-font-size:22px;"/>
+            <VBox spacing="1">
+                <Label text="AI Business Plan Analyzer"
+                       style="-fx-font-size:16px; -fx-font-weight:800; -fx-text-fill:white;"/>
+                <Label fx:id="lblPlanTitle" text=""
+                       style="-fx-font-size:11px; -fx-text-fill:rgba(200,185,255,0.75);"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnClose" text="✕" onAction="#handleClose"
+                    style="-fx-background-color:transparent; -fx-text-fill:rgba(255,255,255,0.65);
+                           -fx-font-size:16px; -fx-cursor:hand;"/>
+        </HBox>
+
+        <!-- Body -->
+        <VBox spacing="16" VBox.vgrow="ALWAYS" style="-fx-padding: 24 28 24 28;">
+
+            <!-- Loading state -->
+            <VBox fx:id="loadingBox" alignment="CENTER" spacing="14" visible="true" managed="true"
+                  style="-fx-padding:40 0;">
+                <ProgressIndicator fx:id="progressIndicator"
+                                   style="-fx-accent:#7c3aed;" prefWidth="52" prefHeight="52"/>
+                <Label text="Analyzing your business plan…"
+                       style="-fx-text-fill:#a78bfa; -fx-font-size:13px; -fx-font-weight:600;"/>
+                <Label text="This may take a few seconds."
+                       style="-fx-text-fill:rgba(167,139,250,0.6); -fx-font-size:11.5px;"/>
+            </VBox>
+
+            <!-- Error state -->
+            <VBox fx:id="errorBox" alignment="CENTER" spacing="12" visible="false" managed="false"
+                  style="-fx-padding:20 0;">
+                <Label text="⚠" style="-fx-font-size:36px;"/>
+                <Label text="Analysis Failed" style="-fx-text-fill:#f87171; -fx-font-size:15px; -fx-font-weight:700;"/>
+                <Label fx:id="lblError" text="" wrapText="true" maxWidth="440"
+                       style="-fx-text-fill:rgba(248,113,113,0.85); -fx-font-size:12px; -fx-alignment:CENTER;"/>
+            </VBox>
+
+            <!-- ── RESULT STATE — 4 structured sections ── -->
+            <ScrollPane fx:id="resultScroll" fitToWidth="true"
+                        visible="false" managed="false"
+                        maxHeight="480" minHeight="160"
+                        style="-fx-background:transparent; -fx-background-color:transparent;
+                               -fx-border-color:transparent;">
+                <VBox spacing="14">
+
+                    <!-- Risk Level badge -->
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="Risk Level"
+                               style="-fx-text-fill:#a78bfa; -fx-font-size:11px; -fx-font-weight:700;"/>
+                        <HBox fx:id="riskBadge" alignment="CENTER" spacing="6"
+                              style="-fx-background-radius:20; -fx-padding:4 16;
+                                     -fx-border-radius:20; -fx-border-width:1.5;">
+                            <Label fx:id="lblRiskIcon"  text="" style="-fx-font-size:14px;"/>
+                            <Label fx:id="lblRiskLevel" text=""
+                                   style="-fx-font-size:13px; -fx-font-weight:800;"/>
+                        </HBox>
+                    </HBox>
+
+                    <!-- Strengths -->
+                    <VBox spacing="6"
+                          style="-fx-background-color:rgba(22,163,74,0.10);
+                                 -fx-background-radius:12; -fx-padding:12 14;
+                                 -fx-border-color:rgba(22,163,74,0.30); -fx-border-radius:12;">
+                        <Label text="✅  Strengths"
+                               style="-fx-text-fill:#4ade80; -fx-font-size:12px; -fx-font-weight:700;"/>
+                        <Label fx:id="lblStrengths" text="" wrapText="true"
+                               style="-fx-text-fill:rgba(220,252,231,0.92); -fx-font-size:12px; -fx-line-spacing:3;"/>
+                    </VBox>
+
+                    <!-- Weaknesses -->
+                    <VBox spacing="6"
+                          style="-fx-background-color:rgba(220,38,38,0.10);
+                                 -fx-background-radius:12; -fx-padding:12 14;
+                                 -fx-border-color:rgba(220,38,38,0.30); -fx-border-radius:12;">
+                        <Label text="⚠️  Weaknesses"
+                               style="-fx-text-fill:#f87171; -fx-font-size:12px; -fx-font-weight:700;"/>
+                        <Label fx:id="lblWeaknesses" text="" wrapText="true"
+                               style="-fx-text-fill:rgba(254,226,226,0.92); -fx-font-size:12px; -fx-line-spacing:3;"/>
+                    </VBox>
+
+                    <!-- Improvement Suggestions -->
+                    <VBox spacing="6"
+                          style="-fx-background-color:rgba(124,58,237,0.12);
+                                 -fx-background-radius:12; -fx-padding:12 14;
+                                 -fx-border-color:rgba(124,58,237,0.32); -fx-border-radius:12;">
+                        <Label text="💡  Improvement Suggestions"
+                               style="-fx-text-fill:#c4b5fd; -fx-font-size:12px; -fx-font-weight:700;"/>
+                        <Label fx:id="lblSuggestions" text="" wrapText="true"
+                               style="-fx-text-fill:rgba(237,233,254,0.92); -fx-font-size:12px; -fx-line-spacing:3;"/>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+
+            <Region VBox.vgrow="ALWAYS" minHeight="8"/>
+
+            <!-- Close button -->
+            <HBox alignment="CENTER_RIGHT" style="-fx-padding:10 0 0 0;">
+                <Button text="  Close  " onAction="#handleClose"
+                        style="-fx-background-color:linear-gradient(to right,#7c3aed,#4f46e5);
+                               -fx-text-fill:white; -fx-background-radius:10; -fx-padding:10 28;
+                               -fx-font-weight:700; -fx-cursor:hand; -fx-font-size:13px;"/>
+            </HBox>
+
+        </VBox>
+    </VBox>
+</StackPane>
+

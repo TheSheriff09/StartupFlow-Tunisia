@@ -1,17 +1,15 @@
-package tn.esprit.services;
+package tn.esprit.Services;
 
 import tn.esprit.entities.Interaction;
 import tn.esprit.utils.MyDB;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class InteractionService {
     private Connection cnx;
 
     public InteractionService() {
-        cnx = MyDB.getInstance().getconx();
+        cnx = MyDB.getInstance().getCnx();
         ensureTableExists();
     }
 
@@ -29,49 +27,27 @@ public class InteractionService {
         } catch (SQLException e) {
             System.out.println("Error creating interactions table: " + e.getMessage());
         }
+
+        // Clean up duplicate reactions before adding unique index
+        try (Statement st = cnx.createStatement()) {
+            st.execute(
+                    "DELETE i1 FROM interactions i1 INNER JOIN interactions i2 WHERE i1.id > i2.id AND i1.post_id = i2.post_id AND i1.user_id = i2.user_id");
+            st.execute("ALTER TABLE interactions ADD UNIQUE INDEX idx_unique_user_post (post_id, user_id)");
+        } catch (SQLException e) {
+            // Index might already exist
+            System.out.println("Note on Interaction Unique Key: " + e.getMessage());
+        }
     }
 
     public void add(Interaction interaction) {
-        // Check if already reacted
-        if (hasReacted(interaction.getPostId(), interaction.getUserId())) {
-            updateReaction(interaction);
-            return;
-        }
-
-        String sql = "INSERT INTO interactions (post_id, user_id, type, created_at) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO interactions (post_id, user_id, type, created_at) " +
+                "VALUES (?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE type=VALUES(type), created_at=VALUES(created_at)";
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
             ps.setInt(1, interaction.getPostId());
             ps.setInt(2, interaction.getUserId());
             ps.setString(3, interaction.getType());
             ps.setTimestamp(4, Timestamp.valueOf(interaction.getCreatedAt()));
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public boolean hasReacted(int postId, int userId) {
-        String sql = "SELECT count(*) FROM interactions WHERE post_id = ? AND user_id = ?";
-        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-            ps.setInt(1, postId);
-            ps.setInt(2, userId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public void updateReaction(Interaction interaction) {
-        String sql = "UPDATE interactions SET type = ?, created_at = ? WHERE post_id = ? AND user_id = ?";
-        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-            ps.setString(1, interaction.getType());
-            ps.setTimestamp(2, Timestamp.valueOf(interaction.getCreatedAt()));
-            ps.setInt(3, interaction.getPostId());
-            ps.setInt(4, interaction.getUserId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

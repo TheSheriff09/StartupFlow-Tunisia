@@ -5,17 +5,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 import tn.esprit.Services.UserService;
 import tn.esprit.entities.User;
-import tn.esprit.utils.CurrentUserSession;
+import tn.esprit.utils.NavigationManager;
+import tn.esprit.utils.SessionManager;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -80,6 +77,9 @@ public class UserManagementController {
 
     @FXML
     private void initialize() {
+        // ── ADMIN role guard ──
+        if (!SessionManager.requireRole(usersTable, "ADMIN"))
+            return;
 
         cbRole.setItems(roles);
         cbStatus.setItems(statuses);
@@ -311,7 +311,7 @@ public class UserManagementController {
 
     @FXML
     private void goDashboard() {
-        goTo("/DashboardAdmin.fxml");
+        NavigationManager.navigateTo(usersTable, "/DashboardAdmin.fxml");
     }
 
     @FXML
@@ -320,7 +320,7 @@ public class UserManagementController {
 
     @FXML
     private void goProjects() {
-        System.out.println("Projects later");
+        NavigationManager.navigateTo(usersTable, "/admindashboard.fxml");
     }
 
     @FXML
@@ -336,13 +336,13 @@ public class UserManagementController {
     @FXML
     private void goDashboardForum() {
         ForumAdminController.showAnalyticsOnLoad = true;
-        goTo("/ForumAdmin.fxml");
+        NavigationManager.navigateTo(usersTable, "/ForumAdmin.fxml");
     }
 
     @FXML
     private void goForumBackOffice() {
         ForumAdminController.showAnalyticsOnLoad = false;
-        goTo("/ForumAdmin.fxml");
+        NavigationManager.navigateTo(usersTable, "/ForumAdmin.fxml");
     }
 
     @FXML
@@ -352,30 +352,12 @@ public class UserManagementController {
 
     @FXML
     private void goReclamations() {
-        goTo("/ReclamationAdmin.fxml");
+        NavigationManager.navigateTo(usersTable, "/ReclamationAdmin.fxml");
     }
 
     @FXML
     private void logout() {
-        CurrentUserSession.user = null;
-        goTo("/Signup.fxml");
-    }
-
-    private void goTo(String fxmlPath) {
-        try {
-            java.net.URL url = getClass().getResource(fxmlPath);
-            System.out.println("FXML URL for " + fxmlPath + " => " + url);
-            if (url == null) {
-                System.out.println("FXML not found: " + fxmlPath);
-                return;
-            }
-            Parent root = FXMLLoader.load(url);
-            Stage stage = (Stage) usersTable.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        NavigationManager.logout(usersTable);
     }
 
     private String ns(String s) {

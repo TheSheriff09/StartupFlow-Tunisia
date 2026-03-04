@@ -5,16 +5,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import tn.esprit.entities.ForumPost;
 import tn.esprit.Services.ForumPostService;
+import tn.esprit.utils.NavigationManager;
+import tn.esprit.utils.SessionManager;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -68,6 +66,10 @@ public class ForumAdminController {
 
     @FXML
     private void initialize() {
+        // ── ADMIN role guard ──
+        if (!SessionManager.requireRole(postsTable, "ADMIN"))
+            return;
+
         setupTable();
         loadPosts();
 
@@ -323,12 +325,12 @@ public class ForumAdminController {
 
     @FXML
     private void goDashboard() {
-        goTo("/DashboardAdmin.fxml");
+        NavigationManager.navigateTo(postsTable, "/DashboardAdmin.fxml");
     }
 
     @FXML
     private void goUsers() {
-        goTo("/UserManagement.fxml");
+        NavigationManager.navigateTo(postsTable, "/UserManagement.fxml");
     }
 
     @FXML
@@ -337,6 +339,13 @@ public class ForumAdminController {
         pnlDashboard.setVisible(true);
         pnlForum.setVisible(false);
         refreshDashboard();
+
+        if (btnForumBackOffice != null && btnDashboardForum != null) {
+            btnForumBackOffice.getStyleClass().remove("active");
+            if (!btnDashboardForum.getStyleClass().contains("active")) {
+                btnDashboardForum.getStyleClass().add("active");
+            }
+        }
     }
 
     @FXML
@@ -344,6 +353,13 @@ public class ForumAdminController {
         showAnalyticsOnLoad = false;
         pnlDashboard.setVisible(false);
         pnlForum.setVisible(true);
+
+        if (btnForumBackOffice != null && btnDashboardForum != null) {
+            btnDashboardForum.getStyleClass().remove("active");
+            if (!btnForumBackOffice.getStyleClass().contains("active")) {
+                btnForumBackOffice.getStyleClass().add("active");
+            }
+        }
     }
 
     @FXML
@@ -379,7 +395,7 @@ public class ForumAdminController {
 
     @FXML
     private void goProjects() {
-        System.out.println("Projects Clicked");
+        NavigationManager.navigateTo(postsTable, "/admindashboard.fxml");
     }
 
     @FXML
@@ -394,7 +410,7 @@ public class ForumAdminController {
 
     @FXML
     private void goForumFeed() {
-        goTo("/ForumFeed.fxml");
+        NavigationManager.navigateTo(postsTable, "/ForumFeed.fxml");
     }
 
     @FXML
@@ -404,13 +420,7 @@ public class ForumAdminController {
 
     @FXML
     private void logout() {
-        try {
-            // Return to MainFx (Role Selection)
-            tn.esprit.MainFx main = new tn.esprit.MainFx();
-            main.start((javafx.stage.Stage) postsTable.getScene().getWindow());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        NavigationManager.logout(postsTable);
     }
 
     private void showAlert(String title, String msg) {
@@ -419,21 +429,6 @@ public class ForumAdminController {
         a.setHeaderText(null);
         a.setContentText(msg);
         a.showAndWait();
-    }
-
-    // NAVIGATION
-    /* The navigation methods below are replaced by the new ones above */
-
-    private void goTo(String fxmlPath) {
-        try {
-            java.net.URL url = getClass().getResource(fxmlPath);
-            Parent root = FXMLLoader.load(url);
-            Stage stage = (Stage) postsTable.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private String ns(String s) {

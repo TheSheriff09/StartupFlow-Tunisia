@@ -1,4 +1,4 @@
-package tn.esprit.services;
+package tn.esprit.Services;
 
 import tn.esprit.entities.Comment;
 import tn.esprit.utils.MyDB;
@@ -11,16 +11,28 @@ public class CommentService implements ICRUD<Comment> {
     private final Connection cnx;
 
     public CommentService() {
-        cnx = MyDB.getInstance().getconx();
+        cnx = MyDB.getInstance().getCnx();
+        ensureTableExists();
+    }
+
+    private void ensureTableExists() {
+        try (Statement st = cnx.createStatement()) {
+            st.execute("ALTER TABLE comments ADD COLUMN IF NOT EXISTS user_id INT DEFAULT 1");
+            st.execute("ALTER TABLE comments ADD COLUMN IF NOT EXISTS author_name VARCHAR(255) DEFAULT 'User'");
+        } catch (SQLException e) {
+            System.out.println("Warning: Could not alter comments table: " + e.getMessage());
+        }
     }
 
     @Override
     public Comment add(Comment comment) {
-        String sql = "INSERT INTO comments (content, created_at, post_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO comments (content, created_at, post_id, user_id, author_name) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, comment.getContent());
             ps.setTimestamp(2, Timestamp.valueOf(comment.getCreatedAt()));
             ps.setInt(3, comment.getPostId());
+            ps.setInt(4, comment.getUserId());
+            ps.setString(5, comment.getAuthorName() != null ? comment.getAuthorName() : "User");
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();
@@ -46,7 +58,9 @@ public class CommentService implements ICRUD<Comment> {
                         rs.getInt("id"),
                         rs.getString("content"),
                         rs.getTimestamp("created_at").toLocalDateTime(),
-                        rs.getInt("post_id"));
+                        rs.getInt("post_id"),
+                        rs.getInt("user_id"),
+                        rs.getString("author_name"));
                 comments.add(comment);
             }
         } catch (SQLException e) {
@@ -101,7 +115,9 @@ public class CommentService implements ICRUD<Comment> {
                             rs.getInt("id"),
                             rs.getString("content"),
                             rs.getTimestamp("created_at").toLocalDateTime(),
-                            rs.getInt("post_id"));
+                            rs.getInt("post_id"),
+                            rs.getInt("user_id"),
+                            rs.getString("author_name"));
                     comments.add(comment);
                 }
             }

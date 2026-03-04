@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Currency Exchange popup overlay.
+    Open via: CurrencyController.show(modalLayer, blurTarget, fundingAmount)
+
+    Two internal states:
+      INPUT   – amount field + Convert button
+      LOADING – spinner while HTTP request runs on background thread
+      RESULT  – USD and EUR conversion cards
+-->
+<StackPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.GUI.popup.CurrencyController"
+        fx:id="overlayRoot"
+        style="-fx-background-color: rgba(15,10,40,0.76);"
+        onMouseClicked="#handleOverlayClick">
+
+    <VBox
+            fx:id="modalCard"
+            alignment="TOP_LEFT"
+            spacing="0"
+            maxWidth="480"
+            minWidth="380"
+            style="-fx-background-color: #1a0f3c; -fx-background-radius: 22;
+                   -fx-effect: dropshadow(gaussian, rgba(56,189,248,0.45), 34, 0, 0, 10);">
+
+        <!-- ════ Title bar ════ -->
+        <HBox alignment="CENTER_LEFT" spacing="12"
+              style="-fx-background-color: linear-gradient(to right,#0369a1,#0284c7);
+                     -fx-background-radius: 22 22 0 0; -fx-padding: 20 28 20 28;">
+            <Label text="💱" style="-fx-font-size:22px;"/>
+            <VBox spacing="1">
+                <Label text="Currency Converter"
+                       style="-fx-font-size:16px; -fx-font-weight:800; -fx-text-fill:white;"/>
+                <Label text="TND → USD  ·  TND → EUR"
+                       style="-fx-font-size:11px; -fx-text-fill:rgba(186,230,253,0.75);"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="✕" onAction="#handleClose"
+                    style="-fx-background-color:transparent; -fx-text-fill:rgba(255,255,255,0.65);
+                           -fx-font-size:16px; -fx-cursor:hand;"/>
+        </HBox>
+
+        <!-- ════ Body ════ -->
+        <VBox spacing="0">
+
+            <!-- ── INPUT STATE ── -->
+            <VBox fx:id="inputBox" spacing="18" visible="true" managed="true"
+                  style="-fx-padding: 26 28 24 28;">
+
+                <Label text="Enter the funding amount in TND to instantly convert it to USD and EUR."
+                       wrapText="true"
+                       style="-fx-text-fill:rgba(186,230,253,0.80); -fx-font-size:12.5px;"/>
+
+                <!-- Amount field -->
+                <VBox spacing="5">
+                    <Label text="Funding Amount (TND)"
+                           style="-fx-text-fill:#7dd3fc; -fx-font-weight:700; -fx-font-size:12px;"/>
+                    <TextField fx:id="tfAmount" promptText="e.g. 250000"
+                               style="-fx-background-color:rgba(255,255,255,0.07); -fx-text-fill:white;
+                                      -fx-prompt-text-fill:rgba(125,211,252,0.45);
+                                      -fx-border-color:rgba(125,211,252,0.35); -fx-border-radius:10;
+                                      -fx-background-radius:10; -fx-padding:10 14; -fx-font-size:14px;"/>
+                    <Label fx:id="errAmount" text=""
+                           style="-fx-text-fill:#f87171; -fx-font-size:10.5px; -fx-font-weight:700;"/>
+                </VBox>
+
+                <!-- Buttons -->
+                <HBox spacing="12" alignment="CENTER_RIGHT">
+                    <Button text="Cancel" onAction="#handleClose"
+                            style="-fx-background-color:rgba(255,255,255,0.07); -fx-text-fill:#7dd3fc;
+                                   -fx-background-radius:10; -fx-padding:10 22; -fx-font-weight:600; -fx-cursor:hand;"/>
+                    <Button fx:id="btnConvert" text="💱  Convert" onAction="#handleConvert"
+                            style="-fx-background-color:linear-gradient(to right,#0369a1,#0284c7);
+                                   -fx-text-fill:white; -fx-background-radius:10; -fx-padding:10 22;
+                                   -fx-font-weight:700; -fx-cursor:hand;"/>
+                </HBox>
+            </VBox>
+
+            <!-- ── LOADING STATE ── -->
+            <VBox fx:id="loadingBox" alignment="CENTER" spacing="16"
+                  visible="false" managed="false"
+                  style="-fx-padding: 52 28;">
+                <ProgressIndicator
+                        style="-fx-accent:#0284c7;" prefWidth="48" prefHeight="48"/>
+                <Label text="Fetching live exchange rates…"
+                       style="-fx-text-fill:#7dd3fc; -fx-font-size:13px; -fx-font-weight:600;"/>
+            </VBox>
+
+            <!-- ── RESULT STATE ── -->
+            <VBox fx:id="resultBox" spacing="16" visible="false" managed="false"
+                  style="-fx-padding: 22 28 26 28;">
+
+                <!-- Source amount badge -->
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="Converting:"
+                           style="-fx-text-fill:rgba(186,230,253,0.7); -fx-font-size:12px;"/>
+                    <Label fx:id="lblSourceAmount"  text=""
+                           style="-fx-text-fill:#38bdf8; -fx-font-size:14px; -fx-font-weight:800;"/>
+                </HBox>
+
+                <!-- USD card -->
+                <VBox spacing="6"
+                      style="-fx-background-color:rgba(2,132,199,0.12);
+                             -fx-background-radius:14; -fx-padding:14 18;
+                             -fx-border-color:rgba(2,132,199,0.35); -fx-border-radius:14;">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="🇺🇸" style="-fx-font-size:22px;"/>
+                        <VBox spacing="2">
+                            <Label text="US Dollar (USD)"
+                                   style="-fx-text-fill:rgba(186,230,253,0.75); -fx-font-size:11px; -fx-font-weight:600;"/>
+                            <Label fx:id="lblUSD" text="—"
+                                   style="-fx-text-fill:white; -fx-font-size:22px; -fx-font-weight:800;"/>
+                        </VBox>
+                    </HBox>
+                    <Label fx:id="lblRateUSD" text=""
+                           style="-fx-text-fill:rgba(125,211,252,0.65); -fx-font-size:10.5px;"/>
+                </VBox>
+
+                <!-- EUR card -->
+                <VBox spacing="6"
+                      style="-fx-background-color:rgba(79,70,229,0.12);
+                             -fx-background-radius:14; -fx-padding:14 18;
+                             -fx-border-color:rgba(79,70,229,0.35); -fx-border-radius:14;">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="🇪🇺" style="-fx-font-size:22px;"/>
+                        <VBox spacing="2">
+                            <Label text="Euro (EUR)"
+                                   style="-fx-text-fill:rgba(196,181,253,0.75); -fx-font-size:11px; -fx-font-weight:600;"/>
+                            <Label fx:id="lblEUR" text="—"
+                                   style="-fx-text-fill:white; -fx-font-size:22px; -fx-font-weight:800;"/>
+                        </VBox>
+                    </HBox>
+                    <Label fx:id="lblRateEUR" text=""
+                           style="-fx-text-fill:rgba(167,139,250,0.65); -fx-font-size:10.5px;"/>
+                </VBox>
+
+                <!-- Last updated label -->
+                <Label fx:id="lblUpdated" text=""
+                       style="-fx-text-fill:rgba(148,163,184,0.55); -fx-font-size:10px;"/>
+
+                <!-- Action buttons -->
+                <HBox spacing="12" alignment="CENTER_RIGHT">
+                    <Button text="↺  Convert Another" onAction="#handleReset"
+                            style="-fx-background-color:rgba(255,255,255,0.07); -fx-text-fill:#7dd3fc;
+                                   -fx-background-radius:10; -fx-padding:10 18; -fx-font-weight:600; -fx-cursor:hand;"/>
+                    <Button text="Close" onAction="#handleClose"
+                            style="-fx-background-color:linear-gradient(to right,#0369a1,#0284c7);
+                                   -fx-text-fill:white; -fx-background-radius:10; -fx-padding:10 22;
+                                   -fx-font-weight:700; -fx-cursor:hand;"/>
+                </HBox>
+            </VBox>
+
+        </VBox>
+    </VBox>
+</StackPane>
+

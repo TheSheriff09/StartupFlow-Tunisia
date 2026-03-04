@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Funding Simulation popup overlay.
+    Injected into the scene's modalLayer StackPane by FundingSimulationController.show().
+-->
+<StackPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.GUI.popup.FundingSimulationController"
+        fx:id="overlayRoot"
+        style="-fx-background-color: rgba(15,10,40,0.72);"
+        onMouseClicked="#handleOverlayClick">
+
+    <VBox
+            fx:id="modalCard"
+            styleClass="modal-card"
+            alignment="TOP_LEFT"
+            spacing="0"
+            maxWidth="460"
+            maxHeight="620"
+            style="-fx-background-color: #1a0f3c; -fx-background-radius: 22; -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.45), 32, 0, 0, 8);">
+
+        <!-- Title bar -->
+        <HBox fx:id="titleBar" alignment="CENTER_LEFT" spacing="12"
+              style="-fx-background-color: linear-gradient(to right,#7c3aed,#4f46e5); -fx-background-radius: 22 22 0 0; -fx-padding: 20 28 20 28;">
+            <Label text="💰" style="-fx-font-size:22px;"/>
+            <Label text="Funding Simulation" style="-fx-font-size:17px; -fx-font-weight:700; -fx-text-fill:white;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnClose" text="✕" onAction="#handleClose"
+                    style="-fx-background-color:transparent; -fx-text-fill:rgba(255,255,255,0.7); -fx-font-size:16px; -fx-cursor:hand;"/>
+        </HBox>
+
+        <!-- Body -->
+        <VBox spacing="18" style="-fx-padding: 28 28 24 28;">
+
+            <!-- Description -->
+            <Label text="Enter your funding parameters to simulate your startup's financial runway."
+                   wrapText="true"
+                   style="-fx-text-fill:rgba(200,185,255,0.85); -fx-font-size:12.5px;"/>
+
+            <!-- Requested Funding -->
+            <VBox spacing="4">
+                <Label text="Requested Funding ($)" style="-fx-text-fill:#c4b5fd; -fx-font-weight:700; -fx-font-size:12px;"/>
+                <TextField fx:id="tfFunding" promptText="e.g. 200000"
+                           style="-fx-background-color:rgba(255,255,255,0.08); -fx-text-fill:white; -fx-prompt-text-fill:rgba(196,181,253,0.5);
+                                  -fx-border-color:rgba(167,139,250,0.4); -fx-border-radius:10; -fx-background-radius:10; -fx-padding:10 14;"/>
+                <Label fx:id="errFunding" text="" style="-fx-text-fill:#f87171; -fx-font-size:10.5px; -fx-font-weight:700;"/>
+            </VBox>
+
+            <!-- Monthly Expenses -->
+            <VBox spacing="4">
+                <Label text="Monthly Expenses ($)" style="-fx-text-fill:#c4b5fd; -fx-font-weight:700; -fx-font-size:12px;"/>
+                <TextField fx:id="tfExpenses" promptText="e.g. 30000"
+                           style="-fx-background-color:rgba(255,255,255,0.08); -fx-text-fill:white; -fx-prompt-text-fill:rgba(196,181,253,0.5);
+                                  -fx-border-color:rgba(167,139,250,0.4); -fx-border-radius:10; -fx-background-radius:10; -fx-padding:10 14;"/>
+                <Label fx:id="errExpenses" text="" style="-fx-text-fill:#f87171; -fx-font-size:10.5px; -fx-font-weight:700;"/>
+            </VBox>
+
+            <!-- Expected Monthly Revenue -->
+            <VBox spacing="4">
+                <Label text="Expected Monthly Revenue ($)" style="-fx-text-fill:#c4b5fd; -fx-font-weight:700; -fx-font-size:12px;"/>
+                <TextField fx:id="tfRevenue" promptText="e.g. 15000"
+                           style="-fx-background-color:rgba(255,255,255,0.08); -fx-text-fill:white; -fx-prompt-text-fill:rgba(196,181,253,0.5);
+                                  -fx-border-color:rgba(167,139,250,0.4); -fx-border-radius:10; -fx-background-radius:10; -fx-padding:10 14;"/>
+                <Label fx:id="errRevenue" text="" style="-fx-text-fill:#f87171; -fx-font-size:10.5px; -fx-font-weight:700;"/>
+            </VBox>
+
+            <!-- Result card (hidden until simulation runs) -->
+            <VBox fx:id="resultBox" spacing="10" visible="false" managed="false"
+                  style="-fx-background-color:rgba(255,255,255,0.06); -fx-background-radius:14; -fx-padding:16 18; -fx-border-color:rgba(167,139,250,0.25); -fx-border-radius:14;">
+                <Label text="Simulation Result" style="-fx-text-fill:#a78bfa; -fx-font-weight:700; -fx-font-size:12px;"/>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label fx:id="lblStatusIcon" text="✅" style="-fx-font-size:20px;"/>
+                    <Label fx:id="lblStatus" text="" style="-fx-font-size:15px; -fx-font-weight:800;"/>
+                </HBox>
+                <Label fx:id="lblBurnRate"  text="" style="-fx-text-fill:rgba(220,210,255,0.9); -fx-font-size:12px;"/>
+                <Label fx:id="lblRunway"    text="" style="-fx-text-fill:rgba(220,210,255,0.9); -fx-font-size:12px;"/>
+                <Label fx:id="lblSummary"   text="" wrapText="true" style="-fx-text-fill:rgba(180,166,255,0.75); -fx-font-size:11px;"/>
+            </VBox>
+
+            <!-- Buttons -->
+            <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding:8 0 0 0;">
+                <Button text="Cancel" onAction="#handleClose"
+                        style="-fx-background-color:rgba(255,255,255,0.07); -fx-text-fill:#a78bfa; -fx-background-radius:10; -fx-padding:10 22; -fx-font-weight:600; -fx-cursor:hand;"/>
+                <Button fx:id="btnSimulate" text="▶  Simulate" onAction="#handleSimulate"
+                        style="-fx-background-color:linear-gradient(to right,#7c3aed,#4f46e5); -fx-text-fill:white; -fx-background-radius:10; -fx-padding:10 22; -fx-font-weight:700; -fx-cursor:hand;"/>
+            </HBox>
+
+        </VBox>
+    </VBox>
+</StackPane>
+

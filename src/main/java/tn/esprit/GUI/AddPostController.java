@@ -12,7 +12,6 @@ import tn.esprit.entities.ForumPost;
 import tn.esprit.Services.ForumPostService;
 import tn.esprit.entities.User;
 import tn.esprit.utils.AudioCapture;
-import tn.esprit.utils.CurrentUserSession;
 import org.vosk.Model;
 import org.vosk.Recognizer;
 import com.google.gson.JsonObject;
@@ -84,7 +83,7 @@ public class AddPostController {
         post.setContent(content);
         post.setCreatedAt(LocalDateTime.now());
 
-        User activeUser = CurrentUserSession.user;
+        User activeUser = tn.esprit.utils.SessionManager.getUser();
         if (activeUser != null) {
             post.setUserId(activeUser.getId());
             // Admin Authorship logic

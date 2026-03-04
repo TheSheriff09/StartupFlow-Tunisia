@@ -18,38 +18,56 @@ import tn.esprit.Services.ReclamationService;
 import tn.esprit.Services.ResponseService;
 import tn.esprit.entities.Reclamation;
 import tn.esprit.entities.Response;
-import tn.esprit.utils.CurrentUserSession;
+import tn.esprit.utils.SessionManager;
 
 import java.net.URL;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import tn.esprit.utils.NavContext;
+import tn.esprit.utils.NavigationManager;
 
 public class ReclamationEntrepreneurController {
 
-    @FXML private TableView<Reclamation> table;
+    @FXML
+    private TableView<Reclamation> table;
 
-    @FXML private TableColumn<Reclamation, String> colId;
-    @FXML private TableColumn<Reclamation, String> colTitle;
-    @FXML private TableColumn<Reclamation, String> colDescription;
-    @FXML private TableColumn<Reclamation, String> colStatus;
-    @FXML private TableColumn<Reclamation, String> colTarget;
-    @FXML private TableColumn<Reclamation, String> colCreated;
-    @FXML private TableColumn<Reclamation, Void> colActions;
+    @FXML
+    private TableColumn<Reclamation, String> colId;
+    @FXML
+    private TableColumn<Reclamation, String> colTitle;
+    @FXML
+    private TableColumn<Reclamation, String> colDescription;
+    @FXML
+    private TableColumn<Reclamation, String> colStatus;
+    @FXML
+    private TableColumn<Reclamation, String> colTarget;
+    @FXML
+    private TableColumn<Reclamation, String> colCreated;
+    @FXML
+    private TableColumn<Reclamation, Void> colActions;
 
-    @FXML private TextField searchField;
-    @FXML private Label lblInfo;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private Label lblInfo;
 
-    @FXML private ComboBox<String> cbTitle;
-    @FXML private TextArea taDescription;
-    @FXML private TextField tfTargetId;
+    @FXML
+    private ComboBox<String> cbTitle;
+    @FXML
+    private TextArea taDescription;
+    @FXML
+    private TextField tfTargetId;
 
     // Responses
-    @FXML private TableView<Response> responsesTable;
-    @FXML private TableColumn<Response, String> colRespCreated;
-    @FXML private TableColumn<Response, String> colRespContent;
-    @FXML private Label lblRespInfo;
+    @FXML
+    private TableView<Response> responsesTable;
+    @FXML
+    private TableColumn<Response, String> colRespCreated;
+    @FXML
+    private TableColumn<Response, String> colRespContent;
+    @FXML
+    private Label lblRespInfo;
 
     private final ReclamationService service = new ReclamationService();
     private final ResponseService responseService = new ResponseService();
@@ -59,8 +77,8 @@ public class ReclamationEntrepreneurController {
 
     private FilteredList<Reclamation> filtered;
 
-    private final ObservableList<String> titles =
-            FXCollections.observableArrayList("USER_PROBLEM","SYSTEM_PROBLEM","SELF_PROBLEM","OTHER");
+    private final ObservableList<String> titles = FXCollections.observableArrayList("USER_PROBLEM", "SYSTEM_PROBLEM",
+            "SELF_PROBLEM", "OTHER");
 
     @FXML
     private void initialize() {
@@ -69,12 +87,14 @@ public class ReclamationEntrepreneurController {
 
         cbTitle.setItems(titles);
         cbTitle.getSelectionModel().selectFirst();
-        if (cbTitle.getValue() == null) cbTitle.setValue("SYSTEM_PROBLEM");
+        if (cbTitle.getValue() == null)
+            cbTitle.setValue("SYSTEM_PROBLEM");
 
         cbTitle.valueProperty().addListener((obs, o, n) -> {
             boolean allow = "USER_PROBLEM".equalsIgnoreCase(n);
             tfTargetId.setDisable(!allow);
-            if (!allow) tfTargetId.clear();
+            if (!allow)
+                tfTargetId.clear();
         });
         tfTargetId.setDisable(true);
 
@@ -89,7 +109,8 @@ public class ReclamationEntrepreneurController {
         table.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, sel) -> {
             if (sel == null) {
                 respMaster.clear();
-                if (lblRespInfo != null) lblRespInfo.setText("Select a reclamation to view replies.");
+                if (lblRespInfo != null)
+                    lblRespInfo.setText("Select a reclamation to view replies.");
                 return;
             }
             loadResponses(sel.getId());
@@ -97,7 +118,8 @@ public class ReclamationEntrepreneurController {
     }
 
     private void setupResponsesTable() {
-        if (responsesTable == null) return;
+        if (responsesTable == null)
+            return;
 
         colRespCreated.setCellValueFactory(cd -> new SimpleStringProperty(formatTs(cd.getValue().getCreatedAt())));
         colRespContent.setCellValueFactory(cd -> new SimpleStringProperty(ns(cd.getValue().getContent())));
@@ -109,7 +131,8 @@ public class ReclamationEntrepreneurController {
     private void loadResponses(int reclamationId) {
         respMaster.clear();
         respMaster.addAll(responseService.listByReclamationId(reclamationId));
-        if (lblRespInfo != null) lblRespInfo.setText("Replies: " + respMaster.size());
+        if (lblRespInfo != null)
+            lblRespInfo.setText("Replies: " + respMaster.size());
         responsesTable.refresh();
     }
 
@@ -118,13 +141,13 @@ public class ReclamationEntrepreneurController {
         colTitle.setCellValueFactory(cd -> new SimpleStringProperty(ns(cd.getValue().getTitle())));
         colStatus.setCellValueFactory(cd -> new SimpleStringProperty(ns(cd.getValue().getStatus())));
         colTarget.setCellValueFactory(cd -> new SimpleStringProperty(
-                cd.getValue().getTargetId() == null ? "" : String.valueOf(cd.getValue().getTargetId())
-        ));
+                cd.getValue().getTargetId() == null ? "" : String.valueOf(cd.getValue().getTargetId())));
         colCreated.setCellValueFactory(cd -> new SimpleStringProperty(formatTs(cd.getValue().getCreatedAt())));
 
         colDescription.setCellValueFactory(cd -> new SimpleStringProperty(ns(cd.getValue().getDescription())));
         colDescription.setCellFactory(TextFieldTableCell.forTableColumn());
-        colDescription.setOnEditCommit(e -> { /* ignore inline edit */ });
+        colDescription.setOnEditCommit(e -> {
+            /* ignore inline edit */ });
 
         colActions.setCellFactory(tc -> new TableCell<>() {
 
@@ -156,7 +179,7 @@ public class ReclamationEntrepreneurController {
 
     private void loadMine() {
         master.clear();
-        int myId = CurrentUserSession.user.getId();
+        int myId = SessionManager.getUser().getId();
 
         master.addAll(service.listByRequester(myId));
         lblInfo.setText("Total: " + master.size());
@@ -167,7 +190,8 @@ public class ReclamationEntrepreneurController {
         String query = (q == null) ? "" : q.trim().toLowerCase(Locale.ROOT);
 
         filtered.setPredicate(r -> {
-            if (query.isEmpty()) return true;
+            if (query.isEmpty())
+                return true;
             return ns(r.getTitle()).toLowerCase(Locale.ROOT).contains(query)
                     || ns(r.getDescription()).toLowerCase(Locale.ROOT).contains(query)
                     || ns(r.getStatus()).toLowerCase(Locale.ROOT).contains(query);
@@ -182,7 +206,8 @@ public class ReclamationEntrepreneurController {
         loadMine();
         applyFilter(searchField.getText());
 
-        if (selected != null) loadResponses(selected.getId());
+        if (selected != null)
+            loadResponses(selected.getId());
     }
 
     @FXML
@@ -215,7 +240,7 @@ public class ReclamationEntrepreneurController {
             }
         }
 
-        int myId = CurrentUserSession.user.getId();
+        int myId = SessionManager.getUser().getId();
 
         Reclamation r = new Reclamation(type, desc, myId, targetId);
         System.out.println("Reclamation title before add = " + r.getTitle());
@@ -234,7 +259,8 @@ public class ReclamationEntrepreneurController {
     }
 
     private void editDescription(Reclamation r) {
-        if (r == null) return;
+        if (r == null)
+            return;
 
         TextArea area = new TextArea(ns(r.getDescription()));
         area.setWrapText(true);
@@ -245,7 +271,8 @@ public class ReclamationEntrepreneurController {
         d.getDialogPane().setContent(area);
         d.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        if (d.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) return;
+        if (d.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK)
+            return;
 
         String newDesc = area.getText() == null ? "" : area.getText().trim();
         if (newDesc.isEmpty()) {
@@ -253,7 +280,7 @@ public class ReclamationEntrepreneurController {
             return;
         }
 
-        int myId = CurrentUserSession.user.getId();
+        int myId = SessionManager.getUser().getId();
         boolean ok = service.updateDescription(r.getId(), myId, newDesc);
 
         if (ok) {
@@ -266,21 +293,24 @@ public class ReclamationEntrepreneurController {
     }
 
     private void deleteReclamation(Reclamation r) {
-        if (r == null) return;
+        if (r == null)
+            return;
 
         Alert a = new Alert(Alert.AlertType.CONFIRMATION);
         a.setTitle("Delete");
         a.setHeaderText("Delete reclamation #" + r.getId() + "?");
         a.setContentText("This cannot be undone.");
 
-        if (a.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) return;
+        if (a.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK)
+            return;
 
-        int myId = CurrentUserSession.user.getId();
+        int myId = SessionManager.getUser().getId();
         boolean ok = service.deleteById(r.getId(), myId);
 
         if (ok) {
             respMaster.clear();
-            if (lblRespInfo != null) lblRespInfo.setText("Select a reclamation to view replies.");
+            if (lblRespInfo != null)
+                lblRespInfo.setText("Select a reclamation to view replies.");
             refresh();
             toast("Deleted");
         } else {
@@ -307,13 +337,14 @@ public class ReclamationEntrepreneurController {
         }
     }
 
-
-
     @FXML
     private void goBack(ActionEvent e) {
         goTo(e, NavContext.backFxml);
     }
-    private void toast(String msg) { lblInfo.setText(msg); }
+
+    private void toast(String msg) {
+        lblInfo.setText(msg);
+    }
 
     private void alert(String title, String msg) {
         Alert a = new Alert(Alert.AlertType.INFORMATION);
@@ -323,10 +354,13 @@ public class ReclamationEntrepreneurController {
         a.showAndWait();
     }
 
-    private String ns(String s) { return (s == null) ? "" : s; }
+    private String ns(String s) {
+        return (s == null) ? "" : s;
+    }
 
     private String formatTs(Timestamp ts) {
-        if (ts == null) return "";
+        if (ts == null)
+            return "";
         return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(ts);
     }
 }

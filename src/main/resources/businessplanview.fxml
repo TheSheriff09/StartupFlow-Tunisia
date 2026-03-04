@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Root StackPane lets us layer the modal overlay on top of the dashboard
+    without touching the dashboard layout.
+-->
+<StackPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.GUI.businessplan.BusinessPlanViewController"
+        stylesheets="@styles.css">
+
+<BorderPane
+        fx:id="mainContent"
+        styleClass="root-pane-bp">
+
+    <!-- ═══════ TOP BAR (matches startup navbar style) ═══════ -->
+    <top>
+        <HBox styleClass="topbar-bp" alignment="CENTER_LEFT" spacing="0">
+
+            <!-- Back + startup name -->
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <Button
+                        text="←  Back"
+                        styleClass="btn-back"
+                        onAction="#goBack"/>
+                <VBox spacing="1">
+                    <Label fx:id="lblStartupName"
+                           text="Business Plans"
+                           styleClass="bp-view-header"/>
+                </VBox>
+            </HBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Search + sort -->
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <TextField
+                        fx:id="searchField"
+                        promptText="🔍  Search plans…"
+                        styleClass="search-field"
+                        prefWidth="240"/>
+                <ComboBox
+                        fx:id="sortCombo"
+                        promptText="Sort by…"
+                        onAction="#onSortChanged"
+                        prefWidth="180"
+                        styleClass="search-field"/>
+            </HBox>
+            <HBox.margin><Insets right="20"/></HBox.margin>
+
+            <!-- Count badge + theme toggle -->
+            <Button fx:id="themeToggle" text="☀" styleClass="theme-toggle"
+                    onAction="#toggleTheme">
+                <HBox.margin><Insets right="10"/></HBox.margin>
+            </Button>
+            <Label fx:id="lblCount" text="0 plans" styleClass="count-badge-bp"/>
+        </HBox>
+    </top>
+
+    <!-- ═══════ BOARD PANEL + CARDS ═══════ -->
+    <center>
+        <StackPane>
+            <padding>
+                <Insets top="14" right="36" bottom="14" left="36"/>
+            </padding>
+            <VBox styleClass="board-panel">
+                <ScrollPane fitToWidth="true" styleClass="scroll-area-bp" VBox.vgrow="ALWAYS">
+                    <FlowPane
+                            fx:id="cardsContainer"
+                            hgap="24" vgap="24"
+                            styleClass="cards-pane-bp">
+                        <padding>
+                            <Insets top="30" right="30" bottom="30" left="30"/>
+                        </padding>
+                    </FlowPane>
+                </ScrollPane>
+            </VBox>
+        </StackPane>
+    </center>
+
+    <!-- ═══════ FAB ═══════ -->
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" styleClass="fab-bar-bp">
+            <Button
+                    fx:id="fabBtn"
+                    text="＋"
+                    styleClass="fab-btn-bp"
+                    onAction="#openAddDialog"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
+
+<!-- Modal overlay layer — populated at runtime by BusinessPlanViewController -->
+<StackPane
+        fx:id="modalLayer"
+        visible="false"
+        managed="false"
+        maxWidth="Infinity"
+        maxHeight="Infinity"
+        StackPane.alignment="CENTER"/>
+
+</StackPane>
+

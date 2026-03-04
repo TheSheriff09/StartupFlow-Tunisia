@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.GUI.ApplicationController"
+            prefWidth="1300" prefHeight="850">
+
+    <top>
+        <VBox spacing="10" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="15" right="15" bottom="10" left="15"/>
+            </padding>
+
+            <Label text="Funding Applications" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Search:"/>
+                <TextField fx:id="searchField" promptText="Search..." prefWidth="400"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <SplitPane dividerPositions="0.42">
+            <!-- Left: Form -->
+            <ScrollPane fitToWidth="true">
+                <content>
+                    <VBox spacing="10">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+
+                        <GridPane hgap="10" vgap="10">
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="35"/>
+                                <ColumnConstraints percentWidth="65"/>
+                            </columnConstraints>
+
+                            <Label text="Entrepreneur ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                            <TextField fx:id="txtEntrepreneurId" promptText="Must exist in users.id"
+                                       GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                            <Label text="Amount:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                            <TextField fx:id="txtAmount" promptText="e.g. 1200.50"
+                                       GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                            <Label text="Status:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                            <TextField fx:id="txtStatus" promptText="Pending / Approved / Rejected"
+                                       GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                            <Label text="Submission Date:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                            <TextField fx:id="txtSubmissionDate" promptText="YYYY-MM-DD"
+                                       GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                            <Label text="Reason:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                            <TextField fx:id="txtApplicationReason" promptText="Why you need funding"
+                                       GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                            <Label text="Project ID:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                            <TextField fx:id="txtProjectId" promptText="Project ID"
+                                       GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+                            <Label text="Payment Schedule:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                            <TextField fx:id="txtPaymentSchedule" promptText="e.g. Monthly"
+                                       GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+                            <Label text="Attachment:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+                            <HBox spacing="8" GridPane.rowIndex="7" GridPane.columnIndex="1">
+                                <TextField fx:id="txtAttachment" promptText="Path..." HBox.hgrow="ALWAYS"/>
+                                <Button text="Browse" onAction="#browseAttachment"/>
+                            </HBox>
+                        </GridPane>
+
+                        <Separator/>
+
+                        <!-- Improve text -->
+                        <HBox spacing="10">
+                            <Button text="Improve Reason" onAction="#improveApplicationReason"/>
+                        </HBox>
+
+                        <Separator/>
+
+                        <!-- Currency conversion -->
+                        <Label text="Currency Converter" style="-fx-font-weight: bold;"/>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <ComboBox fx:id="cmbFromCurrency" prefWidth="110"/>
+                            <ComboBox fx:id="cmbToCurrency" prefWidth="110"/>
+                            <Button text="Convert" onAction="#convertAmount"/>
+                            <TextField fx:id="txtConvertedAmount" promptText="Converted"
+                                       prefWidth="180" editable="false"/>
+                        </HBox>
+
+                        <Separator/>
+
+                        <!-- CRUD Buttons -->
+                        <HBox spacing="10">
+                            <Button text="Add" onAction="#addApplication"/>
+                            <Button text="Update" onAction="#updateApplication"/>
+                            <Button text="Delete" onAction="#deleteApplication"/>
+                            <Button text="Clear" onAction="#clearForm"/>
+                        </HBox>
+
+                        <Separator/>
+
+                        <!-- NEW: Back to dashboard -->
+                        <HBox spacing="10">
+                            <Button text="Back to Dashboard" onAction="#backToDashboard"/>
+                        </HBox>
+
+                        <Label text="Tip: entrepreneurId must exist in users.id (foreign key)."
+                               style="-fx-text-fill: #666;"/>
+                    </VBox>
+                </content>
+            </ScrollPane>
+
+            <!-- Right: Table -->
+            <VBox spacing="10">
+                <padding>
+                    <Insets top="15" right="15" bottom="15" left="15"/>
+                </padding>
+
+                <Label text="Applications" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <TableView fx:id="tableApplications" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                        <TableColumn fx:id="colEntrepreneurId" text="Entrepreneur" prefWidth="110"/>
+                        <TableColumn fx:id="colAmount" text="Amount" prefWidth="90"/>
+                        <TableColumn fx:id="colStatus" text="Status" prefWidth="120"/>
+                        <TableColumn fx:id="colSubmissionDate" text="Date" prefWidth="110"/>
+                        <TableColumn fx:id="colApplicationReason" text="Reason" prefWidth="200"/>
+                        <TableColumn fx:id="colProjectId" text="Project" prefWidth="80"/>
+                        <TableColumn fx:id="colPaymentSchedule" text="Schedule" prefWidth="140"/>
+                        <TableColumn fx:id="colAttachment" text="Attachment" prefWidth="220"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </SplitPane>
+    </center>
+</BorderPane>

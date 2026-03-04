@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    AI Financial Forecast popup overlay.
+    Open via: FinancialForecastController.show(modalLayer, blurTarget)
+
+    Three internal states managed by the controller:
+      INPUT   – form with 3 numeric fields
+      LOADING – spinner while Gemini API call runs on background thread
+      RESULT  – scrollable forecast table + investment recommendation
+-->
+<StackPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.GUI.popup.FinancialForecastController"
+        fx:id="overlayRoot"
+        style="-fx-background-color: rgba(15,10,40,0.76);"
+        onMouseClicked="#handleOverlayClick">
+
+    <VBox
+            fx:id="modalCard"
+            alignment="TOP_LEFT"
+            spacing="0"
+            maxWidth="540"
+            minWidth="440"
+            style="-fx-background-color: #1a0f3c; -fx-background-radius: 22;
+                   -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.50), 36, 0, 0, 10);">
+
+        <!-- ════ Title bar ════ -->
+        <HBox alignment="CENTER_LEFT" spacing="12"
+              style="-fx-background-color: linear-gradient(to right,#059669,#0d9488);
+                     -fx-background-radius: 22 22 0 0; -fx-padding: 20 28 20 28;">
+            <Label text="📈" style="-fx-font-size:22px;"/>
+            <VBox spacing="1">
+                <Label text="AI Financial Forecast"
+                       style="-fx-font-size:16px; -fx-font-weight:800; -fx-text-fill:white;"/>
+                <Label text="12-month projection + investment recommendation"
+                       style="-fx-font-size:11px; -fx-text-fill:rgba(200,255,240,0.75);"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="✕" onAction="#handleClose"
+                    style="-fx-background-color:transparent; -fx-text-fill:rgba(255,255,255,0.65);
+                           -fx-font-size:16px; -fx-cursor:hand;"/>
+        </HBox>
+
+        <!-- ════ Body ════ -->
+        <VBox spacing="0" VBox.vgrow="ALWAYS">
+
+            <!-- ── INPUT STATE ── -->
+            <VBox fx:id="inputBox" spacing="18" visible="true" managed="true"
+                  style="-fx-padding: 26 28 24 28;">
+
+                <Label text="Enter your startup's financial parameters to generate a 12-month AI-powered forecast."
+                       wrapText="true"
+                       style="-fx-text-fill:rgba(200,255,240,0.80); -fx-font-size:12.5px;"/>
+
+                <!-- Monthly Revenue -->
+                <VBox spacing="5">
+                    <Label text="Current Monthly Revenue (TND)"
+                           style="-fx-text-fill:#6ee7b7; -fx-font-weight:700; -fx-font-size:12px;"/>
+                    <TextField fx:id="tfRevenue" promptText="e.g. 15000"
+                               style="-fx-background-color:rgba(255,255,255,0.07); -fx-text-fill:white;
+                                      -fx-prompt-text-fill:rgba(110,231,183,0.45);
+                                      -fx-border-color:rgba(110,231,183,0.35); -fx-border-radius:10;
+                                      -fx-background-radius:10; -fx-padding:10 14;"/>
+                    <Label fx:id="errRevenue" text=""
+                           style="-fx-text-fill:#f87171; -fx-font-size:10.5px; -fx-font-weight:700;"/>
+                </VBox>
+
+                <!-- Growth Rate -->
+                <VBox spacing="5">
+                    <Label text="Expected Monthly Growth Rate (%)"
+                           style="-fx-text-fill:#6ee7b7; -fx-font-weight:700; -fx-font-size:12px;"/>
+                    <TextField fx:id="tfGrowthRate" promptText="e.g. 5"
+                               style="-fx-background-color:rgba(255,255,255,0.07); -fx-text-fill:white;
+                                      -fx-prompt-text-fill:rgba(110,231,183,0.45);
+                                      -fx-border-color:rgba(110,231,183,0.35); -fx-border-radius:10;
+                                      -fx-background-radius:10; -fx-padding:10 14;"/>
+                    <Label fx:id="errGrowthRate" text=""
+                           style="-fx-text-fill:#f87171; -fx-font-size:10.5px; -fx-font-weight:700;"/>
+                </VBox>
+
+                <!-- Monthly Expenses -->
+                <VBox spacing="5">
+                    <Label text="Monthly Expenses (TND)"
+                           style="-fx-text-fill:#6ee7b7; -fx-font-weight:700; -fx-font-size:12px;"/>
+                    <TextField fx:id="tfExpenses" promptText="e.g. 8000"
+                               style="-fx-background-color:rgba(255,255,255,0.07); -fx-text-fill:white;
+                                      -fx-prompt-text-fill:rgba(110,231,183,0.45);
+                                      -fx-border-color:rgba(110,231,183,0.35); -fx-border-radius:10;
+                                      -fx-background-radius:10; -fx-padding:10 14;"/>
+                    <Label fx:id="errExpenses" text=""
+                           style="-fx-text-fill:#f87171; -fx-font-size:10.5px; -fx-font-weight:700;"/>
+                </VBox>
+
+                <!-- Buttons -->
+                <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding:6 0 0 0;">
+                    <Button text="Cancel" onAction="#handleClose"
+                            style="-fx-background-color:rgba(255,255,255,0.07); -fx-text-fill:#6ee7b7;
+                                   -fx-background-radius:10; -fx-padding:10 22; -fx-font-weight:600; -fx-cursor:hand;"/>
+                    <Button fx:id="btnGenerate" text="📈  Generate Forecast" onAction="#handleGenerate"
+                            style="-fx-background-color:linear-gradient(to right,#059669,#0d9488);
+                                   -fx-text-fill:white; -fx-background-radius:10; -fx-padding:10 22;
+                                   -fx-font-weight:700; -fx-cursor:hand;"/>
+                </HBox>
+            </VBox>
+
+            <!-- ── LOADING STATE ── -->
+            <VBox fx:id="loadingBox" alignment="CENTER" spacing="16"
+                  visible="false" managed="false"
+                  style="-fx-padding: 60 28 60 28;">
+                <ProgressIndicator
+                        style="-fx-accent:#10b981;" prefWidth="52" prefHeight="52"/>
+                <Label text="Generating your forecast…"
+                       style="-fx-text-fill:#6ee7b7; -fx-font-size:13.5px; -fx-font-weight:700;"/>
+                <Label text="Analyzing revenue projections and risk factors."
+                       style="-fx-text-fill:rgba(110,231,183,0.6); -fx-font-size:11.5px;"/>
+            </VBox>
+
+            <!-- ── RESULT STATE ── -->
+            <VBox fx:id="resultBox" spacing="14" visible="false" managed="false"
+                  style="-fx-padding: 22 28 24 28;">
+
+                <!-- Summary badges row -->
+                <HBox fx:id="badgeRow" spacing="10" alignment="CENTER_LEFT"/>
+
+                <!-- Forecast content in a ScrollPane -->
+                <ScrollPane fx:id="resultScroll" fitToWidth="true"
+                            prefHeight="340" maxHeight="420"
+                            style="-fx-background:transparent; -fx-background-color:transparent;
+                                   -fx-border-color:transparent;">
+                    <Label fx:id="lblForecast" text="" wrapText="true"
+                           style="-fx-text-fill:rgba(220,255,245,0.92); -fx-font-size:12px;
+                                  -fx-font-family:'Courier New', monospace; -fx-line-spacing:3;
+                                  -fx-background-color:rgba(255,255,255,0.04);
+                                  -fx-background-radius:12; -fx-padding:14 16;"/>
+                </ScrollPane>
+
+                <!-- Action buttons -->
+                <HBox spacing="12" alignment="CENTER_RIGHT">
+                    <Button text="↺  New Forecast" onAction="#handleNewForecast"
+                            style="-fx-background-color:rgba(255,255,255,0.07); -fx-text-fill:#6ee7b7;
+                                   -fx-background-radius:10; -fx-padding:10 22; -fx-font-weight:600; -fx-cursor:hand;"/>
+                    <Button fx:id="btnExport" text="📅  Export" onAction="#handleExport"
+                            style="-fx-background-color:linear-gradient(to right,#0369a1,#0284c7);
+                                   -fx-text-fill:white; -fx-background-radius:10; -fx-padding:10 22;
+                                   -fx-font-weight:700; -fx-cursor:hand;"/>
+                    <Button text="Close" onAction="#handleClose"
+                            style="-fx-background-color:linear-gradient(to right,#059669,#0d9488);
+                                   -fx-text-fill:white; -fx-background-radius:10; -fx-padding:10 22;
+                                   -fx-font-weight:700; -fx-cursor:hand;"/>
+                </HBox>
+            </VBox>
+
+        </VBox>
+    </VBox>
+</StackPane>
+

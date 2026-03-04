@@ -301,7 +301,6 @@ public class UserService implements ICRUD<User> {
     }
     public User addGoogleUser(String fullName, String email, String role) {
         try {
-            // Password is null/empty because Google handles authentication
             String sql = "INSERT INTO user (fullName, email, passwordHash, role, status, mentorExpertise, evaluatorLevel, createdAt) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
 

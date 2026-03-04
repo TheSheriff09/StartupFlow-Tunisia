@@ -1,177 +1,118 @@
-.root{
+.root {
     -fx-font-family: "Segoe UI", "Inter", Arial;
     -fx-background-color: #ffffff;
 }
 
-/* Sidebar */
-.sidebar{
-    -fx-background-color: #ffffff;
-    -fx-border-color: rgba(115,87,255,0.18);
-    -fx-border-width: 0 1 0 0;
-}
-.brand-title{
-    -fx-font-size: 22px;
-    -fx-font-weight: 800;
-    -fx-text-fill: #7357ff;
-}
-.brand-sub{
-    -fx-font-size: 16px;
-    -fx-font-weight: 600;
-    -fx-text-fill: #7357ff;
-    -fx-opacity: 0.85;
-}
-.sep{
-    -fx-opacity: 0.25;
-}
-
-.nav-btn{
-    -fx-background-color: transparent;
-    -fx-text-fill: #5a4bd6;
-    -fx-font-size: 14px;
-    -fx-font-weight: 600;
-    -fx-alignment: CENTER_LEFT;
-    -fx-padding: 10 12;
-    -fx-background-radius: 12;
-    -fx-cursor: hand;
-}
-.nav-btn:hover{
-    -fx-background-color: rgba(115,87,255,0.10);
-}
-.nav-btn.active{
-    -fx-background-color: rgba(115,87,255,0.16);
-    -fx-text-fill: #3f2dbb;
-}
-.nav-btn.logout{
-    -fx-text-fill: #ff2e6a;
-}
-.nav-btn.logout:hover{
-    -fx-background-color: rgba(255,46,106,0.10);
-}
-
-/* Top bar */
-.topbar{
-    -fx-background-color: #ffffff;
-    -fx-border-color: rgba(115,87,255,0.18);
-    -fx-border-width: 0 0 1 0;
-}
-.top-title{
-    -fx-font-size: 18px;
-    -fx-font-weight: 700;
-    -fx-text-fill: #7357ff;
-}
-.user-pill{
-    -fx-background-color: #7357ff;
-    -fx-text-fill: white;
-    -fx-font-weight: 700;
-    -fx-padding: 8 18;
-    -fx-background-radius: 999;
-    -fx-cursor: hand;
-}
-.user-pill:hover{
-    -fx-opacity: 0.92;
-}
-
 /* Main */
-.main{
+.main {
     -fx-background-color: #ffffff;
 }
 
 /* Glass card with soft gradient like your screenshot */
-.glass-card{
+.glass-card {
     -fx-background-radius: 28;
     -fx-background-insets: 0;
     -fx-background-color:
-            linear-gradient(to bottom right,
-            rgba(252,172,255,0.35),
-            rgba(115,87,255,0.28),
-            rgba(252,172,255,0.25)
-            );
-    -fx-effect: dropshadow(gaussian, rgba(115,87,255,0.20), 25, 0.2, 0, 8);
+        linear-gradient(to bottom right,
+            rgba(252, 172, 255, 0.35),
+            rgba(115, 87, 255, 0.28),
+            rgba(252, 172, 255, 0.25));
+    -fx-effect: dropshadow(gaussian, rgba(115, 87, 255, 0.20), 25, 0.2, 0, 8);
 }
-.card-content{
+
+.card-content {
     -fx-background-radius: 26;
 }
 
 /* Title */
-.hello{
+.hello {
     -fx-font-size: 52px;
     -fx-font-weight: 800;
     -fx-text-fill: #7357ff;
 }
-.title-line{
+
+.title-line {
     -fx-opacity: 0.35;
 }
 
 /* Section title */
-.section-title{
+.section-title {
     -fx-font-size: 16px;
     -fx-font-weight: 800;
     -fx-text-fill: #5a4bd6;
 }
 
 /* Status */
-.status-pill{
-    -fx-background-color: rgba(255,255,255,0.65);
+.status-pill {
+    -fx-background-color: rgba(255, 255, 255, 0.65);
     -fx-background-radius: 999;
     -fx-padding: 8 14;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0.2, 0, 4);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 12, 0.2, 0, 4);
 }
-.status-text{
+
+.status-text {
     -fx-text-fill: #7357ff;
     -fx-font-weight: 700;
 }
-.status-approved{
+
+.status-approved {
     -fx-text-fill: #2fbf71;
     -fx-font-weight: 800;
 }
 
 /* Chart */
-.chart{
-    -fx-background-color: rgba(255,255,255,0.60);
+.chart {
+    -fx-background-color: rgba(255, 255, 255, 0.60);
     -fx-background-radius: 18;
     -fx-padding: 10;
     -fx-border-radius: 18;
-    -fx-border-color: rgba(115,87,255,0.18);
+    -fx-border-color: rgba(115, 87, 255, 0.18);
 }
 
 /* Chips */
-.chips-row .chip{
-    -fx-background-color: rgba(255,255,255,0.55);
+.chips-row .chip {
+    -fx-background-color: rgba(255, 255, 255, 0.55);
     -fx-background-radius: 999;
     -fx-padding: 10 16;
-    -fx-border-color: rgba(115,87,255,0.16);
+    -fx-border-color: rgba(115, 87, 255, 0.16);
     -fx-border-radius: 999;
 }
-.chip-label{
+
+.chip-label {
     -fx-text-fill: #5a4bd6;
     -fx-font-weight: 700;
 }
-.chip-value{
+
+.chip-value {
     -fx-text-fill: #3f2dbb;
     -fx-font-weight: 900;
 }
 
 /* Action cards */
-.action-card{
-    -fx-background-color: rgba(255,255,255,0.58);
+.action-card {
+    -fx-background-color: rgba(255, 255, 255, 0.58);
     -fx-background-radius: 18;
     -fx-border-radius: 18;
-    -fx-border-color: rgba(115,87,255,0.18);
-    -fx-effect: dropshadow(gaussian, rgba(115,87,255,0.12), 16, 0.2, 0, 6);
+    -fx-border-color: rgba(115, 87, 255, 0.18);
+    -fx-effect: dropshadow(gaussian, rgba(115, 87, 255, 0.12), 16, 0.2, 0, 6);
 }
-.action-icon{
+
+.action-icon {
     -fx-font-size: 20px;
 }
-.action-title{
+
+.action-title {
     -fx-font-size: 14px;
     -fx-font-weight: 800;
     -fx-text-fill: #5a4bd6;
 }
-.action-sub{
+
+.action-sub {
     -fx-font-size: 12px;
-    -fx-text-fill: rgba(60,45,187,0.70);
+    -fx-text-fill: rgba(60, 45, 187, 0.70);
 }
-.action-btn{
+
+.action-btn {
     -fx-background-color: #7357ff;
     -fx-text-fill: white;
     -fx-font-weight: 800;
@@ -179,24 +120,27 @@
     -fx-background-radius: 12;
     -fx-cursor: hand;
 }
-.action-btn:hover{
+
+.action-btn:hover {
     -fx-opacity: 0.92;
 }
 
 /* User dropdown */
-.user-dropdown{
-    -fx-background-color: rgba(255,255,255,0.90);
+.user-dropdown {
+    -fx-background-color: rgba(255, 255, 255, 0.90);
     -fx-background-radius: 18;
     -fx-border-radius: 18;
-    -fx-border-color: rgba(115,87,255,0.18);
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 18, 0.25, 0, 8);
+    -fx-border-color: rgba(115, 87, 255, 0.18);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 18, 0.25, 0, 8);
 }
-.user-dd-title{
+
+.user-dd-title {
     -fx-font-size: 14px;
     -fx-font-weight: 900;
     -fx-text-fill: #7357ff;
 }
-.user-dd-btn{
+
+.user-dd-btn {
     -fx-background-color: transparent;
     -fx-text-fill: #5a4bd6;
     -fx-font-weight: 700;
@@ -205,12 +149,15 @@
     -fx-background-radius: 12;
     -fx-cursor: hand;
 }
-.user-dd-btn:hover{
-    -fx-background-color: rgba(115,87,255,0.10);
+
+.user-dd-btn:hover {
+    -fx-background-color: rgba(115, 87, 255, 0.10);
 }
-.user-dd-btn.danger{
+
+.user-dd-btn.danger {
     -fx-text-fill: #ff2e6a;
 }
-.user-dd-btn.danger:hover{
-    -fx-background-color: rgba(255,46,106,0.10);
+
+.user-dd-btn.danger:hover {
+    -fx-background-color: rgba(255, 46, 106, 0.10);
 }

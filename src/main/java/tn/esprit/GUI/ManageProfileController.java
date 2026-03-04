@@ -1,53 +1,58 @@
 package tn.esprit.GUI;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import tn.esprit.Services.UserService;
 import tn.esprit.entities.User;
-import tn.esprit.utils.CurrentUserSession;
+import tn.esprit.utils.NavigationManager;
+import tn.esprit.utils.NavContext;
+import tn.esprit.utils.SessionManager;
+import tn.esprit.utils.TopBarHelper;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import tn.esprit.utils.NavContext;
-
 
 public class ManageProfileController {
 
-    @FXML private TextField fullNameField;
-    @FXML private TextField emailField;
+    @FXML
+    private TextField fullNameField;
+    @FXML
+    private TextField emailField;
 
-    @FXML private PasswordField oldPasswordField;
-    @FXML private PasswordField newPasswordField;
+    @FXML
+    private PasswordField oldPasswordField;
+    @FXML
+    private PasswordField newPasswordField;
 
-    @FXML private TextField roleField;
-    @FXML private TextField createdAtField;
+    @FXML
+    private TextField roleField;
+    @FXML
+    private TextField createdAtField;
 
-    @FXML private Label msgLabel;
-    @FXML private MenuButton userMenuBtn;
-    @FXML private MenuItem miHeader;
+    @FXML
+    private Label msgLabel;
+    @FXML
+    private MenuButton userMenuBtn;
+
     private final UserService userService = new UserService();
 
     @FXML
     private void initialize() {
-        User sessionUser = CurrentUserSession.user;
-        if (sessionUser == null) {
-            msgLabel.setText("No user session.");
+        // ── Session guard ──
+        if (!SessionManager.requireLogin(fullNameField))
             return;
-        }
-        String fullName = (sessionUser.getFullName() == null) ? "User" : sessionUser.getFullName().trim();
-        userMenuBtn.setText(fullName);
-        miHeader.setText(fullName);
+
+        // ── Top bar setup (reusable) ──
+        TopBarHelper.setup(userMenuBtn, null, fullNameField);
+
+        User sessionUser = SessionManager.getUser();
         User u = userService.getById(sessionUser.getId());
         if (u == null) {
             msgLabel.setText("User not found.");
             return;
         }
 
-        CurrentUserSession.user = u;
+        SessionManager.login(u); // refresh session
 
         fullNameField.setText(u.getFullName() == null ? "" : u.getFullName());
         emailField.setText(u.getEmail() == null ? "" : u.getEmail());
@@ -55,9 +60,7 @@ public class ManageProfileController {
         oldPasswordField.clear();
         newPasswordField.clear();
 
-        // Fill read-only fields
         roleField.setText(u.getRole() == null ? "" : u.getRole());
-
         createdAtField.setText(formatTs(u.getCreatedAt()));
 
         roleField.setEditable(false);
@@ -68,8 +71,9 @@ public class ManageProfileController {
 
     @FXML
     private void onSave() {
-        User u = CurrentUserSession.user;
-        if (u == null) return;
+        User u = SessionManager.getUser();
+        if (u == null)
+            return;
 
         String newName = fullNameField.getText();
         String newEmail = emailField.getText();
@@ -99,45 +103,44 @@ public class ManageProfileController {
             return;
         }
 
-        msgLabel.setText("Updated successfully ");
+        msgLabel.setText("Updated successfully ✅");
 
         User refreshed = userService.getById(u.getId());
-        if (refreshed != null) CurrentUserSession.user = refreshed;
+        if (refreshed != null)
+            SessionManager.login(refreshed);
 
         oldPasswordField.clear();
         newPasswordField.clear();
     }
 
     @FXML
-
     private void goBack() {
-        goTo(NavContext.backFxml);
+        NavigationManager.navigateTo(fullNameField, NavContext.backFxml);
     }
+
     @FXML
     private void onDashboard() {
-        goTo("/EntrepreneurDashboard.fxml");
+        NavigationManager.goToDashboard(fullNameField);
     }
-    @FXML private void onStartups() { System.out.println("Startups"); }
-    @FXML private void onSettings() { System.out.println("Settings"); }
-    private void goTo(String fxmlPath) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
-            Stage stage = (Stage) fullNameField.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-            msgLabel.setText("Navigation error: " + e.getMessage());
-        }
+
+    @FXML
+    private void onStartups() {
+        NavigationManager.navigateTo(fullNameField, "/startupview.fxml");
+    }
+
+    @FXML
+    private void onSettings() {
+        System.out.println("Settings");
+    }
+
+    @FXML
+    private void onLogout() {
+        NavigationManager.logout(fullNameField);
     }
 
     private String formatTs(Timestamp ts) {
-        if (ts == null) return "";
+        if (ts == null)
+            return "";
         return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(ts);
-    }
-    @FXML
-    private void onLogout() {
-        CurrentUserSession.user = null;
-        goTo("/Signup.fxml");
     }
 }

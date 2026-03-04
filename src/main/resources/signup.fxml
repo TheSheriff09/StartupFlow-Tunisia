@@ -78,12 +78,12 @@
      <Label layoutX="606.0" layoutY="94.0" styleClass="brand-sub" text="Tunisia" />
 
           <!-- Top right "Home" -->
-    <HBox alignment="CENTER" layoutX="1065.0" layoutY="14.0" spacing="10.0" styleClass="top-right">
+    <HBox alignment="CENTER" layoutX="1065.0" layoutY="14.0" onMouseClicked="#onHome" spacing="10.0" styleClass="top-right">
         <Label styleClass="home-text" text="Home" />
         <StackPane styleClass="home-icon">
             <Label prefHeight="18.0" prefWidth="7.0" styleClass="home-icon-text" text="⌂" />
         </StackPane>
     </HBox>
-   <Button layoutX="38.0" layoutY="16.0" mnemonicParsing="false" text="⬅ Back" />
 
 </AnchorPane>
+

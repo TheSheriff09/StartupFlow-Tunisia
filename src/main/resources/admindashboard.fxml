@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Separator?>
+
+<!--
+    Admin Back-Office Dashboard — StartupFlow
+    Main shell: sidebar + topbar + dynamic content area.
+    Pages are loaded programmatically into contentArea by AdminDashboardController.
+-->
+<StackPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.GUI.admin.AdminDashboardController"
+        stylesheets="@styles.css, @css/usermanagement.css">
+
+    <BorderPane fx:id="mainPane" styleClass="root">
+
+        <!-- ═══════ TOP BAR ═══════ -->
+        <top>
+            <HBox alignment="CENTER_LEFT" spacing="12" styleClass="topbar" BorderPane.alignment="CENTER">
+                <padding>
+                    <Insets top="14" right="18" bottom="14" left="18"/>
+                </padding>
+
+                <!-- Title -->
+                <Label fx:id="topbarTitle" text="Dashboard Overview" styleClass="top-title"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Date label -->
+                <Label fx:id="lblDate" text="" styleClass="activity-meta"/>
+
+                <!-- Admin badge -->
+                <Label text="ADMIN" styleClass="admin-badge"/>
+
+                <!-- Back to app -->
+                <Button text="← Back to App" styleClass="admin-back-btn" onAction="#goBack"/>
+
+                <!-- User pill -->
+                <Button text="Admin User" styleClass="user-btn"/>
+            </HBox>
+        </top>
+
+
+        <!-- ═══════ SIDEBAR ═══════ -->
+        <left>
+            <VBox prefWidth="260.0" spacing="14.0" styleClass="sidebar" BorderPane.alignment="CENTER">
+                <padding>
+                    <Insets top="22" right="18" bottom="22" left="18"/>
+                </padding>
+    
+                <!-- Brand -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
+                        <image>
+                            <Image url="@/assest/Startup_Flow__1_-removebg-preview.png"/>
+                        </image>
+                    </ImageView>
+                    <VBox spacing="2">
+                        <Label text="StartupFlow" styleClass="brand-title"/>
+                        <Label text="Tunisia" styleClass="brand-sub"/>
+                    </VBox>
+                </HBox>
+    
+                <Separator styleClass="sep"/>
+    
+                <!-- Navigation -->
+                <VBox spacing="10" styleClass="nav-box">
+                    <Button text="Dashboard" styleClass="nav-btn" onAction="#goAppDashboard"/>
+                    <Button text="User Management" styleClass="nav-btn" onAction="#goUsers"/>
+                    
+                    <VBox spacing="5" style="-fx-padding: 0 0 0 15;">
+                        <Button text="Startup Projects" styleClass="nav-btn active" onAction="#goProjects"/>
+                        <Button fx:id="btnDashboard" text="↳ Sub-Dashboard" styleClass="nav-btn" onAction="#showDashboard" style="-fx-font-size: 13.5px;"/>
+                        <Button fx:id="btnStartups" text="↳ Startups List" styleClass="nav-btn" onAction="#showStartups" style="-fx-font-size: 13.5px;"/>
+                        <Button fx:id="btnBusinessPlans" text="↳ Business Plans" styleClass="nav-btn" onAction="#showBusinessPlans" style="-fx-font-size: 13.5px;"/>
+                    </VBox>
+                    
+                    <Button text="Mentorship" styleClass="nav-btn" onAction="#goMentorship"/>
+                    <Button text="Funding &amp; Evaluation" styleClass="nav-btn" onAction="#goFunding"/>
+                    <Button text="Dashboard Forum" styleClass="nav-btn" onAction="#goDashboardForum"/>
+                    <Button text="Forum" styleClass="nav-btn" onAction="#goForumBackOffice"/>
+                    <Button text="Settings" styleClass="nav-btn" onAction="#goSettings"/>
+                </VBox>
+    
+                <Region VBox.vgrow="ALWAYS"/>
+    
+                <!-- Logout at bottom -->
+                <Button text="Logout" styleClass="nav-btn logout" onAction="#logout"/>
+            </VBox>
+        </left>
+
+        <!-- ═══════ CONTENT AREA ═══════ -->
+        <center>
+            <VBox fx:id="contentArea" alignment="TOP_CENTER"
+                  fillWidth="true" maxHeight="Infinity" maxWidth="Infinity">
+                <!-- Pages are loaded dynamically here -->
+            </VBox>
+        </center>
+
+    </BorderPane>
+
+    <!-- ═══════ MODAL LAYER (popups / overlays) ═══════ -->
+    <StackPane fx:id="modalLayer" visible="false" managed="false"/>
+
+</StackPane>
+

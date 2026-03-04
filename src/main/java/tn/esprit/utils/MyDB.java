@@ -9,7 +9,7 @@ public class MyDB {
     private static MyDB instance;
     private Connection cnx;
 
-    private static final String URL = "jdbc:mysql://localhost:3306/hamod";
+    private static final String URL = "jdbc:mysql://localhost:3306/startupflow";
     private static final String USER = "root";
     private static final String PASS = "";
 

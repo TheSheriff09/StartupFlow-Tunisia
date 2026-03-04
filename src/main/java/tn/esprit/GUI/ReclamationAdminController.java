@@ -6,47 +6,61 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 import tn.esprit.Services.ReclamationService;
 import tn.esprit.Services.ResponseService;
 import tn.esprit.entities.Reclamation;
 import tn.esprit.entities.Response;
-import tn.esprit.utils.CurrentUserSession;
+import tn.esprit.utils.SessionManager;
+import tn.esprit.utils.NavigationManager;
 
-import java.net.URL;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class ReclamationAdminController {
 
-    @FXML private TableView<Reclamation> reclamationsTable;
-    @FXML private TableColumn<Reclamation, String> colId;
-    @FXML private TableColumn<Reclamation, String> colTitle;
-    @FXML private TableColumn<Reclamation, String> colDescription;
-    @FXML private TableColumn<Reclamation, String> colStatus;
-    @FXML private TableColumn<Reclamation, String> colRequested;
-    @FXML private TableColumn<Reclamation, String> colTarget;
-    @FXML private TableColumn<Reclamation, String> colCreated;
-    @FXML private TableColumn<Reclamation, Void> colActions;
+    @FXML
+    private TableView<Reclamation> reclamationsTable;
+    @FXML
+    private TableColumn<Reclamation, String> colId;
+    @FXML
+    private TableColumn<Reclamation, String> colTitle;
+    @FXML
+    private TableColumn<Reclamation, String> colDescription;
+    @FXML
+    private TableColumn<Reclamation, String> colStatus;
+    @FXML
+    private TableColumn<Reclamation, String> colRequested;
+    @FXML
+    private TableColumn<Reclamation, String> colTarget;
+    @FXML
+    private TableColumn<Reclamation, String> colCreated;
+    @FXML
+    private TableColumn<Reclamation, Void> colActions;
 
-    @FXML private TextField searchField;
-    @FXML private Label lblInfo;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private Label lblInfo;
 
-    @FXML private Label lblSelected;
-    @FXML private ComboBox<String> cbStatus;
+    @FXML
+    private Label lblSelected;
+    @FXML
+    private ComboBox<String> cbStatus;
 
-    @FXML private TextArea taResponse;
+    @FXML
+    private TextArea taResponse;
 
-    @FXML private TableView<Response> responsesTable;
-    @FXML private TableColumn<Response, String> colRespCreated;
-    @FXML private TableColumn<Response, String> colRespContent;
-    @FXML private Label lblRespInfo;
+    @FXML
+    private TableView<Response> responsesTable;
+    @FXML
+    private TableColumn<Response, String> colRespCreated;
+    @FXML
+    private TableColumn<Response, String> colRespContent;
+    @FXML
+    private Label lblRespInfo;
 
     private final ReclamationService reclamationService = new ReclamationService();
     private final ResponseService responseService = new ResponseService();
@@ -56,8 +70,8 @@ public class ReclamationAdminController {
 
     private final ObservableList<Response> respMaster = FXCollections.observableArrayList();
 
-    private final ObservableList<String> statuses =
-            FXCollections.observableArrayList("OPEN","IN_PROGRESS","RESOLVED","REJECTED");
+    private final ObservableList<String> statuses = FXCollections.observableArrayList("OPEN", "IN_PROGRESS", "RESOLVED",
+            "REJECTED");
 
     private Reclamation selected;
 
@@ -87,10 +101,10 @@ public class ReclamationAdminController {
         colTitle.setCellValueFactory(cd -> new SimpleStringProperty(ns(cd.getValue().getTitle())));
         colDescription.setCellValueFactory(cd -> new SimpleStringProperty(ns(cd.getValue().getDescription())));
         colStatus.setCellValueFactory(cd -> new SimpleStringProperty(ns(cd.getValue().getStatus())));
-        colRequested.setCellValueFactory(cd -> new SimpleStringProperty(String.valueOf(cd.getValue().getRequestedId())));
+        colRequested
+                .setCellValueFactory(cd -> new SimpleStringProperty(String.valueOf(cd.getValue().getRequestedId())));
         colTarget.setCellValueFactory(cd -> new SimpleStringProperty(
-                cd.getValue().getTargetId() == null ? "" : String.valueOf(cd.getValue().getTargetId())
-        ));
+                cd.getValue().getTargetId() == null ? "" : String.valueOf(cd.getValue().getTargetId())));
         colCreated.setCellValueFactory(cd -> new SimpleStringProperty(formatTs(cd.getValue().getCreatedAt())));
 
         colActions.setCellFactory(tc -> new TableCell<>() {
@@ -102,6 +116,7 @@ public class ReclamationAdminController {
                     deleteReclamation(r);
                 });
             }
+
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
@@ -126,7 +141,8 @@ public class ReclamationAdminController {
     private void applyFilter(String q) {
         String query = (q == null) ? "" : q.trim().toLowerCase(Locale.ROOT);
         filtered.setPredicate(r -> {
-            if (query.isEmpty()) return true;
+            if (query.isEmpty())
+                return true;
             return ns(r.getTitle()).toLowerCase(Locale.ROOT).contains(query)
                     || ns(r.getDescription()).toLowerCase(Locale.ROOT).contains(query)
                     || ns(r.getStatus()).toLowerCase(Locale.ROOT).contains(query);
@@ -210,12 +226,12 @@ public class ReclamationAdminController {
             return;
         }
 
-        if (CurrentUserSession.user == null) {
+        if (!SessionManager.isLoggedIn()) {
             alert("Session", "No logged-in admin in session.");
             return;
         }
 
-        int adminId = CurrentUserSession.user.getId();
+        int adminId = SessionManager.getUser().getId();
 
         Response resp = new Response(content, selected.getId(), adminId);
         Response added = responseService.add(resp);
@@ -231,13 +247,15 @@ public class ReclamationAdminController {
     }
 
     private void deleteReclamation(Reclamation r) {
-        if (r == null) return;
+        if (r == null)
+            return;
 
         Alert a = new Alert(Alert.AlertType.CONFIRMATION);
         a.setTitle("Delete");
         a.setHeaderText("Delete reclamation #" + r.getId() + "?");
         a.setContentText("This will delete its responses too (CASCADE).");
-        if (a.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) return;
+        if (a.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK)
+            return;
 
         boolean ok = reclamationService.deleteByIdAdmin(r.getId());
         if (!ok) {
@@ -257,26 +275,12 @@ public class ReclamationAdminController {
 
     @FXML
     private void goBack(ActionEvent e) {
-        goTo(e, "/DashboardAdmin.fxml");
+        NavigationManager.navigateTo(reclamationsTable, "/DashboardAdmin.fxml");
     }
 
-    private void goTo(ActionEvent e, String fxmlPath) {
-        try {
-            URL url = getClass().getResource(fxmlPath);
-            if (url == null) {
-                System.out.println("FXML not found: " + fxmlPath);
-                return;
-            }
-            Parent root = FXMLLoader.load(url);
-            Stage stage = (Stage) ((Button) e.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    private void toast(String msg) {
+        lblInfo.setText(msg);
     }
-
-    private void toast(String msg) { lblInfo.setText(msg); }
 
     private void alert(String title, String msg) {
         Alert a = new Alert(Alert.AlertType.INFORMATION);
@@ -286,10 +290,13 @@ public class ReclamationAdminController {
         a.showAndWait();
     }
 
-    private String ns(String s) { return (s == null) ? "" : s; }
+    private String ns(String s) {
+        return (s == null) ? "" : s;
+    }
 
     private String formatTs(Timestamp ts) {
-        if (ts == null) return "";
+        if (ts == null)
+            return "";
         return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(ts);
     }
 }

@@ -1,16 +1,13 @@
 package tn.esprit.GUI;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import tn.esprit.Services.UserService;
 import tn.esprit.entities.User;
-import tn.esprit.utils.CurrentUserSession;
+import tn.esprit.utils.NavigationManager;
+import tn.esprit.utils.SessionManager;
 
 public class LoginController {
 
@@ -47,38 +44,21 @@ public class LoginController {
             return;
         }
 
-        CurrentUserSession.user = u;
+        // ── Unified session login ──
+        SessionManager.login(u);
 
-        String role = (u.getRole() == null) ? "" : u.getRole().trim().toUpperCase();
-
-        if (role.equals("ADMIN")) {
-            goTo("/DashboardAdmin.fxml");
-        } else if (role.equals("ENTREPRENEUR")) {
-            goTo("/EntrepreneurDashboard.fxml");
-        } else if (role.equals("MENTOR")) {
-            goTo("/MentorDashboard.fxml");
-        } else if (role.equals("EVALUATOR")) {
-            goTo("/EvaluatorDashboard.fxml");
-        } else {
-            msgLabel.setText("Unknown role: " + role);
-        }
-    }
-
-    private void goTo(String fxmlPath) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
-            Stage stage = (Stage) emailField.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-            msgLabel.setText("Navigation error: " + e.getMessage());
-        }
+        // ── Role-aware navigation via NavigationManager ──
+        NavigationManager.goToDashboard(emailField);
     }
 
     @FXML
     private void onGoSignup() {
-        goTo("/Signup.fxml");
+        NavigationManager.navigateTo(emailField, "/Signup.fxml");
+    }
+
+    @FXML
+    private void onHome() {
+        NavigationManager.navigateTo(emailField, "/Landing.fxml");
     }
 
     @FXML
@@ -104,21 +84,10 @@ public class LoginController {
                         return;
                     }
 
-                    CurrentUserSession.user = existing;
+                    // ── Unified session login ──
+                    SessionManager.login(existing);
 
-                    javafx.application.Platform.runLater(() -> {
-                        String role = (existing.getRole() == null) ? "" : existing.getRole().trim().toUpperCase();
-                        if (role.equals("ADMIN"))
-                            goTo("/DashboardAdmin.fxml");
-                        else if (role.equals("ENTREPRENEUR"))
-                            goTo("/EntrepreneurDashboard.fxml");
-                        else if (role.equals("MENTOR"))
-                            goTo("/MentorDashboard.fxml");
-                        else if (role.equals("EVALUATOR"))
-                            goTo("/EvaluatorDashboard.fxml");
-                        else
-                            msgLabel.setText("Unknown role: " + role);
-                    });
+                    javafx.application.Platform.runLater(() -> NavigationManager.goToDashboard(emailField));
 
                     return;
                 }
@@ -126,11 +95,11 @@ public class LoginController {
                 // New Google user -> send to RoleChoice to pick role
                 tn.esprit.utils.SignupSession.fullName = g.getName();
                 tn.esprit.utils.SignupSession.email = g.getEmail();
-                tn.esprit.utils.SignupSession.passwordPlain = null; // IMPORTANT: no password
+                tn.esprit.utils.SignupSession.passwordPlain = null;
 
                 javafx.application.Platform.runLater(() -> {
                     msgLabel.setText("Choose your role to complete signup.");
-                    goTo("/RoleChoice.fxml");
+                    NavigationManager.navigateTo(emailField, "/RoleChoice.fxml");
                 });
 
             } catch (Exception ex) {

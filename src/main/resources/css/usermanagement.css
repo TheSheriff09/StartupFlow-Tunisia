@@ -13,19 +13,29 @@
 .brand-sub   { -fx-text-fill:#7b61ff; -fx-font-size:12px; -fx-opacity:0.85; }
 
 .nav-btn {
-    -fx-background-color: rgba(255,255,255,0.80);
-    -fx-background-radius: 16;
-    -fx-text-fill:#7b61ff;
-    -fx-font-weight:800;
+    -fx-background-color: transparent;
+    -fx-text-fill: #5a4bd6;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 12;
+    -fx-background-radius: 12;
     -fx-cursor: hand;
-    -fx-padding: 10 14 10 14;
 }
-.nav-btn:hover { -fx-background-color: rgba(123,97,255,0.10); }
+.nav-btn:hover {
+    -fx-background-color: rgba(115,87,255,0.10);
+}
 .nav-btn.active {
-    -fx-background-color: linear-gradient(to right, #7b61ff, #d7a1ff);
-    -fx-text-fill: white;
+    -fx-background-color: rgba(115,87,255,0.16);
+    -fx-text-fill: #3f2dbb;
 }
-.nav-btn.logout:hover { -fx-background-color: rgba(255,59,48,0.12); }
+
+.nav-btn.logout {
+    -fx-text-fill: #ff2e6a;
+}
+.nav-btn.logout:hover {
+    -fx-background-color: rgba(255,46,106,0.10);
+}
 
 .top-title { -fx-text-fill:#7b61ff; -fx-font-size:18px; -fx-font-weight:900; }
 .search {

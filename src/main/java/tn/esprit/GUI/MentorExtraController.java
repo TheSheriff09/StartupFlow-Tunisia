@@ -1,17 +1,10 @@
 package tn.esprit.GUI;
 
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import tn.esprit.entities.User;
 import tn.esprit.Services.UserService;
 import tn.esprit.utils.SignupSession;
-
-import java.io.IOException;
-
-import static tn.esprit.utils.CurrentUserSession.user;
 
 public class MentorExtraController {
 
@@ -35,42 +28,30 @@ public class MentorExtraController {
         User mentor = new User(
                 SignupSession.fullName,
                 SignupSession.email,
-                (SignupSession.passwordPlain == null ? null : SignupSession.passwordPlain),                "MENTOR",
+                (SignupSession.passwordPlain == null ? null : SignupSession.passwordPlain), "MENTOR",
                 "PENDING",
                 expertise,
-                null
-        );
+                null);
 
         User created = us.add(mentor);
         if (created == null) {
             errorLabel.setText("Failed to create mentor user.");
             return;
         }
-        tn.esprit.utils.CurrentUserSession.user = created;
+        tn.esprit.utils.SessionManager.login(created);
 
         new Thread(() -> {
             tn.esprit.Services.EmailService mail = new tn.esprit.Services.EmailService();
             mail.sendWelcomeEmail(
                     created.getEmail(),
                     created.getFullName(),
-                    "http://localhost:8080/startupflow/login"
-            );
+                    "http://localhost:8080/startupflow/login");
         }).start();
 
-        goTo(e, "Login.fxml");
-    }
-
-    private void goTo(ActionEvent e, String fxml) {
-        try {
-            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("/" + fxml))));
-            stage.show();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        tn.esprit.utils.NavigationManager.navigateTo((Node) e.getSource(), "/Login.fxml");
     }
 
     public void goBack(ActionEvent e) {
-        goTo(e, "RoleChoice.fxml");
+        tn.esprit.utils.NavigationManager.navigateTo((Node) e.getSource(), "/RoleChoice.fxml");
     }
 }

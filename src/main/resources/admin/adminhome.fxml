@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Admin Home — Dashboard Overview
+    Stats cards + Charts + Recent Activity
+-->
+<ScrollPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.GUI.admin.AdminHomeController"
+        fitToWidth="true"
+        styleClass="admin-scroll"
+        VBox.vgrow="ALWAYS">
+
+    <VBox styleClass="admin-content-vbox" VBox.vgrow="ALWAYS">
+
+        <!-- ═══ PAGE HEADER ═══ -->
+        <VBox spacing="2">
+            <Label text="Dashboard Overview" styleClass="admin-page-title"/>
+            <Label fx:id="lblSubtitle" text="Welcome back — here's what's happening."
+                   styleClass="admin-page-subtitle"/>
+        </VBox>
+
+        <!-- ═══ STAT CARDS ROW ═══ -->
+        <HBox spacing="18" alignment="CENTER_LEFT">
+
+            <!-- Total Startups (accent card) -->
+            <VBox styleClass="stat-card-accent" spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="🚀" styleClass="stat-icon"/>
+                <Label fx:id="statTotal" text="—" styleClass="stat-value-white"/>
+                <Label text="Total Startups" styleClass="stat-label-white"/>
+            </VBox>
+
+            <!-- Active Startups -->
+            <VBox styleClass="stat-card" spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="✅" styleClass="stat-icon"/>
+                <Label fx:id="statActive" text="—" styleClass="stat-value"/>
+                <Label text="Active Startups" styleClass="stat-label"/>
+            </VBox>
+
+            <!-- Pending Approvals -->
+            <VBox styleClass="stat-card" spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="⏳" styleClass="stat-icon"/>
+                <Label fx:id="statPending" text="—" styleClass="stat-value"/>
+                <Label text="Pending Approvals" styleClass="stat-label"/>
+            </VBox>
+
+            <!-- Total Business Plans -->
+            <VBox styleClass="stat-card" spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="📋" styleClass="stat-icon"/>
+                <Label fx:id="statBP" text="—" styleClass="stat-value"/>
+                <Label text="Business Plans" styleClass="stat-label"/>
+            </VBox>
+
+        </HBox>
+
+        <!-- ═══ CHARTS ROW ═══ -->
+        <HBox spacing="18">
+
+            <!-- Pie chart: Startups by Sector -->
+            <VBox styleClass="admin-chart-card" HBox.hgrow="ALWAYS" spacing="0">
+                <Label text="Startups by Sector" styleClass="chart-title-label"/>
+                <PieChart fx:id="chartBySector"
+                          styleClass="admin-pie-chart"
+                          labelsVisible="true"
+                          legendVisible="true"
+                          legendSide="BOTTOM"
+                          prefHeight="280"
+                          maxHeight="280"/>
+            </VBox>
+
+            <!-- Bar chart: Startups by Stage -->
+            <VBox styleClass="admin-chart-card" HBox.hgrow="ALWAYS" spacing="0">
+                <Label text="Startups by Stage" styleClass="chart-title-label"/>
+                <BarChart fx:id="chartByStage"
+                          styleClass="admin-bar-chart"
+                          prefHeight="280"
+                          maxHeight="280"
+                          animated="true"
+                          legendVisible="false">
+                    <xAxis>
+                        <CategoryAxis label="Stage"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Count" minorTickVisible="false"/>
+                    </yAxis>
+                </BarChart>
+            </VBox>
+
+        </HBox>
+
+        <!-- ═══ RECENT ACTIVITY + QUICK STATS ═══ -->
+        <HBox spacing="18">
+
+            <!-- Recent Activity list -->
+            <VBox styleClass="activity-card" HBox.hgrow="ALWAYS" spacing="10">
+                <Label text="Recent Activity" styleClass="chart-title-label"/>
+                <VBox fx:id="activityList" spacing="6"/>
+            </VBox>
+
+            <!-- Quick summary card -->
+            <VBox styleClass="activity-card" spacing="14"
+                  minWidth="260" maxWidth="300" prefWidth="280">
+                <Label text="Quick Stats" styleClass="chart-title-label"/>
+
+                <!-- KPI avg -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="⭐" style="-fx-font-size:18px;"/>
+                    <VBox spacing="1">
+                        <Label fx:id="statAvgKpi" text="—" styleClass="activity-name"/>
+                        <Label text="Avg. KPI Score" styleClass="activity-meta"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Total funding -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="💰" style="-fx-font-size:18px;"/>
+                    <VBox spacing="1">
+                        <Label fx:id="statTotalFunding" text="—" styleClass="activity-name"/>
+                        <Label text="Total Funding Raised" styleClass="activity-meta"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Most common sector -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="🏭" style="-fx-font-size:18px;"/>
+                    <VBox spacing="1">
+                        <Label fx:id="statTopSector" text="—" styleClass="activity-name"/>
+                        <Label text="Top Sector" styleClass="activity-meta"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Most common stage -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="📈" style="-fx-font-size:18px;"/>
+                    <VBox spacing="1">
+                        <Label fx:id="statTopStage" text="—" styleClass="activity-name"/>
+                        <Label text="Leading Stage" styleClass="activity-meta"/>
+                    </VBox>
+                </HBox>
+
+                <Region VBox.vgrow="ALWAYS"/>
+
+            </VBox>
+        </HBox>
+
+        <!-- ═══ RECENT BUSINESS PLANS ═══ -->
+        <VBox styleClass="activity-card" spacing="12">
+            <Label text="Recent Business Plans" styleClass="chart-title-label"/>
+
+            <!-- Header row -->
+            <HBox styleClass="bp-table-header" spacing="0">
+                <Label text="Title"            prefWidth="220" styleClass="bp-col-header"/>
+                <Label text="Status"           prefWidth="110" styleClass="bp-col-header"/>
+                <Label text="Startup"          prefWidth="165" styleClass="bp-col-header"/>
+                <Label text="Funding Required" prefWidth="155" styleClass="bp-col-header"/>
+                <Label text="Created"          prefWidth="110" styleClass="bp-col-header"/>
+            </HBox>
+
+            <!-- Dynamic rows injected by controller -->
+            <VBox fx:id="bpList" spacing="4"/>
+        </VBox>
+
+        <!-- Bottom spacer -->
+        <Region VBox.vgrow="NEVER" prefHeight="8"/>
+
+    </VBox>
+</ScrollPane>
+

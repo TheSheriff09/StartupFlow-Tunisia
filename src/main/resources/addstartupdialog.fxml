@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    addstartupdialog.fxml — Modern glassmorphism "Add Startup" popup overlay
+    Injected into the scene's modalLayer StackPane by StartupViewController.
+-->
+<StackPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="tn.esprit.GUI.startup.AddStartupController"
+        fx:id="overlayRoot"
+        styleClass="modal-overlay"
+        alignment="CENTER"
+        maxWidth="Infinity"
+        maxHeight="Infinity">
+
+    <!-- ── Dark backdrop — click anywhere outside card to dismiss ── -->
+    <Pane
+            styleClass="modal-backdrop"
+            onMouseClicked="#onCancel"
+            maxWidth="Infinity"
+            maxHeight="Infinity"/>
+
+    <!-- ══════════════════════════════════════════════════
+         Glass card (centered, max 500px wide)
+         ══════════════════════════════════════════════════ -->
+    <VBox fx:id="modalCard" styleClass="modal-card" spacing="0" maxWidth="520">
+
+        <!-- ─── Title bar ─────────────────────────────── -->
+        <HBox styleClass="modal-title-bar" alignment="CENTER_LEFT" spacing="12">
+            <Label text="✦" styleClass="modal-title-icon"/>
+            <Label text="Add Startup"  styleClass="modal-title"/>
+        </HBox>
+
+        <!-- ─── Form fields (scrollable) ───────────────── -->
+        <ScrollPane styleClass="modal-scroll" fitToWidth="true" maxHeight="480"
+                    hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+        <VBox styleClass="modal-form" spacing="16">
+
+            <!-- Startup Name -->
+            <VBox spacing="4">
+                <Label text="STARTUP NAME" styleClass="modal-label"/>
+                <TextField
+                        fx:id="tfName"
+                        promptText="e.g. EcoTech Solutions"
+                        styleClass="modal-input"/>
+                <Label fx:id="errName" styleClass="field-error-msg" visible="false" managed="false"/>
+            </VBox>
+
+            <!-- Description -->
+            <VBox spacing="6">
+                <Label text="DESCRIPTION" styleClass="modal-label"/>
+                <TextArea
+                        fx:id="taDescription"
+                        promptText="Brief description of the startup…"
+                        styleClass="modal-input modal-textarea"
+                        wrapText="true"
+                        prefRowCount="3"/>
+            </VBox>
+
+            <!-- Image Upload -->
+            <VBox spacing="6">
+                <Label text="STARTUP IMAGE" styleClass="modal-label"/>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <StackPane fx:id="imagePreviewPane" styleClass="sf-image-preview-pane">
+                        <ImageView fx:id="ivPreview" fitWidth="72" fitHeight="72" preserveRatio="true"/>
+                        <Label fx:id="lblImagePlaceholder" text="📷" styleClass="sf-image-placeholder"/>
+                    </StackPane>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Button fx:id="btnSelectImage"
+                                text="📁  Choose Image"
+                                styleClass="sf-upload-btn"
+                                onAction="#onSelectImage"
+                                maxWidth="Infinity"/>
+                        <Label fx:id="lblImagePath"
+                               text="No image selected"
+                               styleClass="sf-image-path-label"
+                               wrapText="true"/>
+                        <Label fx:id="errImage" styleClass="field-error-msg" visible="false" managed="false"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Sector + Stage side-by-side -->
+            <HBox spacing="14">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="SECTOR" styleClass="modal-label"/>
+                    <ComboBox
+                            fx:id="cbSector"
+                            maxWidth="Infinity"
+                            styleClass="modal-combo"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="STAGE" styleClass="modal-label"/>
+                    <ComboBox
+                            fx:id="cbStage"
+                            maxWidth="Infinity"
+                            styleClass="modal-combo"/>
+                </VBox>
+            </HBox>
+
+            <!-- Mentor -->
+            <VBox spacing="4">
+                <Label text="MENTOR ID" styleClass="modal-label"/>
+                <TextField
+                        fx:id="tfMentor"
+                        promptText="Mentor ID (numeric)"
+                        styleClass="modal-input"/>
+                <Label fx:id="errMentor" styleClass="field-error-msg" visible="false" managed="false"/>
+            </VBox>
+
+            <!-- Funding Amount + KPI Score side-by-side -->
+            <HBox spacing="14">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="FUNDING AMOUNT ($)" styleClass="modal-label"/>
+                    <TextField
+                            fx:id="tfFunding"
+                            promptText="e.g. 50000"
+                            styleClass="modal-input"/>
+                    <Label fx:id="errFunding" styleClass="field-error-msg" visible="false" managed="false"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="KPI SCORE" styleClass="modal-label"/>
+                    <TextField
+                            fx:id="tfKpiScore"
+                            promptText="e.g. 8.5"
+                            styleClass="modal-input"/>
+                    <Label fx:id="errKpi" styleClass="field-error-msg" visible="false" managed="false"/>
+                </VBox>
+            </HBox>
+
+            <!-- Incubator Program + Creation Date side-by-side -->
+            <HBox spacing="14">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="INCUBATOR PROGRAM" styleClass="modal-label"/>
+                    <TextField
+                            fx:id="tfIncubator"
+                            promptText="e.g. Y Combinator"
+                            styleClass="modal-input"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="CREATION DATE" styleClass="modal-label"/>
+                    <DatePicker
+                            fx:id="dpCreationDate"
+                            maxWidth="Infinity"
+                            styleClass="modal-combo"/>
+                </VBox>
+            </HBox>
+
+            <!-- Status -->
+            <VBox spacing="6">
+                <Label text="STATUS" styleClass="modal-label"/>
+                <ComboBox
+                        fx:id="cbStatus"
+                        maxWidth="Infinity"
+                        styleClass="modal-combo"/>
+            </VBox>
+
+        </VBox>
+        </ScrollPane>
+
+        <!-- ─── Button bar ─────────────────────────────── -->
+        <HBox styleClass="modal-btn-bar" alignment="CENTER_RIGHT" spacing="12">
+            <Button text="Cancel"          styleClass="modal-cancel-btn" onAction="#onCancel"/>
+            <Button text="Save Startup  →" styleClass="modal-save-btn"   onAction="#onSave"/>
+        </HBox>
+
+    </VBox>
+</StackPane>
+

@@ -32,10 +32,11 @@
 
 /* Card */
 .mainCard {
-    -fx-background-color: rgba(0,0,0,0.16);
-    -fx-background-radius: 22;
-    -fx-border-radius: 22;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 26, 0.2, 0, 10);
+    -fx-background-color: rgba(255, 255, 255, 0.55);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(123, 97, 255, 0.15);
+    -fx-effect: dropshadow(gaussian, rgba(123, 97, 255, 0.18), 24, 0.25, 0, 10);
 }
 
 .contentBox{
@@ -96,8 +97,61 @@
     -fx-font-weight: 600;
 }
 
+/* SWOT grid */
+.swotGrid {
+    -fx-hgap: 12;
+    -fx-vgap: 12;
+}
+
+.swotCard {
+    -fx-background-color: rgba(255, 255, 255, 0.72);
+    -fx-background-radius: 18;
+    -fx-border-color: rgba(123, 97, 255, 0.14);
+    -fx-border-radius: 18;
+    -fx-padding: 12 12 12 12;
+    -fx-effect: dropshadow(gaussian, rgba(123,97,255,0.10), 18, 0.2, 0, 8);
+}
+
+.swotTitle {
+    -fx-font-size: 13px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #2b2b2b;
+}
+
+.swotStrength { -fx-text-fill: #1f7a4a; }
+.swotWeakness { -fx-text-fill: #b13a2a; }
+.swotOpportunity { -fx-text-fill: #1c5fb8; }
+.swotThreat { -fx-text-fill: #7a1f7a; }
+
+.swotList {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+}
+
+.swotList .list-cell {
+    -fx-background-color: rgba(123, 97, 255, 0.08);
+    -fx-background-radius: 12;
+    -fx-padding: 8 10 8 10;
+    -fx-text-fill: #2b2b2b;
+    -fx-font-weight: 700;
+}
+
+.swotList .list-cell:filled:selected,
+.swotList .list-cell:filled:selected:hover {
+    -fx-background-color: rgba(123,97,255,0.22);
+}
+
+.swotList .list-cell:empty {
+    -fx-background-color: transparent;
+}
+
 /* Message */
 .msg {
-    -fx-text-fill: #38F41BFF;
     -fx-font-weight: 800;
 }
+
+.msgOk { -fx-text-fill: #2c9a34; }
+.msgError { -fx-text-fill: #d12b2b; }

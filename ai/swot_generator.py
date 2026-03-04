@@ -40,6 +40,30 @@ Description: {description}
 JSON:
 """.strip()
 
+def build_repair_prompt(name: str, description: str, sector: str, current_json: str) -> str:
+    return f"""
+You are a senior business consultant.
+
+You previously produced a SWOT JSON for this startup, but it is incomplete or low-quality.
+Fix it and output a COMPLETE SWOT JSON.
+
+STRICT output rules:
+- Output ONLY valid JSON, nothing else.
+- Keys exactly: strengths, weaknesses, opportunities, threats
+- Each value MUST be a list of 4 to 6 short, specific strings.
+- Do not leave any list empty.
+- Avoid generic filler; tie each point to the startup description/sector.
+
+Startup Name: {name}
+Sector: {sector}
+Description: {description}
+
+Current (incomplete) JSON:
+{current_json}
+
+Fixed JSON:
+""".strip()
+
 def extract_first_json_object(text: str):
     start = text.find("{")
     if start == -1:
@@ -87,6 +111,26 @@ def normalize_swot(obj):
         out[k] = cleaned[:6]
     return out
 
+def is_complete_swot(swot, min_items: int = 4) -> bool:
+    if not isinstance(swot, dict):
+        return False
+    for k in ["strengths", "weaknesses", "opportunities", "threats"]:
+        v = swot.get(k, [])
+        if not isinstance(v, list) or len(v) < min_items:
+            return False
+    return True
+
+def run_generation(gen, prompt: str, max_new_tokens: int, temperature: float):
+    return gen(
+        prompt,
+        max_new_tokens=max_new_tokens,
+        do_sample=True,
+        temperature=temperature,
+        top_p=0.9,
+        repetition_penalty=1.15,
+        return_full_text=True
+    )[0]["generated_text"]
+
 def main():
     if len(sys.argv) < 4:
         print(json.dumps({"error": "Usage: swot_generator.py <name> <description> <sector>"}))
@@ -111,15 +155,8 @@ def main():
         model = AutoModelForCausalLM.from_pretrained(MODEL_ID, token=HF_TOKEN)
         gen = TextGenerationPipeline(model=model, tokenizer=tokenizer)
 
-        result = gen(
-            prompt,
-            max_new_tokens=260,
-            do_sample=True,
-            temperature=0.6,
-            top_p=0.9,
-            repetition_penalty=1.15,
-            return_full_text=True
-        )[0]["generated_text"]
+        # Attempt 1
+        result = run_generation(gen, prompt, max_new_tokens=280, temperature=0.6)
 
     json_str = extract_first_json_object(result)
     if not json_str:
@@ -133,6 +170,23 @@ def main():
         sys.exit(3)
 
     data = normalize_swot(data)
+
+    # If any section is missing/too short, do one repair pass.
+    if not is_complete_swot(data, min_items=4):
+        try:
+            repair_prompt = build_repair_prompt(name, description, sector, json.dumps(data, ensure_ascii=False))
+            with redirect_stdout(sink), redirect_stderr(sink):
+                repaired = run_generation(gen, repair_prompt, max_new_tokens=320, temperature=0.35)
+
+            repaired_json = extract_first_json_object(repaired)
+            if repaired_json:
+                repaired_data = json.loads(repaired_json)
+                repaired_data = normalize_swot(repaired_data)
+                if is_complete_swot(repaired_data, min_items=4):
+                    data = repaired_data
+        except Exception:
+            pass
+
     print(json.dumps(data, ensure_ascii=False))  # ✅ ONLY JSON on stdout
     sys.exit(0)
 

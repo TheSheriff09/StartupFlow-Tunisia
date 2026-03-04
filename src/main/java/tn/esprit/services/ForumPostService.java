@@ -1,4 +1,4 @@
-package tn.esprit.services;
+package tn.esprit.Services;
 
 import tn.esprit.entities.ForumPost;
 import tn.esprit.utils.MyDB;
@@ -13,11 +13,22 @@ public class ForumPostService implements ICRUD<ForumPost> {
 
     public ForumPostService() {
         // Ensure connection is retrieved correctly
-        this.cnx = MyDB.getInstance().getconx();
+        this.cnx = MyDB.getInstance().getCnx();
         if (this.cnx == null) {
             System.out.println("❌ Database connection is NULL in ForumPostService constructor!");
         } else {
             System.out.println("✅ Database connection established in ForumPostService.");
+            ensureTableExists();
+        }
+    }
+
+    private void ensureTableExists() {
+        try (Statement st = cnx.createStatement()) {
+            st.execute("ALTER TABLE forum_posts ADD COLUMN IF NOT EXISTS user_id INT DEFAULT 1");
+            st.execute(
+                    "ALTER TABLE forum_posts ADD COLUMN IF NOT EXISTS author_name VARCHAR(255) DEFAULT 'Community User'");
+        } catch (SQLException e) {
+            System.out.println("Warning: Could not alter forum_posts table: " + e.getMessage());
         }
     }
 
@@ -27,7 +38,7 @@ public class ForumPostService implements ICRUD<ForumPost> {
             System.out.println("❌ Cannot add post: Connection is null.");
             return null;
         }
-        String sql = "INSERT INTO forum_posts (title, content, image_url, created_at, updated_at) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO forum_posts (title, content, image_url, created_at, updated_at, user_id, author_name) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, post.getTitle());
             ps.setString(2, post.getContent());
@@ -42,6 +53,8 @@ public class ForumPostService implements ICRUD<ForumPost> {
             Timestamp updatedTs = post.getUpdatedAt() != null ? Timestamp.valueOf(post.getUpdatedAt())
                     : Timestamp.valueOf(post.getCreatedAt());
             ps.setTimestamp(5, updatedTs);
+            ps.setInt(6, post.getUserId());
+            ps.setString(7, post.getAuthorName());
 
             int rows = ps.executeUpdate();
             System.out.println("Rows affected: " + rows);
@@ -76,6 +89,11 @@ public class ForumPostService implements ICRUD<ForumPost> {
                 post.setContent(rs.getString("content"));
                 post.setImageUrl(rs.getString("image_url"));
 
+                // Use try-catch or checks for columns that might be missing dynamically
+                // but our ALTER TABLE should handle it
+                post.setUserId(rs.getInt("user_id"));
+                post.setAuthorName(rs.getString("author_name"));
+
                 Timestamp createdAt = rs.getTimestamp("created_at");
                 if (createdAt != null)
                     post.setCreatedAt(createdAt.toLocalDateTime());
@@ -98,7 +116,7 @@ public class ForumPostService implements ICRUD<ForumPost> {
     public void update(ForumPost post) {
         if (cnx == null)
             return;
-        String sql = "UPDATE forum_posts SET title = ?, content = ?, image_url = ?, updated_at = ? WHERE id = ?";
+        String sql = "UPDATE forum_posts SET title = ?, content = ?, image_url = ?, updated_at = ?, user_id = ?, author_name = ? WHERE id = ?";
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
             ps.setString(1, post.getTitle());
             ps.setString(2, post.getContent());
@@ -107,7 +125,9 @@ public class ForumPostService implements ICRUD<ForumPost> {
                 img = "default_post.png";
             ps.setString(3, img);
             ps.setTimestamp(4, Timestamp.valueOf(post.getUpdatedAt()));
-            ps.setInt(5, post.getId());
+            ps.setInt(5, post.getUserId());
+            ps.setString(6, post.getAuthorName());
+            ps.setInt(7, post.getId());
             int rows = ps.executeUpdate();
             if (rows > 0)
                 System.out.println("✏️ Post updated: " + post);
