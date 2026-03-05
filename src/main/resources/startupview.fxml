@@ -2,9 +2,11 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
@@ -52,19 +54,50 @@
                 <Label fx:id="lblCount" text="0 startups" styleClass="count-badge">
                     <HBox.margin><Insets right="14"/></HBox.margin>
                 </Label>
+                <Button text="� Scan QR" onAction="#handleScanQR"
+                        style="-fx-background-color:linear-gradient(to right,#7c3aed,#6d28d9);
+                               -fx-text-fill:white; -fx-background-radius:20; -fx-padding:7 16;
+                               -fx-font-weight:700; -fx-font-size:12px; -fx-cursor:hand;">
+                    <tooltip><Tooltip text="Upload a QR code image to find a startup"/></tooltip>
+                    <HBox.margin><Insets right="10"/></HBox.margin>
+                </Button>
+                <Button text="�📈 AI Forecast" onAction="#openFinancialForecast"
+                        style="-fx-background-color:linear-gradient(to right,#059669,#0d9488);
+                               -fx-text-fill:white; -fx-background-radius:20; -fx-padding:7 16;
+                               -fx-font-weight:700; -fx-font-size:12px; -fx-cursor:hand;">
+                    <tooltip><Tooltip text="Generate an AI-powered 12-month financial forecast"/></tooltip>
+                    <HBox.margin><Insets right="10"/></HBox.margin>
+                </Button>
+                <Button text="💱 Currency" onAction="#openCurrencyConverter"
+                        style="-fx-background-color:linear-gradient(to right,#0369a1,#0284c7);
+                               -fx-text-fill:white; -fx-background-radius:20; -fx-padding:7 16;
+                               -fx-font-weight:700; -fx-font-size:12px; -fx-cursor:hand;">
+                    <tooltip><Tooltip text="Convert funding amounts to USD and EUR"/></tooltip>
+                    <HBox.margin><Insets right="10"/></HBox.margin>
+                </Button>
                 <Button text="⚙ Admin" styleClass="admin-back-btn"
                         onAction="#openAdminDashboard">
+                    <tooltip><Tooltip text="Open the Admin Dashboard"/></tooltip>
+                    <HBox.margin><Insets right="10"/></HBox.margin>
+                </Button>
+                <Button fx:id="themeToggle" text="☀" styleClass="theme-toggle"
+                        onAction="#toggleTheme">
+                    <tooltip><Tooltip text="Toggle Dark / Light mode"/></tooltip>
                     <HBox.margin><Insets right="10"/></HBox.margin>
                 </Button>
                 <Button text="User 1" styleClass="user-btn"/>
             </HBox>
 
-            <!-- Centered search bar -->
-            <HBox styleClass="search-wrap" alignment="CENTER">
+            <!-- Centered search bar + sort selector -->
+            <HBox styleClass="search-wrap" alignment="CENTER" spacing="12">
                 <TextField
                         fx:id="searchField"
                         promptText="🔍  Search startups…"
                         styleClass="search-field"/>
+                <ComboBox fx:id="sortCombo" onAction="#onSortChanged"
+                          promptText="Sort by…"
+                          styleClass="search-field"
+                          prefWidth="170"/>
             </HBox>
         </VBox>
     </top>

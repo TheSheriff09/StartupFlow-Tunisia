@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import tn.esprit.utils.ThemeManager;
 
 /**
  * Application entry point.
@@ -18,6 +19,7 @@ public class MainApp extends Application {
         Parent root = loader.load();
 
         Scene scene = new Scene(root, 1100, 720);
+        ThemeManager.getInstance().applyTo(scene);
         primaryStage.setTitle("StartupFlow — Startup Management");
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(800);

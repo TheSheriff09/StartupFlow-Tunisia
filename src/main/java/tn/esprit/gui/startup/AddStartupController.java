@@ -14,17 +14,22 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import tn.esprit.utils.FormValidator;
-import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import tn.esprit.entities.Startup;
+import tn.esprit.services.StartupService;
+import tn.esprit.utils.AlertUtil;
+import tn.esprit.utils.FormValidator;
+import tn.esprit.utils.ValidationUtil;
+import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
@@ -58,8 +63,12 @@ public class AddStartupController implements Initializable {
     @FXML private Label errFunding;
     @FXML private Label errKpi;
     @FXML private Label errImage;
+    @FXML private Label errMentor;
     // ── State ─────────────────────────────────────────────────
     private String selectedImagePath = null;
+
+    /** Used for duplicate-name detection at save time. */
+    private final StartupService startupService = new StartupService();
 
     // ── Callbacks wired by the parent controller ──────────────
     private Consumer<Startup> onSaveCallback;
@@ -87,10 +96,26 @@ public class AddStartupController implements Initializable {
         FormValidator.validateDoubleOnType(tfFunding, errFunding, false);
         FormValidator.validateDoubleOnType(tfKpiScore, errKpi, false);
         FormValidator.enforceLengthLimit(tfIncubator, 120);
-        FormValidator.enforceLengthLimit(tfMentor, 20);
+        // Mentor ID: numeric-only input enforcement (block non-digit characters)
+        tfMentor.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && !newVal.matches("\\d*")) {
+                tfMentor.setText(newVal.replaceAll("\\D", ""));
+            }
+            if (errMentor != null) {
+                if (newVal != null && !newVal.isBlank()) {
+                    try { int v = Integer.parseInt(newVal.trim());
+                        if (v <= 0) showInlineError(errMentor, "Mentor ID must be a positive integer.");
+                        else hideInlineError(errMentor);
+                    } catch (NumberFormatException ex) { hideInlineError(errMentor); }
+                } else { hideInlineError(errMentor); }
+            }
+        });
         // Disallow future creation dates
         dpCreationDate.valueProperty().addListener((obs, o, n) ->
             FormValidator.requireDate(dpCreationDate, null, true));
+
+        // ── Tooltips on action buttons ───────────────────────────
+        btnSelectImage.setTooltip(new Tooltip("Upload a PNG, JPG, or JPEG image for this startup"));
     }
 
     // ── Callback setters ──────────────────────────────────────
@@ -107,28 +132,28 @@ public class AddStartupController implements Initializable {
     public void animateOpen() {
         overlayRoot.setOpacity(0);
         modalCard.setOpacity(0);
-        modalCard.setScaleX(0.76);
-        modalCard.setScaleY(0.76);
+        modalCard.setScaleX(0.82);
+        modalCard.setScaleY(0.82);
         modalCard.setTranslateY(28);
 
         // Overlay fade-in
-        FadeTransition overlayFt = new FadeTransition(Duration.millis(260), overlayRoot);
+        FadeTransition overlayFt = new FadeTransition(Duration.millis(250), overlayRoot);
         overlayFt.setFromValue(0);
         overlayFt.setToValue(1);
 
         // Card spring: scale + translate + fade
         Interpolator spring = Interpolator.SPLINE(0.22, 0.61, 0.36, 1.0);
 
-        ScaleTransition cardSt = new ScaleTransition(Duration.millis(360), modalCard);
-        cardSt.setFromX(0.76); cardSt.setToX(1.0);
-        cardSt.setFromY(0.76); cardSt.setToY(1.0);
+        ScaleTransition cardSt = new ScaleTransition(Duration.millis(320), modalCard);
+        cardSt.setFromX(0.82); cardSt.setToX(1.0);
+        cardSt.setFromY(0.82); cardSt.setToY(1.0);
         cardSt.setInterpolator(spring);
 
-        TranslateTransition cardTt = new TranslateTransition(Duration.millis(360), modalCard);
+        TranslateTransition cardTt = new TranslateTransition(Duration.millis(320), modalCard);
         cardTt.setFromY(28); cardTt.setToY(0);
         cardTt.setInterpolator(spring);
 
-        FadeTransition cardFt = new FadeTransition(Duration.millis(310), modalCard);
+        FadeTransition cardFt = new FadeTransition(Duration.millis(250), modalCard);
         cardFt.setFromValue(0); cardFt.setToValue(1);
 
         new ParallelTransition(
@@ -183,17 +208,78 @@ public class AddStartupController implements Initializable {
 
     @FXML
     private void onSave() {
-        // ── Validate before save ─────────────────────────────────
-        boolean nameOk    = FormValidator.requireNonEmpty(tfName, errName);
-        boolean fundingOk = FormValidator.requireDouble(tfFunding, errFunding, false);
-        boolean kpiOk     = FormValidator.requireKpiScore(tfKpiScore, errKpi);
-        boolean imageOk   = FormValidator.requireImageExtension(selectedImagePath, errImage);
+        // ── Collect strict validation errors ──────────────────────
+        java.util.List<String> errors = new java.util.ArrayList<>();
 
-        if (!nameOk || !fundingOk || !kpiOk || !imageOk) {
-            if (!nameOk) shakeNode(tfName);
+        // Fetch existing names for duplicate-name check
+        java.util.List<String> existingNames = startupService.list().stream()
+                .map(Startup::getName)
+                .collect(java.util.stream.Collectors.toList());
+
+        // Name: required, min 3, max 100, not only-digits, no duplicate
+        ValidationUtil.collect(
+            ValidationUtil.checkName(tfName.getText(), "Startup Name", existingNames, null),
+            errors);
+
+        // Mentor ID: optional but must be a positive integer if provided
+        String mentorRaw = tfMentor.getText() == null ? "" : tfMentor.getText().trim();
+        if (!mentorRaw.isEmpty()) {
+            try {
+                int mid = Integer.parseInt(mentorRaw);
+                if (mid <= 0) errors.add("Mentor ID must be a positive integer.");
+            } catch (NumberFormatException ex) {
+                errors.add("Mentor ID must be a valid integer.");
+            }
+        }
+
+        // Funding: optional but must be > 0 if provided
+        ValidationUtil.collect(ValidationUtil.checkFunding(tfFunding.getText()), errors);
+
+        // KPI Score: optional, 0–10
+        ValidationUtil.collect(ValidationUtil.checkKpiScore(tfKpiScore.getText()), errors);
+
+        // Image extension: optional but must be PNG/JPG/JPEG if supplied
+        boolean imageOk = FormValidator.requireImageExtension(selectedImagePath, errImage);
+        if (!imageOk) errors.add("Image file must be PNG, JPG, or JPEG.");
+
+        // ── Apply field-level red-border highlights ───────────────
+        ValidationUtil.checkName(tfName.getText(), "Startup Name", existingNames, null)
+            .ifPresentOrElse(
+                msg -> ValidationUtil.markFieldError(tfName, errName, msg),
+                ()  -> ValidationUtil.clearFieldError(tfName, errName));
+
+        ValidationUtil.checkFunding(tfFunding.getText())
+            .ifPresentOrElse(
+                msg -> ValidationUtil.markFieldError(tfFunding, errFunding, msg),
+                ()  -> ValidationUtil.clearFieldError(tfFunding, errFunding));
+
+        ValidationUtil.checkKpiScore(tfKpiScore.getText())
+            .ifPresentOrElse(
+                msg -> ValidationUtil.markFieldError(tfKpiScore, errKpi, msg),
+                ()  -> ValidationUtil.clearFieldError(tfKpiScore, errKpi));
+
+        // Mentor ID highlight
+        String mentorHighlight = tfMentor.getText() == null ? "" : tfMentor.getText().trim();
+        if (!mentorHighlight.isEmpty()) {
+            try {
+                int mid = Integer.parseInt(mentorHighlight);
+                if (mid <= 0) ValidationUtil.markFieldError(tfMentor, errMentor, "Mentor ID must be a positive integer.");
+                else          ValidationUtil.clearFieldError(tfMentor, errMentor);
+            } catch (NumberFormatException ex) {
+                ValidationUtil.markFieldError(tfMentor, errMentor, "Mentor ID must be a valid integer.");
+            }
+        } else {
+            ValidationUtil.clearFieldError(tfMentor, errMentor);
+        }
+        // ── Stop and show bulleted error summary ──────────────────
+        if (!errors.isEmpty()) {
+            AlertUtil.showValidationErrors(errors,
+                overlayRoot.getScene() != null ? overlayRoot.getScene().getWindow() : null);
+            shakeNode(tfName);
             return;
         }
 
+        // ── Build Startup entity ──────────────────────────────────
         Startup s = new Startup();
         s.setName(tfName.getText().trim());
         s.setSector(cbSector.getValue());
@@ -238,5 +324,18 @@ public class AddStartupController implements Initializable {
         shake.setCycleCount(6);
         shake.setAutoReverse(true);
         shake.play();
+    }
+
+    private void showInlineError(Label lbl, String msg) {
+        if (lbl == null) return;
+        lbl.setText(msg);
+        lbl.setVisible(true);
+        lbl.setManaged(true);
+    }
+
+    private void hideInlineError(Label lbl) {
+        if (lbl == null) return;
+        lbl.setVisible(false);
+        lbl.setManaged(false);
     }
 }

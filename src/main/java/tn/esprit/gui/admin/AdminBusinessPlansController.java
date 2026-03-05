@@ -13,12 +13,16 @@ import tn.esprit.entities.BusinessPlan;
 import tn.esprit.gui.popup.DialogStyler;
 import tn.esprit.gui.popup.PopupManager;
 import tn.esprit.services.BusinessPlanService;
+import tn.esprit.utils.AlertUtil;
 import tn.esprit.utils.FormValidator;
+import tn.esprit.utils.ValidationUtil;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -66,7 +70,37 @@ public class AdminBusinessPlansController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         buildColumns();
         populateFilters();
+
+        // Enable full-dataset column sorting across pages
+        tableBP.setSortPolicy(tv -> {
+            if (tv.getSortOrder().isEmpty()) return true;
+            Comparator<BusinessPlan> cmp = null;
+            for (TableColumn<BusinessPlan, ?> col : tv.getSortOrder()) {
+                Comparator<BusinessPlan> colCmp = buildColumnComparator(col);
+                if (colCmp == null) continue;
+                cmp = (cmp == null) ? colCmp : cmp.thenComparing(colCmp);
+            }
+            if (cmp != null) filtered.sort(cmp);
+            refreshTable();
+            return true;
+        });
+
         loadAll();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Comparator<BusinessPlan> buildColumnComparator(TableColumn<BusinessPlan, ?> col) {
+        boolean asc = col.getSortType() == TableColumn.SortType.ASCENDING;
+        Comparator<BusinessPlan> cmp = null;
+        if (col == colTitle)    cmp = Comparator.comparing(p -> str(p.getTitle()).toLowerCase());
+        else if (col == colStatus)  cmp = Comparator.comparing(p -> str(p.getStatus()).toLowerCase());
+        else if (col == colFunding) cmp = Comparator.comparing(p -> p.getFundingRequired() != null ? p.getFundingRequired() : 0.0);
+        else if (col == colStartup) cmp = Comparator.comparingInt(BusinessPlan::getStartupID);
+        else if (col == colCreated) cmp = Comparator.comparing(p -> p.getCreationDate() != null ? p.getCreationDate() : LocalDate.MIN);
+        else if (col == colUpdated) cmp = Comparator.comparing(p -> p.getLastUpdate() != null ? p.getLastUpdate() : LocalDate.MIN);
+        else if (col == colId)      cmp = Comparator.comparingInt(BusinessPlan::getBusinessPlanID);
+        if (cmp != null && !asc) cmp = cmp.reversed();
+        return cmp;
     }
 
     public void setModalBridge(StackPane modal, Region blur) {
@@ -231,6 +265,7 @@ public class AdminBusinessPlansController implements Initializable {
         TextArea   taFinFore  = sArea(bp.getFinancialForecast());
         TextField  tfFunding  = sField(bp.getFundingRequired() != null
                 ? String.valueOf(bp.getFundingRequired()) : "", "Funding required ($)");
+        tfFunding.setTextFormatter(ValidationUtil.unsignedDecimalFormatter());
         FormValidator.clearOnType(tfTitle, errTitle);
         FormValidator.validateDoubleOnType(tfFunding, errFunding, false);
         TextField  tfTimeline = sField(bp.getTimeline(), "Timeline");
@@ -264,9 +299,36 @@ public class AdminBusinessPlansController implements Initializable {
         // Block dialog close if validation fails — errors shown inline
         dlg.getDialogPane().lookupButton(ButtonType.OK)
            .addEventFilter(ActionEvent.ACTION, ev -> {
-               boolean ok = FormValidator.requireNonEmpty(tfTitle, errTitle)
-                          & FormValidator.requireDouble(tfFunding, errFunding, false);
-               if (!ok) ev.consume();
+               List<String> titles = service.list().stream()
+                       .map(BusinessPlan::getTitle).collect(Collectors.toList());
+               String sidText = tfStartup.getText().trim();
+               Optional<String> sidErr;
+               try {
+                   int parsed = Integer.parseInt(sidText);
+                   sidErr = parsed <= 0
+                       ? Optional.of("Startup ID must be a positive integer.")
+                       : Optional.empty();
+               } catch (NumberFormatException ex) {
+                   sidErr = sidText.isEmpty()
+                       ? Optional.of("Startup ID is required.")
+                       : Optional.of("Startup ID must be a valid integer.");
+               }
+               List<String> errors = ValidationUtil.gatherErrors(
+                   ValidationUtil.checkName(tfTitle.getText(), "Plan Title", titles, bp.getTitle()),
+                   ValidationUtil.checkTextOptional(taDesc.getText(),    "Description",        2000),
+                   ValidationUtil.checkTextOptional(taMktAn.getText(),   "Market Analysis",    2000),
+                   ValidationUtil.checkTextOptional(taValProp.getText(), "Value Proposition",  2000),
+                   ValidationUtil.checkTextOptional(taBizMod.getText(),  "Business Model",     2000),
+                   ValidationUtil.checkTextOptional(taMktStrat.getText(),"Marketing Strategy", 2000),
+                   ValidationUtil.checkTextOptional(taFinFore.getText(), "Financial Forecast", 2000),
+                   ValidationUtil.checkFunding(tfFunding.getText()),
+                   ValidationUtil.checkTextOptional(tfTimeline.getText(),"Timeline",           200),
+                   sidErr
+               );
+               if (!AlertUtil.checkAndShowErrors(errors,
+                       dlg.getDialogPane().getScene().getWindow())) {
+                   ev.consume();
+               }
            });
 
         dlg.showAndWait().ifPresent(bt -> {
@@ -292,6 +354,9 @@ public class AdminBusinessPlansController implements Initializable {
             } catch (NumberFormatException ignored) {}
             service.update(bp);
             loadAll();
+            AlertUtil.showSuccess("\u270F  Plan Updated",
+                "Business plan \"" + bp.getTitle() + "\" has been updated.",
+                tableBP.getScene().getWindow());
         });
     }
 
@@ -300,7 +365,13 @@ public class AdminBusinessPlansController implements Initializable {
         PopupManager.showDelete(modalLayer, blurTarget,
                 "Delete Business Plan",
                 "Delete \"" + bp.getTitle() + "\"? This action cannot be undone.",
-                () -> { service.delete(bp); loadAll(); });
+                () -> {
+                    service.delete(bp);
+                    loadAll();
+                    AlertUtil.showSuccess("\uD83D\uDDD1  Plan Deleted",
+                        "\"" + bp.getTitle() + "\" has been removed.",
+                        tableBP.getScene().getWindow());
+                });
     }
 
     // ── Form helpers ─────────────────────────────────────────

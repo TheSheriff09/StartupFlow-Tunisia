@@ -27,14 +27,27 @@ import javafx.util.Duration;
 import tn.esprit.entities.Startup;
 import tn.esprit.gui.businessplan.BusinessPlanViewController;
 import tn.esprit.gui.popup.DialogStyler;
+import tn.esprit.gui.popup.CurrencyController;
+import tn.esprit.gui.popup.FinancialForecastController;
+import tn.esprit.gui.popup.FundingSimulationController;
 import tn.esprit.gui.popup.PopupManager;
+import tn.esprit.services.QRCodeService;
+import tn.esprit.services.StartupPDFExporter;
 import tn.esprit.services.StartupService;
+import tn.esprit.services.BusinessPlanService;
+import tn.esprit.services.InvestmentScorer;
+import tn.esprit.services.StartupWebServer;
+import tn.esprit.utils.AlertUtil;
+import tn.esprit.utils.DesignTokens;
 import tn.esprit.utils.FormValidator;
+import tn.esprit.utils.ThemeManager;
+import tn.esprit.utils.ValidationUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -49,6 +62,8 @@ public class StartupViewController implements Initializable {
     @FXML private TextField  searchField;
     @FXML private Label      lblCount;
     @FXML private Button     fabBtn;
+    @FXML private Button     themeToggle;
+    @FXML private ComboBox<String> sortCombo;
     // ── Services ──────────────────────────────────────────────
     private final StartupService service = new StartupService();
 
@@ -60,7 +75,19 @@ public class StartupViewController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         searchField.textProperty().addListener((obs, oldVal, newVal) -> filterCards(newVal));
+        // Populate sort options
+        if (sortCombo != null) {
+            sortCombo.getItems().addAll(
+                "Name (A → Z)", "Name (Z → A)",
+                "Funding (High → Low)", "Funding (Low → High)",
+                "Score (High → Low)", "Score (Low → High)",
+                "Date (Newest)", "Date (Oldest)"
+            );
+        }
         loadAll();
+        // Set initial theme toggle icon
+        if (themeToggle != null)
+            themeToggle.setText(ThemeManager.getInstance().isDark() ? "☀" : "🌙");
         // Start FAB pulse animation after scene is ready
         javafx.application.Platform.runLater(this::breatheFAB);
     }
@@ -83,14 +110,30 @@ public class StartupViewController implements Initializable {
         pulse.play();
     }
 
+    @FXML
+    private void toggleTheme() {
+        ThemeManager tm = ThemeManager.getInstance();
+        tm.toggle();
+        tm.applyTo(themeToggle.getScene());
+        themeToggle.setText(tm.isDark() ? "☀" : "🌙");
+        // Re-render cards so inline styles update
+        if (allStartups != null) renderCards(allStartups);
+    }
+
     // ── Data ──────────────────────────────────────────────────
 
     private void loadAll() {
-        allStartups = service.list();
+        allStartups = service.list().stream()
+                .sorted(Comparator.comparingInt(Startup::getStartupID).reversed())
+                .collect(Collectors.toList());
         renderCards(allStartups);
     }
 
     private void filterCards(String query) {
+        if (allStartups == null || allStartups.isEmpty()) {
+            renderCards(List.of());
+            return;
+        }
         if (query == null || query.isBlank()) {
             renderCards(allStartups);
             return;
@@ -111,6 +154,13 @@ public class StartupViewController implements Initializable {
         cardsContainer.getChildren().clear();
         lblCount.setText(startups.size() + " startup" + (startups.size() != 1 ? "s" : ""));
 
+        if (startups.isEmpty()) {
+            Label empty = new Label("No startups found. Click + to add your first startup.");
+            empty.getStyleClass().add("activity-meta");
+            cardsContainer.getChildren().add(empty);
+            return;
+        }
+
         for (int i = 0; i < startups.size(); i++) {
             Startup s = startups.get(i);
             try {
@@ -122,7 +172,10 @@ public class StartupViewController implements Initializable {
                         s,
                         this::openEditDialog,
                         this::confirmDelete,
-                        this::navigateToBusinessPlans
+                        this::navigateToBusinessPlans,
+                        this::openFundingSimulation,
+                        this::handleCardQR,
+                        this::handleCardExport
                 );
 
                 animateIn(card, i * 55L);
@@ -166,10 +219,13 @@ public class StartupViewController implements Initializable {
             Node overlay = loader.load();
             AddStartupController ctrl = loader.getController();
 
-            // Wire save → persist + refresh
+            // Wire save → persist + success alert + refresh
             ctrl.setOnSave(startup -> {
                 service.add(startup);
                 loadAll();
+                AlertUtil.showSuccess("\u2705  Startup Created",
+                    "\"" + startup.getName() + "\" has been added successfully.",
+                    cardsContainer.getScene().getWindow());
             });
 
             // Wire close → remove overlay, restore blur
@@ -203,7 +259,13 @@ public class StartupViewController implements Initializable {
             modalLayer, mainContent,
             "Delete Startup",
             "Delete \"" + s.getName() + "\"? All linked business plans will also be deleted.",
-            () -> { service.delete(s); loadAll(); });
+            () -> {
+                service.delete(s);
+                loadAll();
+                AlertUtil.showSuccess("🗑  Startup Deleted",
+                    "\"" + s.getName() + "\" has been removed.",
+                    cardsContainer.getScene().getWindow());
+            });
     }
 
     private void navigateToBusinessPlans(Startup s) {
@@ -215,10 +277,196 @@ public class StartupViewController implements Initializable {
 
             Stage stage = (Stage) cardsContainer.getScene().getWindow();
             stage.setTitle("Business Plans — " + s.getName());
-            stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
+            Scene sc = new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight());
+            ThemeManager.getInstance().applyTo(sc);
+            stage.setScene(sc);
         } catch (IOException e) {
             showError("Cannot open Business Plans: " + e.getMessage());
         }
+    }
+
+    /** Opens the Funding Simulation popup for the given startup. */
+    private void openFundingSimulation(Startup s) {
+        FundingSimulationController.show(modalLayer, mainContent);
+    }
+
+    /** Navigates to the full detail page for a startup. */
+    private void navigateToDetail(Startup s) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/startupdetail.fxml"));
+            Parent root = loader.load();
+            StartupDetailController ctrl = loader.getController();
+            ctrl.initWithStartup(s);
+
+            Stage stage = (Stage) cardsContainer.getScene().getWindow();
+            stage.setTitle("Startup Detail — " + s.getName());
+            Scene sc = new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight());
+            ThemeManager.getInstance().applyTo(sc);
+            stage.setScene(sc);
+        } catch (IOException e) {
+            showError("Cannot open Startup Detail: " + e.getMessage());
+        }
+    }
+
+    /** Shows a QR code dialog for a startup directly from the card. */
+    private void handleCardQR(Startup s) {
+        // Load plans and score, then start web server so phone camera opens a browser page
+        BusinessPlanService bpSvc = new BusinessPlanService();
+        java.util.List<tn.esprit.entities.BusinessPlan> plans = bpSvc.getByStartup(s.getStartupID());
+        double score = service.calculateInvestmentScore(s.getStartupID());
+
+        StartupWebServer webServer = new StartupWebServer(s, plans, score);
+        try {
+            webServer.start();
+        } catch (java.io.IOException ioEx) {
+            showError("Could not start QR web server: " + ioEx.getMessage());
+            return;
+        }
+
+        String qrUrl = webServer.getUrl();
+
+        try {
+            javafx.scene.image.Image qrImg = QRCodeService.generateQRImageFromUrl(qrUrl, 250);
+            javafx.scene.image.ImageView iv = new javafx.scene.image.ImageView(qrImg);
+            iv.setFitWidth(250); iv.setFitHeight(250);
+
+            javafx.scene.control.Label lblHint = new javafx.scene.control.Label("📱  Scan — opens full details in browser");
+            lblHint.setStyle("-fx-font-size:11px;-fx-text-fill:#6d28d9;-fx-font-weight:700;"
+                    + "-fx-padding:4 12;-fx-background-color:rgba(109,40,217,0.09);"
+                    + "-fx-background-radius:10;");
+
+            javafx.scene.control.Label lblUrl = new javafx.scene.control.Label(qrUrl);
+            lblUrl.setStyle("-fx-font-size:10px;-fx-text-fill:#a78bfa;-fx-font-family:monospace;");
+            lblUrl.setWrapText(true);
+            lblUrl.setMaxWidth(300);
+
+            javafx.scene.control.Dialog<Void> dlg = new javafx.scene.control.Dialog<>();
+            dlg.setTitle("QR Code — " + s.getName());
+            dlg.setHeaderText(null);
+
+            javafx.scene.layout.VBox box = new javafx.scene.layout.VBox(12, iv, lblHint, lblUrl);
+            box.setAlignment(javafx.geometry.Pos.CENTER);
+            box.setPadding(new javafx.geometry.Insets(16));
+
+            Button saveBtn = new Button("💾  Save PNG");
+            saveBtn.getStyleClass().add("button-primary");
+            saveBtn.setOnAction(evt -> {
+                FileChooser fc = new FileChooser();
+                fc.setTitle("Save QR Code");
+                fc.setInitialFileName(s.getName().replaceAll("\\s+", "_") + "_QR.png");
+                fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG", "*.png"));
+                File file = fc.showSaveDialog(dlg.getDialogPane().getScene().getWindow());
+                if (file != null) {
+                    try {
+                        QRCodeService.saveQRToPNGFromUrl(qrUrl, 400, file);
+                        AlertUtil.showSuccess("QR code saved to " + file.getName(),
+                                dlg.getDialogPane().getScene().getWindow());
+                    } catch (Exception ex) {
+                        showError("Could not save QR: " + ex.getMessage());
+                    }
+                }
+            });
+            box.getChildren().add(saveBtn);
+
+            dlg.getDialogPane().setContent(box);
+            dlg.getDialogPane().getButtonTypes().add(javafx.scene.control.ButtonType.CLOSE);
+            dlg.getDialogPane().getStylesheets().addAll(cardsContainer.getScene().getStylesheets());
+            dlg.initOwner(cardsContainer.getScene().getWindow());
+            dlg.setOnHidden(e -> webServer.stop());
+            dlg.showAndWait();
+        } catch (Exception e) {
+            webServer.stop();
+            showError("QR generation failed: " + e.getMessage());
+        }
+    }
+
+    /** Exports a startup to PDF directly from the card. */
+    private void handleCardExport(Startup s) {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Export Startup PDF");
+        fc.setInitialFileName(s.getName().replaceAll("\\s+", "_") + "_Report.pdf");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
+        File file = fc.showSaveDialog(cardsContainer.getScene().getWindow());
+        if (file == null) return;
+        try {
+            BusinessPlanService bpService = new BusinessPlanService();
+            java.util.List<tn.esprit.entities.BusinessPlan> plans = bpService.getByStartup(s.getStartupID());
+            double score = service.calculateInvestmentScore(s.getStartupID());
+            StartupPDFExporter.exportStartupToPDF(s, plans, score, file);
+            AlertUtil.showSuccess("PDF exported to " + file.getName(),
+                    cardsContainer.getScene().getWindow());
+        } catch (Exception e) {
+            showError("PDF export failed: " + e.getMessage());
+        }
+    }
+
+    // ── Sort handler ──────────────────────────────────────────
+
+    @FXML
+    private void onSortChanged() {
+        if (sortCombo == null || sortCombo.getValue() == null || allStartups == null) return;
+        String sort = sortCombo.getValue();
+        Comparator<Startup> cmp = switch (sort) {
+            case "Name (A → Z)"         -> Comparator.comparing(s -> s.getName() != null ? s.getName().toLowerCase() : "");
+            case "Name (Z → A)"         -> Comparator.comparing((Startup s) -> s.getName() != null ? s.getName().toLowerCase() : "").reversed();
+            case "Funding (High → Low)" -> Comparator.comparing((Startup s) -> s.getFundingAmount() != null ? s.getFundingAmount() : 0.0, Comparator.reverseOrder());
+            case "Funding (Low → High)" -> Comparator.comparing((Startup s) -> s.getFundingAmount() != null ? s.getFundingAmount() : 0.0);
+            case "Score (High → Low)"   -> Comparator.comparing((Startup s) -> service.calculateInvestmentScore(s.getStartupID()), Comparator.reverseOrder());
+            case "Score (Low → High)"   -> Comparator.comparing((Startup s) -> service.calculateInvestmentScore(s.getStartupID()));
+            case "Date (Newest)"        -> Comparator.comparing((Startup s) -> s.getCreationDate() != null ? s.getCreationDate() : java.time.LocalDate.MIN, Comparator.reverseOrder());
+            case "Date (Oldest)"        -> Comparator.comparing((Startup s) -> s.getCreationDate() != null ? s.getCreationDate() : java.time.LocalDate.MIN);
+            default -> null;
+        };
+        if (cmp != null) {
+            allStartups.sort(cmp);
+            renderCards(allStartups);
+        }
+    }
+
+    // ── QR scan handler ───────────────────────────────────────
+
+    @FXML
+    private void handleScanQR() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Select QR Code Image");
+        fc.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Images (PNG, JPG)", "*.png", "*.jpg", "*.jpeg"));
+        File file = fc.showOpenDialog(cardsContainer.getScene().getWindow());
+        if (file == null) return;
+
+        try {
+            int startupID = QRCodeService.decodeStartupID(file);
+            if (startupID <= 0) {
+                AlertUtil.showValidationErrors(
+                        List.of("Invalid QR code. Not a StartupFlow QR."),
+                        cardsContainer.getScene().getWindow());
+                return;
+            }
+            Startup s = service.getById(startupID);
+            if (s == null) {
+                AlertUtil.showValidationErrors(
+                        List.of("Startup with ID " + startupID + " not found in database."),
+                        cardsContainer.getScene().getWindow());
+                return;
+            }
+            navigateToDetail(s);
+        } catch (Exception e) {
+            AlertUtil.showValidationErrors(
+                    List.of("Could not read QR image: " + e.getMessage()),
+                    cardsContainer.getScene().getWindow());
+        }
+    }
+
+    /** Opens the AI Financial Forecast popup from the navbar button. */
+    @FXML
+    private void openFinancialForecast() {
+        FinancialForecastController.show(modalLayer, mainContent);
+    }
+
+    /** Opens the Currency Exchange popup from the navbar button. */
+    @FXML
+    private void openCurrencyConverter() {
+        CurrencyController.show(modalLayer, mainContent);
     }
 
     // ── Add / Edit dialog (programmatic, no extra FXML needed) ─
@@ -243,6 +491,7 @@ public class StartupViewController implements Initializable {
         // ── Real-time validation ──
         FormValidator.clearOnType(tfName, errName);
         FormValidator.enforceLengthLimit(tfName, 100);
+        tfFunding.setTextFormatter(ValidationUtil.unsignedDecimalFormatter());
         FormValidator.validateDoubleOnType(tfFunding, errFunding, false);
         FormValidator.enforceLengthLimit(tfIncubator, 120);
 
@@ -300,13 +549,30 @@ public class StartupViewController implements Initializable {
         dialog.getDialogPane().setPrefWidth(500);
         DialogStyler.style(dialog);
 
-        // Block dialog close if validation fails — errors shown inline
+        // Block dialog close if validation fails — full ValidationUtil pipeline
         dialog.getDialogPane().lookupButton(ButtonType.OK)
               .addEventFilter(ActionEvent.ACTION, ev -> {
-                  boolean nameOk    = FormValidator.requireNonEmpty(tfName, errName);
-                  boolean fundingOk = FormValidator.requireDouble(tfFunding, errFunding, false);
-                  boolean imageOk   = FormValidator.requireImageExtension(imageHolder[0], errImage);
-                  if (!nameOk || !fundingOk || !imageOk) ev.consume();
+                  List<String> existingNames = allStartups.stream()
+                          .map(Startup::getName).collect(Collectors.toList());
+                  String excludeName = isEdit ? existing.getName() : null;
+                  List<String> errors = ValidationUtil.gatherErrors(
+                      ValidationUtil.checkName(tfName.getText(), "Name", existingNames, excludeName),
+                      ValidationUtil.checkFunding(tfFunding.getText())
+                  );
+                  // Image extension check
+                  if (!FormValidator.requireImageExtension(imageHolder[0], errImage))
+                      errors.add("Image must be PNG, JPG, or JPEG.");
+                  // Visual highlights
+                  ValidationUtil.checkName(tfName.getText(), "Name", existingNames, excludeName)
+                      .ifPresentOrElse(
+                          msg -> ValidationUtil.markFieldError(tfName, errName, msg),
+                          ()  -> ValidationUtil.clearFieldError(tfName, errName));
+                  ValidationUtil.checkFunding(tfFunding.getText())
+                      .ifPresentOrElse(
+                          msg -> ValidationUtil.markFieldError(tfFunding, errFunding, msg),
+                          ()  -> ValidationUtil.clearFieldError(tfFunding, errFunding));
+                  if (!AlertUtil.checkAndShowErrors(errors,
+                          dialog.getDialogPane().getScene().getWindow())) ev.consume();
               });
 
         Optional<ButtonType> res = dialog.showAndWait();
@@ -327,6 +593,9 @@ public class StartupViewController implements Initializable {
                 existing.setFundingAmount(funding);
                 existing.setIncubatorProgram(tfIncubator.getText().trim());
                 service.update(existing);
+                AlertUtil.showSuccess("\u270F  Startup Updated",
+                    "\"" + existing.getName() + "\" has been updated successfully.",
+                    cardsContainer.getScene().getWindow());
             } else {
                 Startup s = new Startup();
                 s.setName(tfName.getText().trim());
@@ -339,6 +608,9 @@ public class StartupViewController implements Initializable {
                 s.setFundingAmount(funding);
                 s.setIncubatorProgram(tfIncubator.getText().trim());
                 service.add(s);
+                AlertUtil.showSuccess("\u2705  Startup Created",
+                    "\"" + s.getName() + "\" has been added successfully.",
+                    cardsContainer.getScene().getWindow());
             }
             loadAll();
         }
@@ -370,11 +642,17 @@ public class StartupViewController implements Initializable {
         thumb.setMinSize(84, 84);
         thumb.setMaxSize(84, 84);
         thumb.setStyle(
-            "-fx-background-color: rgba(237,233,254,0.50);" +
-            "-fx-border-color: rgba(167,139,250,0.72);" +
-            "-fx-border-radius: 14;" +
-            "-fx-background-radius: 14;" +
-            "-fx-border-width: 1.5;");
+            ThemeManager.getInstance().isDark()
+                ? "-fx-background-color: rgba(255,255,255,0.05);" +
+                  "-fx-border-color: rgba(139,92,246,0.40);" +
+                  "-fx-border-radius: 14;" +
+                  "-fx-background-radius: 14;" +
+                  "-fx-border-width: 1.5;"
+                : "-fx-background-color: rgba(245,240,255,0.70);" +
+                  "-fx-border-color: rgba(139,92,246,0.30);" +
+                  "-fx-border-radius: 14;" +
+                  "-fx-background-radius: 14;" +
+                  "-fx-border-width: 1.5;");
 
         // Load existing image if available
         if (existingPath != null && !existingPath.isBlank()) {
@@ -391,20 +669,27 @@ public class StartupViewController implements Initializable {
         Label pathLabel = new Label(existingPath != null && !existingPath.isBlank()
                 ? new File(existingPath).getName() : "No image selected");
         pathLabel.setStyle(
-            "-fx-font-size: 10.5px;" +
-            "-fx-text-fill: rgba(196,181,253,0.92);" +
-            "-fx-font-style: italic;");
+            ThemeManager.getInstance().isDark()
+                ? "-fx-font-size: 10.5px;-fx-text-fill: rgba(196,181,253,0.92);-fx-font-style: italic;"
+                : "-fx-font-size: 10.5px;-fx-text-fill: #4c1d95;-fx-font-style: italic;");
         pathLabel.setWrapText(true);
 
         // Choose button
         Button btnChoose = new Button("📁  Choose Image");
         btnChoose.setStyle(
-            "-fx-background-color: rgba(237,233,254,0.86);" +
-            "-fx-border-color: rgba(167,139,250,0.72);" +
-            "-fx-border-radius: 12;-fx-background-radius: 12;" +
-            "-fx-border-width: 1.5;-fx-text-fill: #6d28d9;" +
-            "-fx-font-size: 13px;-fx-font-weight: 800;" +
-            "-fx-padding: 9 18 9 18;-fx-cursor: hand;");
+            ThemeManager.getInstance().isDark()
+                ? "-fx-background-color: rgba(255,255,255,0.07);" +
+                  "-fx-border-color: rgba(139,92,246,0.40);" +
+                  "-fx-border-radius: 12;-fx-background-radius: 12;" +
+                  "-fx-border-width: 1.5;-fx-text-fill: #a78bfa;" +
+                  "-fx-font-size: 13px;-fx-font-weight: 800;" +
+                  "-fx-padding: 9 18 9 18;-fx-cursor: hand;"
+                : "-fx-background-color: rgba(245,240,255,0.80);" +
+                  "-fx-border-color: rgba(139,92,246,0.30);" +
+                  "-fx-border-radius: 12;-fx-background-radius: 12;" +
+                  "-fx-border-width: 1.5;-fx-text-fill: #6d28d9;" +
+                  "-fx-font-size: 13px;-fx-font-weight: 800;" +
+                  "-fx-padding: 9 18 9 18;-fx-cursor: hand;");
         btnChoose.setMaxWidth(Double.MAX_VALUE);
         btnChoose.setOnAction(e -> {
             FileChooser fc = new FileChooser();
@@ -451,14 +736,7 @@ public class StartupViewController implements Initializable {
     private DatePicker styledDatePicker() {
         DatePicker dp = new DatePicker();
         dp.setMaxWidth(Double.MAX_VALUE);
-        dp.setStyle(
-            "-fx-background-color: rgba(255,255,255,0.90);" +
-            "-fx-border-color: rgba(167,139,250,0.55);" +
-            "-fx-border-radius: 12;" +
-            "-fx-background-radius: 12;" +
-            "-fx-border-width: 1.5;" +
-            "-fx-font-size: 13px;" +
-            "-fx-padding: 3 0 3 6;");
+        dp.setStyle(DesignTokens.comboNormal());
         return dp;
     }
 
@@ -467,14 +745,7 @@ public class StartupViewController implements Initializable {
         cb.getItems().addAll(items);
         cb.setValue(items[0]);
         cb.setMaxWidth(Double.MAX_VALUE);
-        cb.setStyle(
-            "-fx-background-color: rgba(255,255,255,0.90);" +
-            "-fx-border-color: rgba(167,139,250,0.55);" +
-            "-fx-border-radius: 12;" +
-            "-fx-background-radius: 12;" +
-            "-fx-border-width: 1.5;" +
-            "-fx-font-size: 13px;" +
-            "-fx-padding: 3 0 3 6;");
+        cb.setStyle(DesignTokens.comboNormal());
         return cb;
     }
 
@@ -489,6 +760,7 @@ public class StartupViewController implements Initializable {
             Parent root = loader.load();
             Scene scene = new Scene(root, stage.getScene().getWidth(),
                     stage.getScene().getHeight());
+            ThemeManager.getInstance().applyTo(scene);
             stage.setScene(scene);
             stage.setTitle("StartupFlow — Admin Dashboard");
         } catch (IOException e) {

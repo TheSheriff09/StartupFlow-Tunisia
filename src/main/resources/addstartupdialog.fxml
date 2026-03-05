@@ -114,12 +114,13 @@
             </HBox>
 
             <!-- Mentor -->
-            <VBox spacing="6">
+            <VBox spacing="4">
                 <Label text="MENTOR ID" styleClass="modal-label"/>
                 <TextField
                         fx:id="tfMentor"
                         promptText="Mentor ID (numeric)"
                         styleClass="modal-input"/>
+                <Label fx:id="errMentor" styleClass="field-error-msg" visible="false" managed="false"/>
             </VBox>
 
             <!-- Funding Amount + KPI Score side-by-side -->

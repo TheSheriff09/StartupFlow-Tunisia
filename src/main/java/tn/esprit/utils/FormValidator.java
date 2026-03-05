@@ -1,5 +1,8 @@
 package tn.esprit.utils;
 
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.Bindings;
+import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputControl;
@@ -20,34 +23,10 @@ import java.time.LocalDate;
  */
 public final class FormValidator {
 
-    // ── Error style tokens ────────────────────────────────────
-    private static final String NORMAL_STYLE =
-        "-fx-background-color: rgba(255,255,255,0.92);" +
-        "-fx-text-fill: #3b1f6b;" +
-        "-fx-border-color: rgba(167,139,250,0.58);" +
-        "-fx-border-radius: 12;" +
-        "-fx-background-radius: 12;" +
-        "-fx-border-width: 1.5;" +
-        "-fx-prompt-text-fill: rgba(139,92,246,0.46);" +
-        "-fx-font-size: 13px;" +
-        "-fx-padding: 11 16 11 16;";
-
-    private static final String ERROR_STYLE =
-        "-fx-background-color: rgba(255,235,235,0.95);" +
-        "-fx-text-fill: #7f1d1d;" +
-        "-fx-border-color: #f87171;" +
-        "-fx-border-radius: 12;" +
-        "-fx-background-radius: 12;" +
-        "-fx-border-width: 2;" +
-        "-fx-prompt-text-fill: rgba(239,68,68,0.50);" +
-        "-fx-font-size: 13px;" +
-        "-fx-padding: 11 16 11 16;";
-
-    private static final String ERROR_LABEL_STYLE =
-        "-fx-text-fill: #ef4444;" +
-        "-fx-font-size: 10.5px;" +
-        "-fx-font-weight: 700;" +
-        "-fx-padding: 2 0 0 2;";
+    // ── Error style tokens — dynamically resolved via DesignTokens ──────
+    private static String normalStyle()     { return DesignTokens.fieldNormal(); }
+    private static String errorStyle()      { return DesignTokens.fieldError(); }
+    private static String errorLabelStyle() { return DesignTokens.errorLabel(); }
 
     private FormValidator() {}
 
@@ -169,7 +148,7 @@ public final class FormValidator {
         }
         if (errLbl != null) {
             errLbl.setText("Only PNG, JPG or JPEG images are accepted.");
-            errLbl.setStyle(ERROR_LABEL_STYLE);
+            errLbl.setStyle(errorLabelStyle());
             errLbl.setVisible(true);
             errLbl.setManaged(true);
         }
@@ -180,6 +159,63 @@ public final class FormValidator {
     // Real-time listener helpers
     // ─────────────────────────────────────────────────────────
 
+    /**
+     * Validates that a numeric field contains a value strictly greater than zero.
+     * Use for funding amounts and similar fields that cannot be zero.
+     *
+     * @param field    the control to validate
+     * @param errLbl   the error Label (may be null)
+     * @param required if true, empty field also fails
+     * @return true if valid
+     */
+    public static boolean requirePositiveDouble(TextInputControl field, Label errLbl, boolean required) {
+        String val = field.getText() == null ? "" : field.getText().trim();
+        if (val.isEmpty()) {
+            if (required) { markError(field, errLbl, "This field is required."); return false; }
+            clearError(field, errLbl);
+            return true;
+        }
+        try {
+            double d = Double.parseDouble(val);
+            if (d <= 0) {
+                markError(field, errLbl, "Value must be greater than zero.");
+                return false;
+            }
+            clearError(field, errLbl);
+            return true;
+        } catch (NumberFormatException e) {
+            markError(field, errLbl, "Enter a valid number (e.g. 50000).");
+            return false;
+        }
+    }
+
+    /**
+     * Binds a submit {@link Button}'s disable property so it is automatically
+     * disabled whenever any of the watched fields is blank.
+     *
+     * Usage:
+     * <pre>
+     *   FormValidator.bindSubmitButton(btnSave, tfName, tfFunding, tfExpenses);
+     * </pre>
+     *
+     * @param button the button to control
+     * @param fields one or more TextInputControls that must all be non-blank
+     */
+    public static void bindSubmitButton(Button button, TextInputControl... fields) {
+        if (fields == null || fields.length == 0) return;
+
+        // Build a BooleanBinding: true when ANY field is blank (disables the button)
+        BooleanBinding anyEmpty = Bindings.createBooleanBinding(() -> {
+            for (TextInputControl f : fields) {
+                if (f.getText() == null || f.getText().trim().isEmpty()) return true;
+            }
+            return false;
+        }, java.util.Arrays.stream(fields)
+                            .map(TextInputControl::textProperty)
+                            .toArray(javafx.beans.value.ObservableValue[]::new));
+
+        button.disableProperty().bind(anyEmpty);
+    }
     /**
      * Attaches a real-time listener: clears the error as soon as the user types anything.
      */
@@ -216,7 +252,7 @@ public final class FormValidator {
      */
     public static Label errorLabel() {
         Label lbl = new Label();
-        lbl.setStyle(ERROR_LABEL_STYLE);
+        lbl.setStyle(errorLabelStyle());
         lbl.setVisible(false);
         lbl.setManaged(false);
         lbl.setWrapText(true);
@@ -228,10 +264,7 @@ public final class FormValidator {
      */
     public static VBox fieldRow(String labelText, javafx.scene.Node field, Label errLbl) {
         Label lbl = new Label(labelText);
-        lbl.setStyle(
-            "-fx-text-fill: rgba(233,213,255,0.85);" +
-            "-fx-font-size: 10px;" +
-            "-fx-font-weight: bold;");
+        lbl.setStyle(DesignTokens.fieldLabel());
         VBox row = errLbl != null
             ? new VBox(5, lbl, field, errLbl)
             : new VBox(5, lbl, field);
@@ -244,17 +277,17 @@ public final class FormValidator {
     // ─────────────────────────────────────────────────────────
 
     private static void markError(TextInputControl field, Label errLbl, String msg) {
-        field.setStyle(ERROR_STYLE);
+        field.setStyle(errorStyle());
         if (errLbl != null) {
             errLbl.setText(msg);
-            errLbl.setStyle(ERROR_LABEL_STYLE);
+            errLbl.setStyle(errorLabelStyle());
             errLbl.setVisible(true);
             errLbl.setManaged(true);
         }
     }
 
     private static void clearError(TextInputControl field, Label errLbl) {
-        field.setStyle(NORMAL_STYLE);
+        field.setStyle(normalStyle());
         if (errLbl != null) {
             errLbl.setText("");
             errLbl.setVisible(false);
@@ -263,25 +296,17 @@ public final class FormValidator {
     }
 
     private static void markDateError(DatePicker dp, Label errLbl, String msg) {
-        dp.setStyle(
-            "-fx-background-color: rgba(255,235,235,0.95);" +
-            "-fx-border-color: #f87171;" +
-            "-fx-border-radius: 12;-fx-background-radius: 12;" +
-            "-fx-border-width: 2;-fx-font-size: 13px;-fx-padding: 3 0 3 6;");
+        dp.setStyle(DesignTokens.comboError());
         if (errLbl != null) {
             errLbl.setText(msg);
-            errLbl.setStyle(ERROR_LABEL_STYLE);
+            errLbl.setStyle(errorLabelStyle());
             errLbl.setVisible(true);
             errLbl.setManaged(true);
         }
     }
 
     private static void clearDateError(DatePicker dp, Label errLbl) {
-        dp.setStyle(
-            "-fx-background-color: rgba(255,255,255,0.90);" +
-            "-fx-border-color: rgba(167,139,250,0.55);" +
-            "-fx-border-radius: 12;-fx-background-radius: 12;" +
-            "-fx-border-width: 1.5;-fx-font-size: 13px;-fx-padding: 3 0 3 6;");
+        dp.setStyle(DesignTokens.comboNormal());
         if (errLbl != null) {
             errLbl.setText("");
             errLbl.setVisible(false);

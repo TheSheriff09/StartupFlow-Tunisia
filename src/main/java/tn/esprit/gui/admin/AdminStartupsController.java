@@ -19,7 +19,9 @@ import tn.esprit.gui.popup.DialogStyler;
 import tn.esprit.gui.popup.PopupManager;
 import tn.esprit.gui.startup.AddStartupController;
 import tn.esprit.services.StartupService;
+import tn.esprit.utils.AlertUtil;
 import tn.esprit.utils.FormValidator;
+import tn.esprit.utils.ValidationUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,7 +78,37 @@ public class AdminStartupsController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         buildColumns();
         populateFilters();
+
+        // Enable full-dataset column sorting (not just current page)
+        tableStartups.setSortPolicy(tv -> {
+            if (tv.getSortOrder().isEmpty()) return true;
+            Comparator<Startup> cmp = null;
+            for (TableColumn<Startup, ?> col : tv.getSortOrder()) {
+                Comparator<Startup> colCmp = buildColumnComparator(col);
+                if (colCmp == null) continue;
+                cmp = (cmp == null) ? colCmp : cmp.thenComparing(colCmp);
+            }
+            if (cmp != null) filtered.sort(cmp);
+            refreshTable();
+            return true;
+        });
+
         loadAll();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Comparator<Startup> buildColumnComparator(TableColumn<Startup, ?> col) {
+        boolean asc = col.getSortType() == TableColumn.SortType.ASCENDING;
+        Comparator<Startup> cmp = null;
+        if (col == colName)    cmp = Comparator.comparing(s -> str(s.getName()).toLowerCase());
+        else if (col == colSector) cmp = Comparator.comparing(s -> str(s.getSector()).toLowerCase());
+        else if (col == colStage)  cmp = Comparator.comparing(s -> str(s.getStage()).toLowerCase());
+        else if (col == colStatus) cmp = Comparator.comparing(s -> str(s.getStatus()).toLowerCase());
+        else if (col == colFunding) cmp = Comparator.comparing(s -> s.getFundingAmount() != null ? s.getFundingAmount() : 0.0);
+        else if (col == colKpi)    cmp = Comparator.comparing(s -> s.getKpiScore() != null ? s.getKpiScore() : 0.0);
+        else if (col == colId)     cmp = Comparator.comparingInt(Startup::getStartupID);
+        if (cmp != null && !asc) cmp = cmp.reversed();
+        return cmp;
     }
 
     /** Called by the dashboard after loading this page. */
@@ -138,6 +170,8 @@ public class AdminStartupsController implements Initializable {
             {
                 btnEdit.getStyleClass().add("tbl-btn-edit");
                 btnDelete.getStyleClass().add("tbl-btn-delete");
+                btnEdit.setTooltip(new javafx.scene.control.Tooltip("Edit this startup"));
+                btnDelete.setTooltip(new javafx.scene.control.Tooltip("Delete this startup"));
                 btnEdit.setOnAction(e  -> editStartup(getTableRow().getItem()));
                 btnDelete.setOnAction(e -> deleteStartup(getTableRow().getItem()));
             }
@@ -258,7 +292,13 @@ public class AdminStartupsController implements Initializable {
             Node overlay = loader.load();
             AddStartupController ctrl = loader.getController();
 
-            ctrl.setOnSave(s -> { service.add(s); loadAll(); });
+            ctrl.setOnSave(s -> {
+                service.add(s);
+                loadAll();
+                AlertUtil.showSuccess("\u2705  Startup Created",
+                    "\"" + s.getName() + "\" has been added successfully.",
+                    tableStartups.getScene().getWindow());
+            });
             ctrl.setOnClose(this::closeModal);
 
             modalLayer.getChildren().setAll(overlay);
@@ -287,6 +327,7 @@ public class AdminStartupsController implements Initializable {
         TextField        tfFunding   = styledField(
             s.getFundingAmount() != null ? String.valueOf(s.getFundingAmount()) : "",
             "Funding amount");
+        tfFunding.setTextFormatter(ValidationUtil.unsignedDecimalFormatter());
         TextField        tfIncubator = styledField(s.getIncubatorProgram(), "Incubator program");
 
         // ── Validation labels ──
@@ -324,10 +365,39 @@ public class AdminStartupsController implements Initializable {
         // Block dialog close if validation fails — errors shown inline
         dlg.getDialogPane().lookupButton(ButtonType.OK)
            .addEventFilter(ActionEvent.ACTION, ev -> {
-               boolean nameOk    = FormValidator.requireNonEmpty(tfName, errName);
-               boolean fundingOk = FormValidator.requireDouble(tfFunding, errFunding, false);
-               boolean imageOk   = FormValidator.requireImageExtension(imageHolder[0], errImage);
-               if (!nameOk || !fundingOk || !imageOk) ev.consume();
+               // Collect strict validation errors
+               List<String> errors = new ArrayList<>();
+
+               // Existing names, excluding the current startup being edited
+               List<String> existingNames = allData.stream()
+                       .map(Startup::getName)
+                       .collect(Collectors.toList());
+
+               ValidationUtil.collect(
+                   ValidationUtil.checkName(tfName.getText(), "Name", existingNames,
+                           s.getName()),
+                   errors);
+               ValidationUtil.collect(
+                   ValidationUtil.checkFunding(tfFunding.getText()),
+                   errors);
+               boolean imageOk = FormValidator.requireImageExtension(imageHolder[0], errImage);
+               if (!imageOk) errors.add("Image file must be PNG, JPG, or JPEG.");
+
+               // Apply red borders on failing fields
+               ValidationUtil.checkName(tfName.getText(), "Name", existingNames, s.getName())
+                   .ifPresentOrElse(
+                       msg -> ValidationUtil.markFieldError(tfName, errName, msg),
+                       ()  -> ValidationUtil.clearFieldError(tfName, errName));
+               ValidationUtil.checkFunding(tfFunding.getText())
+                   .ifPresentOrElse(
+                       msg -> ValidationUtil.markFieldError(tfFunding, errFunding, msg),
+                       ()  -> ValidationUtil.clearFieldError(tfFunding, errFunding));
+
+               if (!errors.isEmpty()) {
+                   AlertUtil.showValidationErrors(errors,
+                       dlg.getDialogPane().getScene().getWindow());
+                   ev.consume();
+               }
            });
 
         dlg.showAndWait().ifPresent(bt -> {
@@ -346,6 +416,9 @@ public class AdminStartupsController implements Initializable {
             s.setIncubatorProgram(tfIncubator.getText().trim());
             service.update(s);
             loadAll();
+            AlertUtil.showSuccess("\u270F  Startup Updated",
+                "\"" + s.getName() + "\" has been updated successfully.",
+                tableStartups.getScene().getWindow());
         });
     }
 
@@ -354,7 +427,13 @@ public class AdminStartupsController implements Initializable {
         PopupManager.showDelete(modalLayer, blurTarget,
                 "Delete Startup",
                 "Delete \"" + s.getName() + "\"? All linked business plans will also be removed.",
-                () -> { service.delete(s); loadAll(); });
+                () -> {
+                    service.delete(s);
+                    loadAll();
+                    AlertUtil.showSuccess("\uD83D\uDDD1  Startup Deleted",
+                        "\"" + s.getName() + "\" has been removed.",
+                        tableStartups.getScene().getWindow());
+                });
     }
 
     // ── Modal helpers ────────────────────────────────────────

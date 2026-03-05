@@ -23,9 +23,11 @@
             <Insets top="24" right="24" bottom="20" left="24"/>
         </padding>
 
-        <!-- Status badge -->
-        <HBox>
+        <!-- Status badge + more button row -->
+        <HBox alignment="CENTER_LEFT">
             <Label fx:id="lblStatus" styleClass="bp-status" text="DRAFT"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnMore" text="⋯" styleClass="btn-more" onAction="#handleMore"/>
         </HBox>
 
         <!-- Title -->
@@ -39,7 +41,7 @@
         </Region>
 
         <!-- Info rows -->
-        <VBox spacing="7">
+        <VBox spacing="8">
             <Label fx:id="lblDescription"    styleClass="card-bullet" text="" wrapText="true"/>
             <Label fx:id="lblMarketAnalysis" styleClass="bp-market"  text="" wrapText="true"/>
             <!-- Funding + Timeline -->
@@ -52,11 +54,5 @@
 
         <Region VBox.vgrow="ALWAYS"/>
     </VBox>
-
-    <!-- Action bar — hidden by default, revealed on hover -->
-    <HBox fx:id="btnGroup" styleClass="bp-card-action-bar" alignment="CENTER" spacing="10" opacity="0">
-        <Button fx:id="btnEdit"   text="✏  Edit"   styleClass="bp-btn-edit"   onAction="#handleEdit"/>
-        <Button fx:id="btnDelete" text="🗑  Delete" styleClass="bp-btn-delete" onAction="#handleDelete"/>
-    </HBox>
 
 </VBox>

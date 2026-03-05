@@ -14,17 +14,21 @@
         fx:id="cardRoot"
         styleClass="startup-card"
         prefWidth="310"
-        minHeight="228"
+        minHeight="240"
         spacing="0">
 
     <!-- Content area (padded) -->
     <VBox spacing="0" VBox.vgrow="ALWAYS">
         <padding>
-            <Insets top="26" right="24" bottom="20" left="24"/>
+            <Insets top="24" right="24" bottom="20" left="24"/>
         </padding>
 
-        <!-- Title -->
-        <Label fx:id="lblName" styleClass="card-name" text="Startup Name" wrapText="true"/>
+        <!-- Title row with more button -->
+        <HBox alignment="CENTER_LEFT" spacing="8">
+            <Label fx:id="lblName" styleClass="card-name" text="Startup Name" wrapText="true"
+                   HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308"/>
+            <Button fx:id="btnMore" text="⋯" styleClass="btn-more" onAction="#handleMore"/>
+        </HBox>
 
         <!-- Thin divider -->
         <Region styleClass="card-divider">
@@ -40,14 +44,18 @@
             <Label fx:id="lblDate" visible="false" managed="false" text=""/>
         </VBox>
 
+        <!-- Investment Score badge -->
+        <HBox alignment="CENTER_LEFT" spacing="8" VBox.margin="$bottom8">
+            <Label text="📊 Score:" styleClass="card-bullet"
+                   style="-fx-font-weight:700;"/>
+            <Label fx:id="lblScore" text="—"
+                   style="-fx-font-size:12px; -fx-font-weight:800; -fx-padding: 2 10 2 10;
+                          -fx-background-radius:20;"/>
+            <Label fx:id="lblScoreBand" text=""
+                   style="-fx-font-size:10.5px; -fx-opacity:0.8;"/>
+        </HBox>
+
         <Region VBox.vgrow="ALWAYS"/>
     </VBox>
-
-    <!-- Action bar — hidden by default, revealed on hover -->
-    <HBox fx:id="btnGroup" styleClass="card-action-bar" alignment="CENTER" spacing="8" opacity="0">
-        <Button fx:id="btnEdit"      text="✏  Edit"    styleClass="btn-edit"    onAction="#handleEdit"/>
-        <Button fx:id="btnDelete"    text="🗑  Delete"  styleClass="btn-delete"   onAction="#handleDelete"/>
-        <Button fx:id="btnViewPlans" text="📋  Plans"   styleClass="btn-plans"    onAction="#handleViewPlans"/>
-    </HBox>
 
 </VBox>

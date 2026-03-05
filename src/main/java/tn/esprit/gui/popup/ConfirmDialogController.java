@@ -91,30 +91,30 @@ public class ConfirmDialogController implements Initializable {
     public void animateOpen() {
         overlayRoot.setOpacity(0);
         modalCard.setOpacity(0);
-        modalCard.setScaleX(0.80);
-        modalCard.setScaleY(0.80);
+        modalCard.setScaleX(0.82);
+        modalCard.setScaleY(0.82);
 
-        FadeTransition bgFt = new FadeTransition(Duration.millis(220), overlayRoot);
+        FadeTransition bgFt = new FadeTransition(Duration.millis(250), overlayRoot);
         bgFt.setFromValue(0); bgFt.setToValue(1);
 
         Interpolator spring = Interpolator.SPLINE(0.22, 0.61, 0.36, 1.0);
 
-        ScaleTransition cardSt = new ScaleTransition(Duration.millis(300), modalCard);
-        cardSt.setFromX(0.80); cardSt.setToX(1.0);
-        cardSt.setFromY(0.80); cardSt.setToY(1.0);
+        ScaleTransition cardSt = new ScaleTransition(Duration.millis(320), modalCard);
+        cardSt.setFromX(0.82); cardSt.setToX(1.0);
+        cardSt.setFromY(0.82); cardSt.setToY(1.0);
         cardSt.setInterpolator(spring);
 
-        FadeTransition cardFt = new FadeTransition(Duration.millis(260), modalCard);
+        FadeTransition cardFt = new FadeTransition(Duration.millis(250), modalCard);
         cardFt.setFromValue(0); cardFt.setToValue(1);
 
         new ParallelTransition(bgFt, cardSt, cardFt).play();
     }
 
     private void animateClose(Runnable afterClose) {
-        FadeTransition ft = new FadeTransition(Duration.millis(180), overlayRoot);
+        FadeTransition ft = new FadeTransition(Duration.millis(200), overlayRoot);
         ft.setFromValue(1); ft.setToValue(0);
 
-        ScaleTransition st = new ScaleTransition(Duration.millis(180), modalCard);
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), modalCard);
         st.setToX(0.84); st.setToY(0.84);
         st.setInterpolator(Interpolator.EASE_IN);
 

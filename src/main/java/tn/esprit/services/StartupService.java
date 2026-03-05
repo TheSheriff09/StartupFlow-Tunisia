@@ -1,5 +1,6 @@
 package tn.esprit.services;
 
+import tn.esprit.entities.BusinessPlan;
 import tn.esprit.entities.Startup;
 import tn.esprit.utils.DatabaseConnection;
 
@@ -171,5 +172,20 @@ public class StartupService implements ICRUD<Startup> {
             System.err.println("[StartupService.getById] " + e.getMessage());
         }
         return null;
+    }
+
+    // ── INVESTMENT SCORING ────────────────────────────────────
+
+    /**
+     * Calculates an Investment Score (0–100) for the given startup by
+     * fetching all its BusinessPlans and delegating to {@link InvestmentScorer}.
+     *
+     * @param startupID the PK of the startup
+     * @return score in [0.0, 100.0]; 0.0 if the startup has no plans
+     */
+    public double calculateInvestmentScore(int startupID) {
+        BusinessPlanService bpService = new BusinessPlanService();
+        List<BusinessPlan>  plans     = bpService.getByStartup(startupID);
+        return InvestmentScorer.calculate(plans);
     }
 }

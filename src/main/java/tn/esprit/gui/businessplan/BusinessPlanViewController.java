@@ -26,11 +26,16 @@ import tn.esprit.gui.popup.DialogStyler;
 import tn.esprit.gui.popup.PopupManager;
 import tn.esprit.gui.startup.StartupViewController;
 import tn.esprit.services.BusinessPlanService;
+import tn.esprit.utils.AlertUtil;
+import tn.esprit.utils.DesignTokens;
 import tn.esprit.utils.FormValidator;
+import tn.esprit.utils.ThemeManager;
+import tn.esprit.utils.ValidationUtil;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -46,6 +51,8 @@ public class BusinessPlanViewController implements Initializable {
     @FXML private Label      lblStartupName;
     @FXML private Label      lblCount;
     @FXML private Button     fabBtn;
+    @FXML private Button     themeToggle;
+    @FXML private ComboBox<String> sortCombo;
     // ── Services ──────────────────────────────────────────────
     private final BusinessPlanService service = new BusinessPlanService();
 
@@ -58,6 +65,21 @@ public class BusinessPlanViewController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         searchField.textProperty().addListener((obs, o, n) -> filterCards(n));
+
+        // Sort options
+        if (sortCombo != null) {
+            sortCombo.getItems().addAll(
+                "Date (Newest)", "Date (Oldest)",
+                "Title (A → Z)", "Title (Z → A)",
+                "Funding (High → Low)", "Funding (Low → High)",
+                "Status"
+            );
+        }
+
+        // Set initial theme toggle icon
+        if (themeToggle != null)
+            themeToggle.setText(ThemeManager.getInstance().isDark() ? "☀" : "🌙");
+
         javafx.application.Platform.runLater(this::breatheFAB);
     }
 
@@ -79,6 +101,16 @@ public class BusinessPlanViewController implements Initializable {
         pulse.play();
     }
 
+    @FXML
+    private void toggleTheme() {
+        ThemeManager tm = ThemeManager.getInstance();
+        tm.toggle();
+        tm.applyTo(themeToggle.getScene());
+        themeToggle.setText(tm.isDark() ? "☀" : "🌙");
+        // Re-render cards so inline styles update
+        if (allPlans != null) renderCards(allPlans);
+    }
+
     /**
      * Called by StartupViewController before showing this scene.
      * Injects the selected startup so we can load its plans.
@@ -92,11 +124,44 @@ public class BusinessPlanViewController implements Initializable {
     // ── Data ──────────────────────────────────────────────────
 
     private void loadAll() {
-        allPlans = service.getByStartup(currentStartup.getStartupID());
+        allPlans = service.getByStartup(currentStartup.getStartupID()).stream()
+            .sorted(Comparator
+                .comparing((BusinessPlan p) -> p.getLastUpdate() != null
+                    ? p.getLastUpdate()
+                    : p.getCreationDate(), Comparator.nullsLast(Comparator.naturalOrder()))
+                .reversed()
+                .thenComparing(BusinessPlan::getBusinessPlanID, Comparator.reverseOrder()))
+            .collect(Collectors.toList());
         renderCards(allPlans);
     }
 
+    // ── Sort handler ──────────────────────────────────────────
+
+    @FXML
+    private void onSortChanged() {
+        if (sortCombo == null || sortCombo.getValue() == null || allPlans == null) return;
+        String sort = sortCombo.getValue();
+        Comparator<BusinessPlan> cmp = switch (sort) {
+            case "Title (A → Z)"        -> Comparator.comparing(p -> p.getTitle() != null ? p.getTitle().toLowerCase() : "");
+            case "Title (Z → A)"        -> Comparator.comparing((BusinessPlan p) -> p.getTitle() != null ? p.getTitle().toLowerCase() : "").reversed();
+            case "Funding (High → Low)" -> Comparator.comparing((BusinessPlan p) -> p.getFundingRequired() != null ? p.getFundingRequired() : 0.0, Comparator.reverseOrder());
+            case "Funding (Low → High)" -> Comparator.comparing((BusinessPlan p) -> p.getFundingRequired() != null ? p.getFundingRequired() : 0.0);
+            case "Status"               -> Comparator.comparing(p -> p.getStatus() != null ? p.getStatus().toLowerCase() : "");
+            case "Date (Newest)"        -> Comparator.comparing((BusinessPlan p) -> p.getLastUpdate() != null ? p.getLastUpdate() : (p.getCreationDate() != null ? p.getCreationDate() : LocalDate.MIN), Comparator.reverseOrder());
+            case "Date (Oldest)"        -> Comparator.comparing((BusinessPlan p) -> p.getLastUpdate() != null ? p.getLastUpdate() : (p.getCreationDate() != null ? p.getCreationDate() : LocalDate.MIN));
+            default -> null;
+        };
+        if (cmp != null) {
+            allPlans.sort(cmp);
+            renderCards(allPlans);
+        }
+    }
+
     private void filterCards(String query) {
+        if (allPlans == null || allPlans.isEmpty()) {
+            renderCards(List.of());
+            return;
+        }
         if (query == null || query.isBlank()) { renderCards(allPlans); return; }
         String q = query.toLowerCase().trim();
         renderCards(allPlans.stream().filter(p ->
@@ -113,6 +178,13 @@ public class BusinessPlanViewController implements Initializable {
         cardsContainer.getChildren().clear();
         lblCount.setText(plans.size() + " plan" + (plans.size() != 1 ? "s" : ""));
 
+        if (plans.isEmpty()) {
+            Label empty = new Label("No business plans found. Click + to create your first plan.");
+            empty.getStyleClass().add("activity-meta");
+            cardsContainer.getChildren().add(empty);
+            return;
+        }
+
         for (int i = 0; i < plans.size(); i++) {
             BusinessPlan bp = plans.get(i);
             try {
@@ -120,7 +192,8 @@ public class BusinessPlanViewController implements Initializable {
                 Parent card = loader.load();
                 BusinessPlanCardController ctrl = loader.getController();
 
-                ctrl.setData(bp, this::openEditDialog, this::confirmDelete);
+                ctrl.setData(bp, this::openEditDialog, this::confirmDelete,
+                             modalLayer, mainContent);
 
                 animateIn(card, i * 55L);
                 cardsContainer.getChildren().add(card);
@@ -170,6 +243,7 @@ public class BusinessPlanViewController implements Initializable {
             Stage stage = (Stage) cardsContainer.getScene().getWindow();
             stage.setTitle("Startups — StartupFlow");
             Scene scene = new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight());
+            ThemeManager.getInstance().applyTo(scene);
             stage.setScene(scene);
         } catch (IOException e) {
             showError("Cannot navigate back: " + e.getMessage());
@@ -188,7 +262,13 @@ public class BusinessPlanViewController implements Initializable {
             modalLayer, mainContent,
             "Delete Plan",
             "Delete \"" + planTitle + "\"? This cannot be undone.",
-            () -> { service.delete(bp); loadAll(); });
+            () -> {
+                service.delete(bp);
+                loadAll();
+                AlertUtil.showSuccess("\uD83D\uDDD1  Plan Deleted",
+                    "\"" + planTitle + "\" has been removed.",
+                    cardsContainer.getScene().getWindow());
+            });
     }
 
     // ── Add / Edit dialog ─────────────────────────────────────
@@ -205,6 +285,7 @@ public class BusinessPlanViewController implements Initializable {
         TextArea  taMarketing   = styledArea("Go-to-market strategy…");
         TextArea  taFinancial   = styledArea("Revenue projections, burn rate…");
         TextField tfFunding     = styledField("e.g. 50000");
+        tfFunding.setTextFormatter(ValidationUtil.unsignedDecimalFormatter());
         TextField tfTimeline    = styledField("e.g. 12 months");
 
         // ── Validation labels + real-time listeners ──
@@ -217,23 +298,9 @@ public class BusinessPlanViewController implements Initializable {
         cbStatus.getItems().addAll("Draft", "Active", "Under Review", "Pending", "Funded", "Archived");
         cbStatus.setValue("Draft");
         cbStatus.setMaxWidth(Double.MAX_VALUE);
-        cbStatus.setStyle(
-            "-fx-background-color: rgba(255,255,255,0.90);" +
-            "-fx-border-color: rgba(167,139,250,0.55);" +
-            "-fx-border-radius: 12;" +
-            "-fx-background-radius: 12;" +
-            "-fx-border-width: 1.5;" +
-            "-fx-font-size: 13px;" +
-            "-fx-padding: 3 0 3 6;");
+        cbStatus.setStyle(DesignTokens.comboNormal());
 
-        String pickerStyle =
-            "-fx-background-color: rgba(255,255,255,0.90);" +
-            "-fx-border-color: rgba(167,139,250,0.55);" +
-            "-fx-border-radius: 12;" +
-            "-fx-background-radius: 12;" +
-            "-fx-border-width: 1.5;" +
-            "-fx-font-size: 13px;" +
-            "-fx-padding: 3 0 3 6;";
+        String pickerStyle = DesignTokens.comboNormal();
         DatePicker dpCreation = new DatePicker(LocalDate.now());
         DatePicker dpUpdate   = new DatePicker(LocalDate.now());
         dpCreation.setMaxWidth(Double.MAX_VALUE);
@@ -293,9 +360,32 @@ public class BusinessPlanViewController implements Initializable {
         // Block dialog close if validation fails — errors shown inline
         dialog.getDialogPane().lookupButton(ButtonType.OK)
               .addEventFilter(ActionEvent.ACTION, ev -> {
-                  boolean titleOk   = FormValidator.requireNonEmpty(tfTitle, errTitle);
-                  boolean fundingOk = FormValidator.requireDouble(tfFunding, errFunding, false);
-                  if (!titleOk || !fundingOk) ev.consume();
+                  List<String> existingTitles = allPlans.stream()
+                          .map(BusinessPlan::getTitle).collect(Collectors.toList());
+                  String excludeTitle = (isEdit && existing.getTitle() != null)
+                          ? existing.getTitle() : null;
+              Optional<String> dateOrder =
+                  (dpCreation.getValue() != null && dpUpdate.getValue() != null
+                  && dpUpdate.getValue().isBefore(dpCreation.getValue()))
+                  ? Optional.of("Last Update cannot be before Creation Date.")
+                  : Optional.empty();
+                  List<String> errors = ValidationUtil.gatherErrors(
+                      ValidationUtil.checkName(tfTitle.getText(), "Plan Title",
+                              existingTitles, excludeTitle),
+                      ValidationUtil.checkTextOptional(taDesc.getText(),      "Description",        2000),
+                      ValidationUtil.checkTextOptional(taMarket.getText(),    "Market Analysis",    2000),
+                      ValidationUtil.checkTextOptional(taValueProp.getText(), "Value Proposition",  2000),
+                      ValidationUtil.checkTextOptional(taBizModel.getText(),  "Business Model",     2000),
+                      ValidationUtil.checkTextOptional(taMarketing.getText(), "Marketing Strategy", 2000),
+                      ValidationUtil.checkTextOptional(taFinancial.getText(), "Financial Forecast", 2000),
+                      ValidationUtil.checkFunding(tfFunding.getText()),
+                      ValidationUtil.checkTextOptional(tfTimeline.getText(),  "Timeline",           200),
+                      dateOrder
+                  );
+                  if (!AlertUtil.checkAndShowErrors(errors,
+                          dialog.getDialogPane().getScene().getWindow())) {
+                      ev.consume();
+                  }
               });
 
         Optional<ButtonType> res = dialog.showAndWait();
@@ -319,6 +409,9 @@ public class BusinessPlanViewController implements Initializable {
                 existing.setCreationDate(dpCreation.getValue());
                 existing.setLastUpdate(dpUpdate.getValue());
                 service.update(existing);
+                AlertUtil.showSuccess("\u270F  Plan Updated",
+                    "\"" + existing.getTitle() + "\" has been updated successfully.",
+                    cardsContainer.getScene().getWindow());
             } else {
                 BusinessPlan bp = new BusinessPlan();
                 bp.setTitle(tfTitle.getText().trim());
@@ -335,6 +428,9 @@ public class BusinessPlanViewController implements Initializable {
                 bp.setLastUpdate(dpUpdate.getValue());
                 bp.setStartupID(currentStartup.getStartupID());
                 service.add(bp);
+                AlertUtil.showSuccess("\u2705  Plan Created",
+                    "\"" + bp.getTitle() + "\" has been added successfully.",
+                    cardsContainer.getScene().getWindow());
             }
             loadAll();
         }
